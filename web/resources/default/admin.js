@@ -224,9 +224,6 @@ Vue.component('json-item', {
 			if(hash.substring(0, 1)=='#') hash=hash.substring(1);
 			return hash;
 		},
-		changeLocationHash:function(hash){
-			//主页实现
-		},
 		fillJSONData:function(data,name,value){
 			var flag=true;
 			var index=0;
@@ -1040,10 +1037,6 @@ Vue.component('json-item', {
 		
 	});
 	$(document).ready(function() {
-		$(window).on('hashchange',function(){
-			$.changeLocationHash($.getLocationHash());
-		});
-		
 		var pageVue=new Vue({
 			el:document.createElement("div"),
 			template:`<div>

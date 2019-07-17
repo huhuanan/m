@@ -262,27 +262,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		</div>
 		
 		<script type="text/javascript">
-			$.extend({
-				changeLocationHash:function(hash){
-					if(hash){
-						var self=$.vue['main_admin'];
-						if(self.currentMenuOid){$("#menu"+self.currentMenuOid)['slideUp'](300);}
-						self.currentMenuOid=hash;
-						var content=$("#main_content").children('#menu'+hash);
-						if(content.length){
-							content.slideDown(300);
-						}else{
-							$.execHTML('action/manageGroupMenuLink/gotoMenuPage',{'menu.oid':hash},function(html){
-								var ele=$(html).slideUp();
-								$("#main_content").append(ele);
-								ele.fadeIn(300);
-							});
-						}
-					}
-				}
-			});
+		
 			$(document.body).ready(function(){
-				
 				var loginVue=new Vue({
 					el:"#login_page",
 					data:{
@@ -423,13 +404,38 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 													}
 													return this.currentMenuOid;
 												},
+												hashChange:function(){
+													var hash=$.getLocationHash();
+													var self=$.vue['main_admin'];
+													if(self.currentMenuOid){$("#menu"+self.currentMenuOid)['slideUp'](300);}
+													self.currentMenuOid=hash;
+													var content=$("#main_content").children('#menu'+hash);
+													if(content.length){
+														content.slideDown(300);
+													}else{
+														$.execHTML('action/manageGroupMenuLink/gotoMenuPage',{'menu.oid':hash},function(html){
+															html=$.trim(html);
+															if(html.indexOf("<")==0){
+																var ele=$(html).slideUp();
+																$("#main_content").append(ele);
+																ele.fadeIn(300);
+															}else{
+																pageVue.$Message.error(html);
+															}
+														});
+													}
+												}
 											}
 										});
-										var hash=$.getLocationHash()||json.defaultMenuOid;
-										if(hash){
-											$.vue['main_admin'].doOpenMenu(hash);
-											$.changeLocationHash(hash);
+										if($.getLocationHash()){
+											$.vue['main_admin'].doOpenMenu($.getLocationHash());
+											$.vue['main_admin'].hashChange();
+										}else{
+											$.vue['main_admin'].doOpenMenu(json.defaultMenuOid);
 										}
+										$(window).on('hashchange',function(){
+											$.vue['main_admin'].hashChange();
+										});
 									}else{
 										pageVue.$Message.error(json.msg);
 									}
