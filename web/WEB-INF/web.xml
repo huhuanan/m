@@ -1,12 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
-  <display-name>m</display-name>
-  <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
-    <welcome-file>index.htm</welcome-file>
-    <welcome-file>index.jsp</welcome-file>
-    <welcome-file>default.html</welcome-file>
-    <welcome-file>default.htm</welcome-file>
-    <welcome-file>default.jsp</welcome-file>
-  </welcome-file-list>
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	version="2.4">
+	<!-- 系统初始化监听 -->
+	<listener>
+		<listener-class>m.system.listener.InitListener</listener-class>
+	</listener>
+	<!--end 系统初始化监听 -->
+	<listener>
+		<display-name>SessionListener</display-name>
+		<listener-class>m.system.listener.SessionListener</listener-class>
+	</listener>
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+	<!-- url 过滤器  -->
+	<!-- 执行过滤器 -->
+	<filter>
+		<filter-name>actionFilter</filter-name>
+		<filter-class>m.system.filter.ActionFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>actionFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+	</filter-mapping>
+	<!--end url 过滤器 -->
+	
+	<error-page> 
+		<error-code>404</error-code> 
+		<location>/error404.jsp</location> 
+	</error-page> 
+	<error-page> 
+		<error-code>500</error-code> 
+		<location>/error500.jsp</location> 
+	</error-page>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
 </web-app>

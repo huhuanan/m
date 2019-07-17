@@ -1,0 +1,146 @@
+package m.common.action;
+
+import java.io.File;
+import java.util.Date;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import m.common.dao.Dao;
+import m.common.model.LogModel;
+import m.common.model.UserModel;
+import m.common.service.Service;
+import m.system.RuntimeData;
+import m.system.exception.MException;
+import m.system.util.ClassUtil;
+import m.system.util.StringUtil;
+
+
+public abstract class Action {
+	/**
+	 * 获取当前操作员
+	 * @return
+	 */
+	public UserModel getSessionLogUser(){
+		return null;
+	}
+	private LogModel logModel=null;
+	/**
+	 * 设置日志的描述
+	 * @param description
+	 */
+	public void setLogContent(String operType,String description){
+		String logClass=RuntimeData.getLogClass();
+		UserModel user=getSessionLogUser();
+		if(!StringUtil.isSpace(logClass)&&null!=user){
+			try {
+				if(null==logModel){
+					logModel=ClassUtil.newInstance(logClass.trim());
+					logModel.setUsername(user.getUsername());
+					logModel.setRealname(user.getRealname());
+					logModel.setUserType(user.getUserType());
+					logModel.setCreateDate(new Date());
+					logModel.setOperIp(getIpAddress());
+					logModel.setOperResult("请求完成");
+				}
+				logModel.setOperType(operType);
+				logModel.setDescription(description);
+			} catch (MException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	public void setLogError(String errorMessage){
+		if(null!=logModel){
+			logModel.setOperResult("请求失败");
+			logModel.setResultException(errorMessage);
+		}
+	}
+	/**
+	 * 获取service实例
+	 * @param <T>
+	 * @param clazz
+	 * @return
+	 * @throws MException
+	 */
+	public <T extends Service> T getService(Class<? extends T> clazz) throws MException{
+		return RuntimeData.getService(clazz);
+	}
+	/**
+	 * 获取dao实例
+	 * @param <T>
+	 * @param clazz
+	 * @return
+	 * @throws MException
+	 */
+	public <T extends Dao> T getDao(Class<? extends T> clazz) throws MException{
+		return RuntimeData.getDao(clazz);
+	}
+	public Dao getDao() throws MException{
+		return RuntimeData.getDao(Dao.class);
+	}
+	public Service getService() throws MException{
+		return RuntimeData.getService(Service.class);
+	}
+	
+	private HttpServletRequest request;
+	private HttpServletResponse response;
+	private String authorization;
+	private Map<String,File> fileMap;
+	public HttpServletRequest getRequest() {
+		return request;
+	}
+	public void setRequest(HttpServletRequest request) {
+		this.request = request;
+	}
+	public String getAuthorization() {
+		return authorization;
+	}
+	public void setAuthorization(String authorization) {
+		this.authorization = authorization;
+	}
+	public HttpServletResponse getResponse() {
+		return response;
+	}
+	public void setResponse(HttpServletResponse response) {
+		this.response = response;
+	}
+	/**
+	 * 获取上传文件流的Map
+	 * @return
+	 */
+	public Map<String, File> getFileMap() {
+		return fileMap;
+	}
+	public void setFileMap(Map<String, File> fileMap) {
+		this.fileMap = fileMap;
+	}
+	public LogModel getLogModel() {
+		return logModel;
+	}
+	public void setLogModel(LogModel logModel) {
+		this.logModel = logModel;
+	}
+
+	private String requestBody;
+	public String getRequestBody() {
+		return requestBody;
+	}
+	public void setRequestBody(String requestBody) {
+		this.requestBody = requestBody;
+	}
+	public String getIpAddress() { 
+		String ip = getRequest().getHeader("x-forwarded-for"); 
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) { 
+			ip = getRequest().getHeader("Proxy-Client-IP"); 
+		} 
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) { 
+			ip = getRequest().getHeader("WL-Proxy-Client-IP"); 
+		} 
+		if(ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) { 
+			ip = getRequest().getRemoteAddr(); 
+		} 
+		return ip;
+	}
+}

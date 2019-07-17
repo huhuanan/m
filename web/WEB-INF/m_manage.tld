@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<taglib>
+
+    <tlibversion>1.0</tlibversion>
+    <jspversion>1.0</jspversion>
+	<description>m Manage</description>  
+	<short-name>mm</short-name>  
+	<uri>/WEB-INF/m_manage.tld</uri>
+	<function>
+		<name>getThumPath</name>  
+		<function-class>manage.service.ImageInfoService</function-class>  
+		<function-signature>java.lang.String getThumPath(java.lang.String)</function-signature>
+	</function>
+	<function>
+		<name>getFileName</name>  
+		<function-class>manage.service.FileInfoService</function-class>  
+		<function-signature>java.lang.String getFileName(java.lang.String)</function-signature>
+	</function>
+</taglib>

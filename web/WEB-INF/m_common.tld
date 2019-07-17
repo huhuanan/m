@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<taglib>
+
+    <tlibversion>1.0</tlibversion>
+    <jspversion>1.0</jspversion>
+	<description>m Common</description>  
+	<short-name>mc</short-name>  
+	<uri>/WEB-INF/m_common.tld</uri>  
+	<function>
+		<name>toFormatShow</name>  
+		<function-class>m.system.util.DateUtil</function-class>  
+		<function-signature>java.lang.String toFormatShow(java.util.Date)</function-signature>
+	</function>
+	<function>
+		<name>toFormatInput</name>  
+		<function-class>m.system.util.DateUtil</function-class>  
+		<function-signature>java.lang.String toFormatInput(java.util.Date)</function-signature>
+	</function>
+	<function>
+		<name>toFormat</name>  
+		<function-class>m.system.util.DateUtil</function-class>  
+		<function-signature>java.lang.String format(java.util.Date)</function-signature>
+	</function>
+	<function>
+		<name>toFormatStyle</name>  
+		<function-class>m.system.util.DateUtil</function-class>  
+		<function-signature>java.lang.String format(java.util.Date,java.lang.String)</function-signature>
+	</function>
+	<function>
+		<name>isContain</name>  
+		<function-class>m.system.util.DateUtil</function-class>  
+		<function-signature>java.lang.Boolean isContain(java.util.Date,java.util.Date,java.lang.String)</function-signature>
+	</function>
+	<function>
+		<name>isExpire</name>  
+		<function-class>m.system.util.DateUtil</function-class>  
+		<function-signature>java.lang.Boolean isExpire(java.util.Date,java.lang.String)</function-signature>
+	</function>
+	<function>
+		<name>getInAttribute</name>  
+		<function-class>m.system.util.ActionUtil</function-class>  
+		<function-signature>java.lang.Object getInAttribute(java.lang.Object,java.lang.String)</function-signature>
+	</function>
+	<function>
+		<name>getInAttributeByArray</name>  
+		<function-class>m.system.util.ActionUtil</function-class>  
+		<function-signature>java.lang.Object getInAttributeByArray(java.lang.Object,java.lang.String)</function-signature>
+	</function>
+	<!-- 数字 -->
+	<function>
+		<name>round</name>  
+		<function-class>m.system.util.NumberUtil</function-class>  
+		<function-signature>java.lang.Double round(java.lang.Double,java.lang.Integer)</function-signature>
+	</function>
+	<function>
+		<name>floor</name>  
+		<function-class>m.system.util.NumberUtil</function-class>  
+		<function-signature>java.lang.Double floor(java.lang.Double,java.lang.Integer)</function-signature>
+	</function>
+</taglib>

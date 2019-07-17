@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<taglib>
+
+	<tlibversion>1.0</tlibversion>
+	<jspversion>1.0</jspversion>
+	<description>dictionary</description>  
+	<short-name>dict</short-name>  
+	<uri>/WEB-INF/dictionary.tld</uri>
+	
+	<tag>
+		<name>select</name>
+		<tagclass>manage.util.tag.DictionarySelectTag</tagclass>
+		<!-- 字典类型 -->
+		<attribute>
+			<name>type</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<!-- 当前值 -->
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<!-- html标签扩展属性 -->
+		<attribute>
+			<name>extend</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute> 
+	</tag>
+	<tag>
+		<name>checkbox</name>
+		<tagclass>manage.util.tag.DictionaryCheckboxTag</tagclass>
+		<!-- 字典类型 -->
+		<attribute>
+			<name>type</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<!-- 当前值 -->
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<!-- html标签扩展属性 -->
+		<attribute>
+			<name>extend</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<!-- 是否显示字典值 -->
+		<attribute>
+			<name>showText</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute> 
+	</tag>
+	<tag>
+		<name>radio</name>
+		<tagclass>manage.util.tag.DictionaryRadioTag</tagclass>
+		<!-- 字典类型 -->
+		<attribute>
+			<name>type</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<!-- 当前值 -->
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<!-- html标签扩展属性 -->
+		<attribute>
+			<name>extend</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<!-- 是否显示字典值 -->
+		<attribute>
+			<name>showText</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute> 
+	</tag>
+	<function>  
+		<name>getName</name>  
+		<function-class>manage.util.tag.DictionaryUtil</function-class>  
+		<function-signature>java.lang.String getName(java.lang.String,java.lang.String)</function-signature>
+	</function>
+	<function>  
+		<name>getValue</name>  
+		<function-class>manage.util.tag.DictionaryUtil</function-class>  
+		<function-signature>java.lang.String getValue(java.lang.String,java.lang.String)</function-signature>
+	</function>
+	<function>  
+		<name>isContain</name>  
+		<function-class>manage.util.tag.DictionaryUtil</function-class>  
+		<function-signature>java.lang.Boolean isContain(java.lang.String,java.lang.String)</function-signature>
+	</function>
+
+</taglib>

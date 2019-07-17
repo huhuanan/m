@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<redirect><!-- 重定向 -->
+		<url tag="/admin"><![CDATA[/action/manageAdminLogin/admin]]></url>
+	</redirect>
+	<enable><!-- 允许访问的路径 -->
+		<tag><![CDATA[/resources/]]></tag>
+	</enable>
+	<referer><!-- 允许来路的域名 -->
+		<tag><![CDATA[192.168.137.1]]></tag>
+	</referer>
+	<authorization><!-- 允许授权的前缀 -->
+	</authorization>
+</root>
