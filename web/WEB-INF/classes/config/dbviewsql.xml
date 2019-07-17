@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<root>
-	<sql tableName="v_image_admin"><![CDATA[
-	select al.oid,al.token,al.username name,'管理员' type from os_admin_login al
-	]]></sql>
-</root>
