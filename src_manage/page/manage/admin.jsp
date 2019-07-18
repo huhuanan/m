@@ -13,15 +13,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<meta name="viewport" i-content="width=device-width, initial-scale=1, maximum-scale=1">
 		<title>${map.systemInfo.backgroundTitle }</title>
 		<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/resources/css/iview.css" />
-		<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/resources/syntaxhighlighter/styles/shCoreDefault.css" />
 		<script type="text/javascript" src="<%=request.getContextPath() %>/resources/js/vue.min.js"></script>
 		<script type="text/javascript" src="<%=request.getContextPath() %>/resources/js/echarts-all.js"></script>
 		<script type="text/javascript" src="<%=request.getContextPath() %>/resources/js/jquery.min.js"></script>
 		<script type="text/javascript" src="<%=request.getContextPath() %>/resources/js/iview.min.js"></script>
-		<script type="text/javascript" src="<%=request.getContextPath() %>/resources/syntaxhighlighter/scripts/shCore.js"></script>
-		<script type="text/javascript" src="<%=request.getContextPath() %>/resources/syntaxhighlighter/scripts/shBrushJavaFX.js"></script>
-		<script type="text/javascript" src="<%=request.getContextPath() %>/resources/syntaxhighlighter/scripts/shBrushJScript.js"></script>
-		<script type="text/javascript" src="<%=request.getContextPath() %>/resources/syntaxhighlighter/scripts/shBrushXml.js"></script>
 		<script type="text/javascript" src="<%=request.getContextPath() %>/resources/js/vue-html5-editor.js"></script>
 		<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/resources/default/admin.css" />
 		<script type="text/javascript" src="<%=request.getContextPath() %>/resources/default/admin.js"></script>

@@ -3,15 +3,6 @@
 	<row :gutter="10">
 		<i-col span="6">
 			<collapse accordion v-model="index">
-				<panel name="1">基本功能
-					<cell-group slot="content" style="max-height:500px;overflow:auto;margin:-16px;">
-						<cell title="配置文件" :selected="id=='100'" @click.native="openTitle('100','配置文件','page/manage/developerGuide/config/base')" />
-						<cell title="Action基本设置" :selected="id=='101'" @click.native="openTitle('101','Action基本设置','page/manage/developerGuide/action/base')" />
-						<cell title="Action通用基类" :selected="id=='102'" @click.native="openTitle('102','Action通用基类','page/manage/developerGuide/action/commonClass')" />
-						<cell title="Model基本设置" :selected="id=='103'" @click.native="openTitle('103','Model基本设置','page/manage/developerGuide/model/base')" />
-						<cell title="Model通用基类" :selected="id=='104'" @click.native="openTitle('104','Model通用基类','page/manage/developerGuide/model/commonClass')" />
-					</cell-group>
-				</panel>
 				<panel name="action">Action接口
 					<cell-group slot="content" style="max-height:500px;overflow:auto;margin:-16px;">
 						<cell v-for="item in actions" :title="item.title" :selected="id==item.className" @click.native="openAction(item.className,item.title+' - '+item.description)"></cell>
@@ -27,7 +18,6 @@
 		<i-col span="18">
 			<card :padding="10">
 				<p slot="title">{{title}}</p>
-				<div id="content${key}"></div>
 				<div id="action${key}">
 					<div v-for="item in selectAction.methods" class="ivu-table-wrapper">
 						<table class="ivu-table ivu-table-small" style="width:100%" cellspacing="0" cellpadding="0" border="0">
@@ -151,7 +141,7 @@
 			return {
 				//key:'',
 				//openKey:'',
-				index:"1",
+				index:"model",
 				id:"",
 				title:"",
 				actions:${map.actions},
@@ -167,19 +157,10 @@
 			};
 		},
 		mounted:function(){
-			this.openTitle("100","配置文件","page/manage/developerGuide/config/base");
+			this.openModel(this.models[0].clazz);
 		},
 		
 		methods:{
-			openTitle:function(id,title,url){
-				this.id=id;
-				this.title=title;
-				$.loadVuePage($('#content${key}'),url,{},function(){
-					$('#content${key}').slideDown(300);
-				});
-				$('#action${key}').slideUp(300);
-				$('#model${key}').slideUp(300);
-			},
 			openAction:function(id,title){
 				this.id=id;
 				this.title=title;
@@ -189,7 +170,6 @@
 						break;
 					}
 				}
-				$('#content${key}').slideUp(300);
 				$('#model${key}').slideUp(300);
 				$('#action${key}').slideDown(300);
 			},
@@ -202,7 +182,6 @@
 						break;
 					}
 				}
-				$('#content${key}').slideUp(300);
 				$('#action${key}').slideUp(300);
 				$('#model${key}').slideDown(300);
 			},
