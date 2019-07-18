@@ -33,5 +33,13 @@
 	<sql tableName="os_admin_group_power"><![CDATA[
 	INSERT INTO os_admin_group_power (oid, name, admin_group_oid) VALUES ('1', 'manage_system_power', '1');
 	]]></sql>
+	<sql tableName="os_dictionary_type"><![CDATA[
+	INSERT INTO os_dictionary_type (oid, name, type) VALUES ('0', '基础状态', 'status');
+	]]></sql>
+	<sql tableName="os_dictionary_data"><![CDATA[
+	INSERT INTO os_dictionary_data (oid, status, name, value, sort, dictionary_type_oid) VALUES ('0', '0', '正常', '0', '0', '0');
+	INSERT INTO os_dictionary_data (oid, status, name, value, sort, dictionary_type_oid) VALUES ('9', '0', '停用', '9', '9', '0');
+	]]></sql>
+	
 
 </root>
