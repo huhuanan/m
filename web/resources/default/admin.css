@@ -13,6 +13,15 @@
   -webkit-text-stroke-width: 0.2px;
   -moz-osx-font-smoothing: grayscale;
 }
+//滚动条样式
+::-webkit-scrollbar{width:6px;height:9px;}
+::-webkit-scrollbar-button{background: #f6f6f6;}
+::-webkit-scrollbar-button{display:none;}
+::-webkit-scrollbar-track{background: #f6f6f6;}
+::-webkit-scrollbar-thumb{background: #bbb;border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background: #2d8cf0;}
+::-webkit-scrollbar-corner{background: #f6f6f6;}
+
 .slide-fade-right-enter-active { transition: all .3s ease; }
 .slide-fade-right-leave-active { transition: all .3s ease; }
 .slide-fade-right-enter, .slide-fade-right-leave-to { transform: translateX(100px);opacity: 0; height:0px;overflow: hidden;}
@@ -144,7 +153,7 @@ text-align: center;
 .line_height_lg{line-height:1.8;}
 .line_height_max{line-height:2;}
 .line_height_maxx{line-height:2.3;}
-.color_main{color:#1aad19;}
+.color_main{color:#2d8cf0;}
 .color_blue{color:#108ee9;}
 .color_red{color:#ff3300;}
 .color_info{color:#ff9900;}
