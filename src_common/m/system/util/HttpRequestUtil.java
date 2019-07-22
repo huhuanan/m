@@ -14,6 +14,8 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class HttpRequestUtil {
@@ -57,6 +59,9 @@ public class HttpRequestUtil {
 		}
 	}
 
+	public String doPost(String url, String param) throws Exception {
+		return doPost(url,param,null);
+	}
 	/**
 	 * Do POST request
 	 * 
@@ -65,10 +70,15 @@ public class HttpRequestUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public String doPost(String url, String param) throws Exception {
+	public String doPost(String url, String param,Map<String,String> header) throws Exception {
 		URL localURL = new URL(url);
 		URLConnection connection = openConnection(localURL);
 		HttpURLConnection httpURLConnection = (HttpURLConnection) connection;
+		if(null!=header) {
+			for(String key : header.keySet()) {
+				httpURLConnection.setRequestProperty(key, header.get(key));
+			}
+		}
 		httpURLConnection.setRequestMethod("POST");
 		httpURLConnection.setDoOutput(true);
 		OutputStream outputStream = null;

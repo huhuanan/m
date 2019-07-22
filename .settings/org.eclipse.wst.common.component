@@ -1,17 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
-        
-    <wb-module deploy-name="m">
-                
-        <wb-resource deploy-path="/" source-path="/web" tag="defaultRootSource"/>
-                
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_manage"/>
-        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_common"/>
-                
-        <property name="context-root" value="m"/>
-                
-        <property name="java-output-path" value="/m/web/WEB-INF/classes"/>
             
-    </wb-module>
     
+    <wb-module deploy-name="m">
+                        
+        
+        <wb-resource deploy-path="/" source-path="/web" tag="defaultRootSource"/>
+                        
+        
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+                
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_manage"/>
+                
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_common"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src_test"/>
+                        
+        
+        <property name="context-root" value="m"/>
+                        
+        
+        <property name="java-output-path" value="/m/web/WEB-INF/classes"/>
+                    
+    
+    </wb-module>
+        
+
 </project-modules>

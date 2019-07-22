@@ -91,7 +91,7 @@ public class ActionUtil {
 			if(null!=obj){
 				fillInAttribute(obj, paramName.substring(paramName.indexOf(".")+1), paramValue);
 			}
-		}else if(paramName.indexOf("[]")==paramName.length()-2){
+		}else if(paramName.length()-2!=-1&&paramName.indexOf("[]")==paramName.length()-2){
 			setArrayAttribute(action, paramName.substring(0, paramName.length()-2), paramValue);
 		}else{
 			setValueAttribute(action, paramName, paramValue);

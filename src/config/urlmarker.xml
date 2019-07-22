@@ -10,5 +10,6 @@
 		<tag><![CDATA[192.168.137.1]]></tag>
 	</referer>
 	<authorization><!-- 允许授权的前缀 -->
+		<tag><![CDATA[test]]></tag>
 	</authorization>
 </root>

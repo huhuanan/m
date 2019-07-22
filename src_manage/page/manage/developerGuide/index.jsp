@@ -30,8 +30,8 @@
 								<td style="text-align:center;"><i-button type="primary" @click.native="showTestModal(item.title,item.path)">测试</i-button></td>
 							</tr>
 							<tr>
-								<th style="text-align:center;">参数名称</th>
-								<th style="text-align:center;">参数描述</th>
+								<th style="text-align:left;">参数名称</th>
+								<th style="text-align:left;">参数描述</th>
 								<th style="text-align:center;">类型</th>
 								<th style="text-align:center;">长度</th>
 								<th style="text-align:center;">必填</th>
