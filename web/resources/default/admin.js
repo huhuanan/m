@@ -801,7 +801,15 @@ Vue.component('json-item', {
 							}).bind(this)
 						);
 					}else if("OPEN"==param.event){
-						window.open(param.url+(param.url.indexOf("?")>=0?"&":"?")+$.param(d));
+						var data={};
+						for(var i in d){
+							if(d[i] instanceof Date){
+								data[i]=d[i].format('yyyy-MM-dd HH:mm:ss');
+							}else{
+								data[i]=d[i];
+							}
+						}
+						window.open(param.url+(param.url.indexOf("?")>=0?"&":"?")+$.param(data));
 					}
 				}).bind(this);
 				if(param.confirm){
@@ -862,7 +870,15 @@ Vue.component('json-item', {
 					);
 					return;
 				}else if("OPEN"==param.event){
-					window.open(param.url+(param.url.indexOf("?")>=0?"&":"?")+$.param(d));
+					var data={};
+					for(var i in d){
+						if(d[i] instanceof Date){
+							data[i]=d[i].format('yyyy-MM-dd HH:mm:ss');
+						}else{
+							data[i]=d[i];
+						}
+					}
+					window.open(param.url+(param.url.indexOf("?")>=0?"&":"?")+$.param(data));
 					return;
 				}
 				if(!(ds.length!=0||param.params.length==0)){

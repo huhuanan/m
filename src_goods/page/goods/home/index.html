@@ -1,0 +1,96 @@
+<page>
+	<h2>首页</h2>
+	<Alert>自定义页面可以参照iView (<a target="_black" href="https://www.iviewui.com/">https://www.iviewui.com/</a>) 编写</Alert>
+	<row :gutter="10">
+		<i-col :lg="6" :sm="8" :xs="12" style="margin-bottom:10px;">
+			<Card @click.native="toMenu('B1101')">
+				<Icon type="ios-color-palette" class="goods_index_icon" />
+				<div style="display:inline-block;">
+					<div>商品数量</div>
+					<div style="font-size:20px;" v-html="map.goodsNum"></div>
+				</div>
+			</Card>
+		</i-col>
+		<i-col :lg="6" :sm="8" :xs="12" style="margin-bottom:10px;">
+			<Card @click.native="toMenu('B1102')">
+				<Icon type="ios-at" class="goods_index_icon" />
+				<div style="display:inline-block;">
+					<div>总库存数量</div>
+					<div style="font-size:20px;" v-html="map.stockNum"></div>
+				</div>
+			</Card>
+		</i-col>
+		<i-col :lg="6" :sm="8" :xs="12" style="margin-bottom:10px;">
+			<Card @click.native="toMenu('B1201')">
+				<Icon type="ios-at" class="goods_index_icon" />
+				<div style="display:inline-block;">
+					<div>销售金额</div>
+					<div style="font-size:20px;" v-html="map.saleAmount"></div>
+				</div>
+			</Card>
+		</i-col>
+		<i-col :lg="6" :sm="8" :xs="12" style="margin-bottom:10px;">
+			<Card @click.native="toMenu('B1101')">
+				<Icon type="ios-color-palette" class="goods_index_icon" />
+				<div style="display:inline-block;">
+					<div>商品数量</div>
+					<div style="font-size:20px;" v-html="map.goodsNum"></div>
+				</div>
+			</Card>
+		</i-col>
+		<i-col :lg="6" :sm="8" :xs="12" style="margin-bottom:10px;">
+			<Card @click.native="toMenu('B1102')">
+				<Icon type="ios-at" class="goods_index_icon" />
+				<div style="display:inline-block;">
+					<div>总库存数量</div>
+					<div style="font-size:20px;" v-html="map.stockNum"></div>
+				</div>
+			</Card>
+		</i-col>
+		<i-col :lg="6" :sm="8" :xs="12" style="margin-bottom:10px;">
+			<Card @click.native="toMenu('B1201')">
+				<Icon type="ios-at" class="goods_index_icon" />
+				<div style="display:inline-block;">
+					<div>销售金额</div>
+					<div style="font-size:20px;" v-html="map.saleAmount"></div>
+				</div>
+			</Card>
+		</i-col>
+	</row>
+</page>
+<script>
+(function(){
+	return { //vue对象属性
+		data(){
+			return {
+				//key:'',
+				//openKey:'',
+				map:{}
+			};
+		},
+		mounted:function(){
+			$.execJSON('action/goodsGoodsInfo/getIndexInfo',{},function(json){
+				console.log(json);
+				if(json.code==0){
+					this.map=json.map;
+				}else{
+					pageVue.$Message.error(json.msg);
+				}
+			}.bind(this));
+		},
+		methods:{
+			backHandler:function(success,msg){//打开窗体的回调
+			},
+			toMenu:function(menuid){
+				$.vue['main_admin'].doOpenMenu(menuid);//使用admin页面的打开菜单方法
+			}
+		}
+	};
+})();
+</script>
+<!-- style标签可以不写, 写的话只能是全局的 -->
+<style>
+.goods_index_icon{
+font-size:50px;color:#2d8cf0;vertical-align:top;
+}
+</style>

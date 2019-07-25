@@ -13,7 +13,7 @@
   -webkit-text-stroke-width: 0.2px;
   -moz-osx-font-smoothing: grayscale;
 }
-::-webkit-scrollbar{width:6px;height:9px;}
+::-webkit-scrollbar{width:6px;height:7px;}
 ::-webkit-scrollbar-button{background: #f6f6f6;}
 ::-webkit-scrollbar-button{display:none;}
 ::-webkit-scrollbar-track{background: #f6f6f6;}
@@ -50,9 +50,9 @@ h1,h2,h3,h4,h5,h6{
 .ivu-menu-item>i {font-size: 18px;vertical-align: middle;}
 .ivu-menu-submenu-title span>i, .ivu-menu-submenu-title>i {font-size: 18px;vertical-align: middle;}
 .ivu-layout-header {height:60px;line-height:60px;background:transparent;}
-.ivu-layout-header .ivu-menu-light{background:rgb(240,245,255);box-shadow: 0 1px 3px rgba(0,0,0,.3);}
-.ivu-menu-dark.ivu-menu-horizontal .ivu-menu-item-active,ivu-menu-dark.ivu-menu-horizontal .ivu-menu-item-active, .ivu-menu-dark.ivu-menu-horizontal .ivu-menu-item:hover{color: #2d8cf0;}
-.ivu-select-dropdown {z-index: 1010;max-height:80%;}
+.ivu-layout-header .ivu-menu-light{background:#eeefff;box-shadow: 0 1px 3px rgba(0,0,0,.3);}
+.ivu-menu-dark.ivu-menu-horizontal .ivu-menu-item-active, .ivu-menu-dark.ivu-menu-horizontal .ivu-menu-item-active, .ivu-menu-dark.ivu-menu-horizontal .ivu-menu-item:hover{color: #2d8cf0;}
+.ivu-select-dropdown {z-index: 1010;max-height:300px;}
 .ivu-loading-bar{top:60px;}
 .ivu-input[disabled], fieldset[disabled] .ivu-input, 
 .ivu-select-disabled .ivu-select-selection,
