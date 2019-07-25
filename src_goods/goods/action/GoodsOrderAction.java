@@ -54,7 +54,7 @@ public class GoodsOrderAction extends ManageAction {
 		setLogContent("保存", "保存商品信息");
 		JSONMessage result=new JSONMessage();
 		try {
-			verifyAdminOperPower("goods_manager_power");
+			verifyAdminOperPower("goods_sale_power");
 			String msg=getService(GoodsOrderService.class).save(model);
 			result.push("model.oid", model.getOid());
 			result.push("code", 0);
@@ -116,7 +116,7 @@ public class GoodsOrderAction extends ManageAction {
 		buttons = {
 			@ButtonMeta(title="新增", event = ButtonEvent.MODAL,modalWidth=700,  url = "action/goodsGoodsOrder/toEdit", 
 				success=SuccessMethod.REFRESH,style=ButtonStyle.NORMAL,
-				power="goods_manager_power"
+				power="goods_sale_power"
 			),
 			@ButtonMeta(title="报表",style=ButtonStyle.DEFAULT, event = ButtonEvent.MODAL,modalWidth=1000, url = "action/goodsGoodsOrder/toChart?method=goodsOrderChart", 
 				queryParams={

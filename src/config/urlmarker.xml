@@ -8,6 +8,8 @@
 	</enable>
 	<referer><!-- 允许来路的域名 -->
 		<tag><![CDATA[192.168.137.1]]></tag>
+		<tag><![CDATA[123.207.181.225]]></tag>
+		<tag><![CDATA[test.fulicat.cn]]></tag>
 	</referer>
 	<authorization><!-- 允许授权的前缀 -->
 		<tag><![CDATA[test]]></tag>
