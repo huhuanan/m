@@ -6,10 +6,10 @@
 <%@ taglib uri="/WEB-INF/m_manage.tld" prefix="mm" %>
 <%@ taglib uri="/WEB-INF/dictionary.tld" prefix="dict" %>
 <page>
-	<h2><c:if test="${map.openMode=='PAGE' }"><a @click="back(false)" ><i class="iconfont" style="font-size:23px;font-weight:100;">&#xe718;</i>&nbsp;&nbsp;</a></c:if>${map.formTitle }</h2>
+	<h2 style="padding:0 5px 10px;"><c:if test="${map.openMode=='PAGE' }"><a @click="back(false)" ><i class="iconfont" style="font-size:23px;font-weight:100;">&#xe718;</i>&nbsp;&nbsp;</a></c:if>${map.formTitle }</h2>
 	<i-form>
 	<c:forEach var="row" items="${map.formRows }" varStatus="index">
-		<c:if test="${row.line||index.first}"><div style="margin-top:-18px;"><divider orientation="left" :style="{color:'#2d8cf0'}">${row.title }</divider></div></c:if>
+		<c:if test="${row.line||index.first}"><div style="margin-top:-18px;"><divider orientation="left" :style="{color:'#2d8cf0',margin:'${row.title!=""?"10":"15" }px 0'}">${row.title }</divider></div></c:if>
 	<row :gutter="10" :style="{marginRight:'${row.marginRight }px',minWidth:'${row.minWidth }px'}">
 		<c:forEach var="field" items="${row.fields}">
 		<c:if test="${field.type=='HIDDEN' }">
@@ -97,7 +97,7 @@
 		</c:forEach>
 	</row>
 	</c:forEach>
-	<hr style="margin-bottom:18px;"/>
+	<hr style="margin-bottom:15px;"/>
 	<form-item label=" " style="margin-bottom:10px;width:100%;${map.openMode=='MODAL'?'text-align:center;':'' }" :label-width="${map.openMode=='MODAL'?'0':'100' }">
 		<c:forEach var="btn" items="${map.formButtons}">
 			<i-button type="${btn.style}" @click="submitHandler"><i class="iconfont">${btn.icon }</i>&nbsp;<span class="n-btn_title">${btn.title}</span>&nbsp;</i-button>
@@ -109,8 +109,10 @@
 	</i-form>
 	<c:forEach var="other" items="${map.others}">
 	<div id="other_${other.title}_${key}" style="display:none;margin:0 0 10px 0;">
-		<h3><c:if test="${map.openMode=='PAGE' }"><a @click="back(false)" ><i class="iconfont" style="font-size:20px;font-weight:100;">&#xe718;</i>&nbsp;&nbsp;</a></c:if>${other.title }</h3>
-		<divider orientation="left" :style="{margin:'5px 0 10px',color:'#2d8cf0'}"></divider>
+		<divider orientation="left" :style="{margin:'5px 0 5px',color:'#2d8cf0'}">
+			<c:if test="${map.openMode=='PAGE' }"><a @click="back(false)" ><i class="iconfont" style="font-size:20px;font-weight:100;">&#xe718;</i>&nbsp;&nbsp;</a></c:if>
+			${other.title }
+		</divider>
 		<div id="other_${other.title}_${key}_content"></div>
 	</div>
 	</c:forEach>

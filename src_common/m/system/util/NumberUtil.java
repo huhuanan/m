@@ -27,12 +27,12 @@ public class NumberUtil {
 		return new DecimalFormat(parttern);
 	}
 	/**
-	 * 四舍五入, 8位
+	 * 四舍五入, 7位
 	 * @param d
 	 * @return
 	 */
 	public static Double round(Double d){
-		return round(d,8);
+		return round(d,7);
 	}
 	/**
 	 * 四舍五入

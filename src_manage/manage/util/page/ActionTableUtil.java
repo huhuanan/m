@@ -199,6 +199,9 @@ public class ActionTableUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static PageInfo toPageInfo(ActionTableMeta tableMeta,QueryPage page,QueryCondition condition,QueryOrder... orders) throws ClassNotFoundException, SQLException, MException{
+		for(QueryOrder order : orders) {//处理转换的排序列
+			if(null!=order) order.setName(order.getName().replaceAll("_", "."));
+		}
 		return ModelQueryList.getModelPageInfo(getModelQueryList(tableMeta, page, condition, orders));
 	}
 	private static String[] getFieldNames(ActionTableColMeta[] cols,ButtonMeta[] buttons){

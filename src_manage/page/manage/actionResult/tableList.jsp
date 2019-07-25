@@ -65,7 +65,7 @@
 		<div>
 		<i-table ref="itable" :loading="tableLoading" :height="tableHeight" :columns="columns" :data="datas" size="small" :stripe="false" :border="true" :highlight-row="true" @on-sort-change="sortHandler" @on-selection-change="selectHandler"></i-table>
 		</div>
-		<page style="margin-top:10px;" size="small" :total="count" :current="param.pageNo" :page-size="param.pageNum" show-total show-sizer transfer @on-change="changePageNo" @on-page-size-change="changePageNum"></page>
+		<page style="margin-top:10px;" size="small" :total="count" :current="param.pageNo" :page-size="param.pageNum" show-elevator show-total show-sizer transfer @on-change="changePageNo" @on-page-size-change="changePageNum"></page>
 	</div>
 	</transition>
 	<transition name="slide-fade-right">

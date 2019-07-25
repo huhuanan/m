@@ -266,7 +266,7 @@ public class ModelQueryList {
 		if(null==this.countParameter){
 			this.countParameter=getQueryParameter();
 			StringBuffer sql=new StringBuffer();
-			sql=new StringBuffer("SELECT count(*) num FROM (").append(this.countParameter.getSql()).append(") a");
+			sql=new StringBuffer("SELECT count(*) num FROM (").append(this.countParameter.getSql().split(" LIMIT ")[0]).append(") a");
 			this.countParameter.setSql(sql.toString());
 		}
 		return this.countParameter;

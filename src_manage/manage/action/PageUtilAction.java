@@ -97,7 +97,7 @@ public class PageUtilAction extends ManageAction {
 					null, 
 					QueryCondition.and(clist.toArray(new QueryCondition[]{})),
 					emap,
-					QueryOrder.asc(StringUtil.isSpace(sortField)?"sort":sortField)
+					QueryOrder.asc(StringUtil.isSpace(sortField)?"oid":sortField)
 				);
 				for(Model m : list){
 					JSONMessage dm=new JSONMessage();

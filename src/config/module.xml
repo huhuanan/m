@@ -2,6 +2,8 @@
 <root adminPage="manage/admin">
 	<power>
 		<operation name="manage_system_power" description="系统管理的权限"></operation>
+		<operation name="goods_manager_power" description="商品管理的权限"></operation>
+		<operation name="goods_sale_power" description="商品销售的权限"></operation>
 	</power>
 	<module oid="A" sort="0" name="系统设置" icoStyle="&#xe6ae;" isPublic="N">
 		<menu oid="A11" sort="111" name="系统用户" icoStyle="&#xe70b;" description="" isPublic="N">
@@ -11,6 +13,18 @@
 			<menu oid="A1104" sort="11104" name="操作日志" urlPath="action/manageSystemLog/toList?method=systemLogData" description="查询用户操作日志." isPublic="N"></menu>
 			<menu oid="A1105" sort="11105" name="系统信息" urlPath="action/manageSystemInfo/toEdit" description="设置系统信息" isPublic="N"></menu>
 			<menu oid="A1106" sort="11106" name="开发指南" urlPath="action/manageDeveloperGuide/toIndex" description="" isPublic="N"></menu>
+		</menu>
+	</module>
+	<module oid="B" sort="2" name="商品管理" icoStyle="&#xe6ae;" isPublic="N">
+		<menu oid="B01" sort="201" name="商品首页" icoStyle="&#xe70b;" description="" isPublic="N">
+			<menu oid="B0101" sort="20101" name="首页" urlPath="page/goods/home/index.html" description="" isPublic="N"></menu>
+		</menu>
+		<menu oid="B11" sort="211" name="商品管理" icoStyle="&#xe70b;" description="" isPublic="N">
+			<menu oid="B1101" sort="21101" name="商品信息" urlPath="action/goodsGoodsInfo/toList?method=goodsInfoData" description="" isPublic="N"></menu>
+			<menu oid="B1102" sort="21102" name="商品库存" urlPath="action/goodsGoodsStock/toList?method=goodsStockData" description="" isPublic="N"></menu>
+		</menu>
+		<menu oid="B12" sort="212" name="商品销售" icoStyle="&#xe70b;" description="" isPublic="N">
+			<menu oid="B1201" sort="21201" name="商品订单" urlPath="action/goodsGoodsOrder/toList?method=goodsOrderData" description="" isPublic="N"></menu>
 		</menu>
 	</module>
 </root>
