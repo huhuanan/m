@@ -65,6 +65,8 @@ public class SystemInit {
 			TableMeta tm=AnnotationUtil.getAnnotation4Class(TableMeta.class,clazz);
 			initModel(clazz,tm);
 		}
+		//特殊表初始化
+		initModel(CacheSynch.class,AnnotationUtil.getAnnotation4Class(TableMeta.class,CacheSynch.class));
 	}
 	private static <T extends Model> void initModel(Class<T> clazz,TableMeta tm){
 		if(null!=tm) {
@@ -81,10 +83,7 @@ public class SystemInit {
 		HostInfo host=RuntimeData.getHostInfo();
 		if(null==host||host.getMain()==1) isMain=true;
 		if(!isMain) return;
-		//特殊表初始化
-		initModel(CacheSynch.class,AnnotationUtil.getAnnotation4Class(TableMeta.class,CacheSynch.class));
 		
-		ModelUtil.initModelTable(CacheSynch.class);
 		for(Class<? extends Model> clazz : ModelConfig.getTableList()){
 			ModelUtil.initModelTable(clazz);
 		}

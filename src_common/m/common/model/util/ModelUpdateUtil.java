@@ -377,22 +377,24 @@ public class ModelUpdateUtil {
 		if(fieldString.length()<=0){
 			throw new MException(ModelUpdateUtil.class,"没有更新的属性!");
 		}
-		List<T> list=ModelQueryList.getModelList(clazz, new String[]{"oid"}, null, condition);
-		if(list.size()<=0){
-			return 0;
-		}
+		QueryParameter queryParam=ModelQueryList.instance(clazz, new String[]{"oid"}, null, condition).getQueryParameter();
+		//if(list.size()<=0){
+		//	return 0;
+		//}
 		StringBuffer sql=new StringBuffer("UPDATE ").append(tableMeta.name());
 		sql.append(" SET ").append(fieldString.substring(1));
-		sql.append(" WHERE oid in(");
-		for(int i=0,len=list.size();i<len;i++){
-			if(i!=0) sql.append(",");
-			sql.append("'").append(list.get(i).getOid()).append("'");
-		}
-		sql.append(")");
+		sql.append(" WHERE oid in(select t0_oid from (");
+		sql.append(queryParam.getSql());
+		//for(int i=0,len=list.size();i<len;i++){
+		//	if(i!=0) sql.append(",");
+		//	sql.append("'").append(list.get(i).getOid()).append("'");
+		//}
+		sql.append(") a)");
 		try {
 			List<Object> paramList=new ArrayList<Object>();
 			paramList.addAll(valueParams);
 			paramList.addAll(linkTableParams);
+			paramList.addAll(queryParam.getValueList());
 			return DBManager.executeUpdate(sql.toString(),paramList.toArray(new Object[]{}));
 		} catch (SQLException e) {
 			throw new MException(ModelUpdateUtil.class,"更新属性失败!"+e.getMessage());

@@ -117,6 +117,7 @@ public class TransactionManager {
 	public void commit() throws SQLException {
 		if(!StringUtil.isSpace(synchKey)) {
 			CacheUtil.releaseSynch(synchKey);
+			synchKey=null;
 		}
 		if(dbRun.get()&&isRun){
 			dbRun.remove();
@@ -136,6 +137,7 @@ public class TransactionManager {
 	public void rollback() {
 		if(!StringUtil.isSpace(synchKey)) {
 			CacheUtil.releaseSynch(synchKey);
+			synchKey=null;
 		}
 		if(dbRun.get()&&isRun){
 			dbRun.remove();

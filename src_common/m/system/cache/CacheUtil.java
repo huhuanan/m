@@ -1,11 +1,14 @@
 package m.system.cache;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import m.common.model.util.ModelUpdateUtil;
 import m.common.model.util.QueryCondition;
 import m.system.cache.model.CacheSynch;
 import m.system.exception.MException;
+import m.system.util.StringUtil;
 
 public class CacheUtil {
 	
@@ -61,44 +64,49 @@ public class CacheUtil {
 		}
 	}
 	/**
-	 * 执行同步缓存
-	 * @param key
+	 * 执行同步缓存 
+	 * @param key  返回的key需要传到CacheUtil.releaseSynch重置
 	 * @throws Exception
 	 */
 	public static String executeSynch(String key) throws Exception {
-		return executeSynch(key,10);
+		return executeSynch(key,30);
 	}
 	public static String executeSynch(String key,int n) throws Exception {
 		if(n<0) throw new MException(CacheUtil.class, "操作超时,请重试!");
 		CacheSynch m=get(CacheSynch.class,key);
 		if(null==m) {
 			clear(CacheSynch.class,key);
-			CacheSynch cs=new CacheSynch();
-			cs.setOid(key);
-			cs.setSynchStatus(0);//未执行
-			int ins=ModelUpdateUtil.insertModel(cs);
-			if(ins<1) {//未插入成功
-				Thread.sleep(100);
-				executeSynch(key,n-1);
-			}
-			m=get(CacheSynch.class,key);
+			insertSynch(key);
+			return executeSynch(key,n-1);
 		}
 		m.setSynchStatus(1);
 		int num=ModelUpdateUtil.update(m, new String[] {"synchStatus"}, QueryCondition.and(new QueryCondition[] {
 			QueryCondition.eq("oid", key),QueryCondition.eq("synchStatus", 0)
 		}));
 		if(num<1) {//未更新成功
-			Thread.sleep(100);
-			executeSynch(key,n-1);
+			Thread.sleep(15);
+			return executeSynch(key,n-1);
 		}
+		System.out.println(num);
 		return key;
+	}
+	private static void insertSynch(String key) {
+		CacheSynch cs=new CacheSynch();
+		cs.setOid(key);
+		cs.setSynchStatus(0);//未执行
+		try {
+			ModelUpdateUtil.insertModel(cs);
+		} catch (MException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	/**
 	 * 重置同步缓存
-	 * @param key
+	 * @param key  CacheUtil.executeSynch执行结果
 	 * @throws Exception
 	 */
 	public static void releaseSynch(String key) {
+		if(StringUtil.isSpace(key)) return;
 		CacheSynch m=get(CacheSynch.class,key);
 		m.setSynchStatus(0);
 		try {
