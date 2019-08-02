@@ -25,32 +25,39 @@ public class DBConnection {
 	}
 	static DBConnection[] conns=null;
 	static Map<String,Integer> connlist=new HashMap<String,Integer>();
-	protected synchronized static Connection get() {
-		if(null==conns)conns=new DBConnection[DBConfig.getMaxConnect()];
-		for(int i=0;i<conns.length;i++){
-			DBConnection conn=conns[i];
-			if(null==conn||null==conn.connection){
-				//System.out.println(Thread.currentThread().getName()+"-----------创建数据库连接--");
-				conns[i]=new DBConnection(true, createConnection());
-				connlist.put(Thread.currentThread().getName(), i);
-				//System.out.println("=======获取连接====>>>>>"+i);
-				return conns[i].connection;
-			}else if(!conn.isUse){
-				try {
-					if(!conn.connection.isValid(1)){
+	protected static Connection get() {
+		if(null==conns) {
+			synchronized(DBConnection.class) {
+				if(null==conns)
+					conns=new DBConnection[DBConfig.getMaxConnect()];
+			}
+		}
+		synchronized(DBConnection.class) {
+			for(int i=0;i<conns.length;i++){
+				DBConnection conn=conns[i];
+				if(null==conn||null==conn.connection){
+					//System.out.println(Thread.currentThread().getName()+"-----------创建数据库连接--");
+					conns[i]=new DBConnection(true, createConnection());
+					connlist.put(Thread.currentThread().getName(), i);
+					//System.out.println("=======获取连接====>>>>>"+i);
+					return conns[i].connection;
+				}else if(!conn.isUse){
+					try {
+						if(!conn.connection.isValid(1)){
+							conn.connection=null;
+							System.out.println(Thread.currentThread().getName()+"-----------数据库连接超时--");
+							return get();
+						}
+					} catch (SQLException e) {
 						conn.connection=null;
-						System.out.println(Thread.currentThread().getName()+"-----------数据库连接超时--");
+						System.out.println(Thread.currentThread().getName()+"-----------数据库连接验证异常--");
 						return get();
 					}
-				} catch (SQLException e) {
-					conn.connection=null;
-					System.out.println(Thread.currentThread().getName()+"-----------数据库连接验证异常--");
-					return get();
+					conn.isUse=true;
+					connlist.put(Thread.currentThread().getName(), i);
+					//System.out.println("=======获取连接====>>>>>"+i);
+					return conn.connection;
 				}
-				conn.isUse=true;
-				connlist.put(Thread.currentThread().getName(), i);
-				//System.out.println("=======获取连接====>>>>>"+i);
-				return conn.connection;
 			}
 		}
 		return null;

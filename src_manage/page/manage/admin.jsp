@@ -58,7 +58,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<c:if test="${map.systemInfo.titleType=='Y'}"><img src="${map.systemInfo.titleImage.imgPath }" style="width:200px;height:60px;"/></c:if>
 						<c:if test="${map.systemInfo.titleType!='Y'}">${map.systemInfo.backgroundTitle }</c:if>
 					</div>
-					<menu-item v-for="(module,key) in modules" :name="key" @click.native="doModule(key)">
+					<menu-item v-for="(module,key) in modules" :name="key" @click.native="doModule(key)" :class="active==key?'ivu-menu-item-active':''">
 						<i class="iconfont" v-html="module.icon"></i><span v-html="module.name"></span>
 					</menu-item>
 					<slot></slot>
@@ -83,7 +83,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								<template slot="title">
 								<i class="iconfont" v-html="menu1.icon"></i><span v-html="menu1.name"></span>
 								</template>
-								<menu-item v-for="(menu2,key2) in menu1.menus" :name="key2" @click.native="doMenu(key2)">
+								<menu-item v-for="(menu2,key2) in menu1.menus" :name="key2" @click.native="doMenu(key2)" :class="activeMenu2==key2?'ivu-menu-item-active':''">
 									<icon type="ios-arrow-forward" style="font-size:12px;"></icon>
 									<span v-html="menu2"></span>
 								</menu-item>
@@ -227,7 +227,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</div>
 			</modal>
 		</div>
-		<div id="login_page" class="login_layout" v-show="loginBackground" style="background:url(resources/img/bg.jpg) round;background-size:cover;">
+		<div id="login_page" class="login_layout" v-show="loginBackground" style="z-index:1000;background:url(resources/img/bg.jpg) round;background-size:cover;">
 			<modal class-name="vertical-center-modal" :closable="false" :mask-closable="false" v-model="tologin">
 				<p slot="header" style="color:#2d8cf0;text-align:center">
 					<icon type="information-circled"></icon>
@@ -259,6 +259,133 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<script type="text/javascript">
 		
 			$(document.body).ready(function(){
+				$.vue['main_admin']=new Vue({//主页面初始化
+					el:"#main_page",
+					data:{init:false,modelInfo:{headImage:{thumPath:''}},modules:[],menuMap:{},
+						toModify:false,tags:[],tagName:{},activeTag:'',currentMenuOid:'',
+						activeModule:'',breadcrumb1:'',breadcrumb2:'',breadcrumb3:'',
+						menuExpansion:true},
+					mounted:function(){
+						pageVue.$on("menuExpansion",function(b){
+							this.menuExpansion=b;
+						}.bind(this));
+					},
+					methods:{
+						backHandler:function(s){
+							if(s){location.reload();}
+							else this.toModify=false;
+						},
+						setMenuExpansion:function(){
+							this.menuExpansion=!this.menuExpansion;
+							pageVue.$emit("menuExpansion",this.menuExpansion);
+						},
+						modify:function(){
+							var self=this;
+							$.loadVuePage($('#modifyModelInfo'),'action/manageAdminLogin/toEdit4Self',{openKey:'main_admin'},function(){
+								self.toModify=true;
+							});
+						},
+						logout:function(){
+							this.$Modal.confirm({
+								title: '退出系统',
+								content: '<p>确定要退出系统吗?</p>',
+								loading: true,
+								onOk: function(){
+									$.execJSON("action/manageAdminLogin/doLogout",{},function(json){});
+									window.location.hash="";
+									location.reload();
+								}
+							});
+						},
+						doModule:function(oid){
+							if(!this.init) return;
+							pageVue.$emit("changeModule",oid);
+						},
+						doOpenMenu:function(oid,flag){
+							if(!this.init) return;
+							var arr=this.menuMap[oid];
+							if(!arr[0]) this.doCloseMenu(oid);
+							this.activeModule=arr[0].oid;
+							this.activeTag=oid;
+							pageVue.$emit("changeMenu",[arr[0].oid,arr[1].oid,oid]);
+							this.breadcrumb1=arr[0].name;
+							this.breadcrumb2=arr[1].name;
+							this.breadcrumb3=arr[2];
+							if(!flag){
+								this.tags.remove(oid);
+								this.tags.unshift(oid);
+								this.tagName[oid]=this.breadcrumb3;
+							}
+							window.location.hash=oid;
+						},
+						doCloseMenu:function(oid){
+							if(!this.init) return;
+							var n=this.closeMenu(oid);
+							if(n){
+								this.tags.remove(oid);
+								this.tagName[oid]=null;
+								this.doOpenMenu(n);
+							}
+						},
+						closeMenu:function(oid){
+							if(!this.init) return;
+							if(this.currentMenuOid==oid){
+								var childs=$("#main_content").children("div");
+								if(childs.length==1){
+									pageVue.$Message.error("最后一个标签了,不能再关闭了");
+									return "";
+								}
+								$("#menu"+oid).remove();
+								childs=$("#main_content").children("div");
+								if(childs.length>0){
+									var content=childs.eq(0);
+									this.currentMenuOid=(content.attr("id")+"").substring(4);
+								}else{
+									this.currentMenuOid="";
+								}
+							}else{
+								$("#menu"+oid).remove();
+							}
+							return this.currentMenuOid;
+						},
+						setDefaultMenu:function(menuid){
+							for(var i=this.tags.length-1;i>=0;i--){
+								if(!this.menuMap[this.tags[i]]){
+									this.tags.splice(this.tags.length-1,1);
+								}
+							}
+							var hash=$.getLocationHash();
+							if(hash&&this.menuMap[hash]){
+								this.doOpenMenu(hash);
+								this.hashChange();
+							}else{
+								this.doOpenMenu(menuid);
+							}
+						},
+						hashChange:function(){
+							if(!this.init) return;
+							var hash=$.getLocationHash();
+							var self=$.vue['main_admin'];
+							if(self.currentMenuOid){$("#menu"+self.currentMenuOid)['slideUp'](300);}
+							self.currentMenuOid=hash;
+							var content=$("#main_content").children('#menu'+hash);
+							if(content.length){
+								content.slideDown(300);
+							}else{
+								$.execHTML('action/manageGroupMenuLink/gotoMenuPage',{'menu.oid':hash},function(html){
+									html=$.trim(html);
+									if(html.indexOf("<")==0){
+										var ele=$(html).slideUp();
+										$("#main_content").append(ele);
+										ele.fadeIn(300);
+									}else{
+										pageVue.$Message.error(html);
+									}
+								});
+							}
+						}
+					}
+				});
 				var loginVue=new Vue({
 					el:"#login_page",
 					data:{
@@ -272,21 +399,24 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						}
 					},
 					mounted:function(){
-						var self=this;
-						$.execJSON('action/manageAdminLogin/isLogin',this.loginInfo,function(json){
-							console.log(json);
-							if(json.code==0&&null!=json.model){
-								loginVue.tologin=false;
-								loginVue.loginBackground=false;
-								self.modelInfo=json.model;
-							}else{
-								loginVue.tologin=true;
-								loginVue.loginBackground=true;
-								window.location.hash="";
-							}
-						});
+						this.isLogin();
 					},
 					methods:{
+						isLogin:function(){
+							var self=this;
+							$.execJSON('action/manageAdminLogin/isLogin',this.loginInfo,function(json){
+								console.log(json);
+								if(json.code==0&&null!=json.model){
+									loginVue.tologin=false;
+									loginVue.loginBackground=false;
+									self.modelInfo=json.model;
+								}else{
+									loginVue.tologin=true;
+									loginVue.loginBackground=true;
+									self.modelInfo={};
+								}
+							});
+						},
 						doLogin:function(){
 							var self=this;
 							$.execJSON('action/manageAdminLogin/doLogin',this.loginInfo,function(json){
@@ -300,13 +430,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 									pageVue.$Message.error(json.msg);
 									loginVue.tologin=true;
 									loginVue.loginBackground=true;
+									self.modelInfo={};
 								}
 							});
-						}
+						},
+						
 					},
 					watch:{
 						loginBackground:function(val,old){
-							if(old&&!val){
+							if(!val){
 								$.execJSON('action/manageGroupMenuLink/getModuleList',{},function(json){
 									if(json.code==0){
 										var menuMap={};
@@ -318,119 +450,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 											}
 										}
 										if(!loginVue.modelInfo.headImage)loginVue.modelInfo.headImage={thumPath:''};
-										var dd={modelInfo:loginVue.modelInfo,toModify:false,tags:[],tagName:{},activeTag:'',
-											activeModule:'',breadcrumb1:'',breadcrumb2:'',breadcrumb3:'',
-											menuExpansion:true};
-										dd.modules=json.modules;
-										dd.currentMenuOid='';
-										$.vue['main_admin']=new Vue({//主页面初始化
-											el:"#main_page",
-											data:dd,
-											methods:{
-												backHandler:function(s){
-													if(s){location.reload();}
-													else this.toModify=false;
-												},
-												setMenuExpansion:function(){
-													this.menuExpansion=!this.menuExpansion;
-													pageVue.$emit("menuExpansion",this.menuExpansion);
-												},
-												modify:function(){
-													var self=this;
-													$.loadVuePage($('#modifyModelInfo'),'action/manageAdminLogin/toEdit4Self',{openKey:'main_admin'},function(){
-														self.toModify=true;
-													});
-												},
-												logout:function(){
-													this.$Modal.confirm({
-														title: '退出系统',
-														content: '<p>确定要退出系统吗?</p>',
-														loading: true,
-														onOk: function(){
-															$.execJSON("action/manageAdminLogin/doLogout",{},function(json){});
-															window.location.hash="";
-															location.reload();
-														}
-													});
-												},
-												doModule:function(oid){
-													pageVue.$emit("changeModule",oid);
-												},
-												doOpenMenu:function(oid,flag){
-													var arr=menuMap[oid];
-													this.activeModule=arr[0].oid;
-													this.activeTag=oid;
-													pageVue.$emit("changeMenu",[arr[0].oid,arr[1].oid,oid]);
-													dd.breadcrumb1=arr[0].name;
-													dd.breadcrumb2=arr[1].name;
-													dd.breadcrumb3=arr[2];
-													if(!flag){
-														this.tags.remove(oid);
-														this.tags.unshift(oid);
-														this.tagName[oid]=this.breadcrumb3;
-													}
-													window.location.hash=oid;
-												},
-												doCloseMenu:function(oid){
-													var n=this.closeMenu(oid);
-													if(n){
-														this.tags.remove(oid);
-														this.tagName[oid]=null;
-														this.doOpenMenu(n);
-													}
-												},
-												closeMenu:function(oid){
-													if(this.currentMenuOid==oid){
-														var childs=$("#main_content").children("div");
-														if(childs.length==1){
-															pageVue.$Message.error("最后一个标签了,不能再关闭了");
-															return "";
-														}
-														$("#menu"+oid).remove();
-														childs=$("#main_content").children("div");
-														if(childs.length>0){
-															var content=childs.eq(0);
-															this.currentMenuOid=(content.attr("id")+"").substring(4);
-														}else{
-															this.currentMenuOid="";
-														}
-													}else{
-														$("#menu"+oid).remove();
-													}
-													return this.currentMenuOid;
-												},
-												hashChange:function(){
-													var hash=$.getLocationHash();
-													var self=$.vue['main_admin'];
-													if(self.currentMenuOid){$("#menu"+self.currentMenuOid)['slideUp'](300);}
-													self.currentMenuOid=hash;
-													var content=$("#main_content").children('#menu'+hash);
-													if(content.length){
-														content.slideDown(300);
-													}else{
-														$.execHTML('action/manageGroupMenuLink/gotoMenuPage',{'menu.oid':hash},function(html){
-															html=$.trim(html);
-															if(html.indexOf("<")==0){
-																var ele=$(html).slideUp();
-																$("#main_content").append(ele);
-																ele.fadeIn(300);
-															}else{
-																pageVue.$Message.error(html);
-															}
-														});
-													}
-												}
-											}
-										});
-										if($.getLocationHash()){
-											$.vue['main_admin'].doOpenMenu($.getLocationHash());
-											$.vue['main_admin'].hashChange();
-										}else{
-											$.vue['main_admin'].doOpenMenu(json.defaultMenuOid);
-										}
-										$(window).on('hashchange',function(){
-											$.vue['main_admin'].hashChange();
-										});
+										$.vue['main_admin'].modelInfo=loginVue.modelInfo;
+										$.vue['main_admin'].modules=json.modules;
+										$.vue['main_admin'].menuMap=menuMap;
+										$.vue['main_admin'].init=true;
+										console.log($.vue['main_admin'].modules,$.vue['main_admin'].menuMap,$.vue['main_admin'].tags,$.vue['main_admin'].tagNames);
+										$.vue['main_admin'].setDefaultMenu(json.defaultMenuOid);
+										
 									}else{
 										pageVue.$Message.error(json.msg);
 									}
@@ -440,8 +466,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					}
 				});
 			
+				$(window).on('hashchange',function(){
+					$.vue['main_admin'].hashChange();
+				});
 				$(window).on('resize',function(){
 					$("#main_page").css({height:$(window).height()});
+				});
+				$(window).on('focus',function(){
+					loginVue.isLogin();
+				});
+				$(window).on('blur',function(){
+					
 				});
 				$("#main_page").css({height:$(window).height()});
 				$(document.body).append("<script type=\"text/javascript\" src=\"https://webapi.amap.com/maps?v=1.4.8&key=97aa8a15d5a9bc783e16236cc66d3662\"><\/script>");
