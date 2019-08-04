@@ -68,13 +68,13 @@ public class GoodsOrderAction extends ManageAction {
 		return result;
 	}
 
-	@ActionFormMeta(title="商品入库",
+	@ActionFormMeta(title="商品订单",
 		rows={
 			@FormRowMeta(fields={
 				@FormFieldMeta(field = "model.oid", type = FormFieldType.HIDDEN),
 				@FormFieldMeta(title="名称",field="model.goods.oid",type=FormFieldType.SELECT,hint="请选择商品",span=12,
 					querySelect=@QuerySelectMeta(modelClass = "goods.model.GoodsInfo", title = "name", value = "oid",
-						titleExpression="concat(#{name},'(',#{price},'元)')",
+						titleExpression="concat(#{name},' / 数量：',#{stockNum}-#{saleNum},', 单价：',#{price},'元')",
 						conditions= {@SelectConditionMeta(field = "status",value="0")})
 				),
 				@FormFieldMeta(title="创建时间",field="model.createDate",type=FormFieldType.DATE,span=12),
@@ -91,6 +91,9 @@ public class GoodsOrderAction extends ManageAction {
 	public ActionResult toEdit() throws Exception{
 		if(null!=model&&!StringUtil.isSpace(model.getOid())){
 			model=ModelQueryUtil.getModel(model);
+		}else {
+			model=new GoodsOrder();
+			model.setCreateDate(new Date());
 		}
 		return getFormResult(this,ActionFormPage.EDIT);
 	}
