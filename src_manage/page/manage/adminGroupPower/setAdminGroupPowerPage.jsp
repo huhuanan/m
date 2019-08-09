@@ -2,14 +2,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <page>
 	<h2>权限设置</h2>
-	<c:forEach var="item" items="${array}">
-	<row style="margin-top:15px;">
-		<i-col span="16" style="padding-left:15px;line-height:24px;">${item[1] }</i-col>
-		<i-col span="8" style="text-align:right;">
-			<i-switch v-model="${item[0] }" @on-change="onchange('${item[0] }')"></i-switch>
-		</i-col>
-	</row>
-	</c:forEach>
+	<card>
+		<c:forEach var="item" items="${array}">
+		<row style="line-height:40px;">
+			<i-col span="16" style="padding-left:15px;">${item[1] }</i-col>
+			<i-col span="8" style="text-align:right;">
+				<i-switch v-model="${item[0] }" @on-change="onchange('${item[0] }')"></i-switch>
+			</i-col>
+		</row>
+		</c:forEach>
+	</card>
 </page>
 <script>
 (function(){

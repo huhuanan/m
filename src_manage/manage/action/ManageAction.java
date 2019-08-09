@@ -17,6 +17,7 @@ import m.common.model.util.QueryCondition;
 import m.common.model.util.QueryOrder;
 import m.common.model.util.QueryPage;
 import m.system.RuntimeData;
+import m.system.cache.CacheUtil;
 import m.system.exception.MException;
 import m.system.lang.PageInfo;
 import m.system.util.AnnotationUtil;
@@ -26,6 +27,7 @@ import m.system.util.ObjectUtil;
 import m.system.util.StringUtil;
 import manage.dao.AdminLoginDao;
 import manage.model.AdminGroup;
+import manage.model.AdminGroupPower;
 import manage.model.AdminLogin;
 import manage.service.AdminGroupPowerService;
 import manage.util.excel.ExcelObject;
@@ -165,17 +167,11 @@ public abstract class ManageAction extends Action {
 		}
 	}
 	
-	private static Map<String,Map<String,Boolean>> adminGroupPowerMap=new HashMap<String, Map<String,Boolean>>();
-	public static Map<String,Boolean> getAdminOperPower(AdminGroup adminGroup) throws SQLException, MException{
-		if(null==adminGroupPowerMap.get(adminGroup.getOid())){
-			adminGroupPowerMap.put(adminGroup.getOid(), RuntimeData.getService(AdminGroupPowerService.class).getPowerMap(adminGroup.getOid()));
-		}
-		return adminGroupPowerMap.get(adminGroup.getOid());
+	public static Map<String,Boolean> getAdminOperPower(AdminLogin admin) throws SQLException, MException{
+		return RuntimeData.getService(AdminGroupPowerService.class).getPowerMap(admin.getOid());
 	}
-	public static void clearAdminOperPower(AdminGroup adminGroup){
-		if(null!=adminGroupPowerMap.get(adminGroup.getOid())){
-			adminGroupPowerMap.remove(adminGroup.getOid());
-		}
+	public static Map<String,Boolean> getAdminOperPower(AdminGroup adminGroup) throws SQLException, MException{
+		return RuntimeData.getService(AdminGroupPowerService.class).getPowerMapByGroup(adminGroup.getOid());
 	}
 	/**
 	 * 获取当前登陆人所在管理员组的操作权限
@@ -187,7 +183,7 @@ public abstract class ManageAction extends Action {
 		if(null==admin){
 			throw new MException(this.getClass(),"未登录");
 		}
-		return getAdminOperPower(admin.getAdminGroup());
+		return getAdminOperPower(admin);
 	}
 	/**
 	 * 验证操作权限

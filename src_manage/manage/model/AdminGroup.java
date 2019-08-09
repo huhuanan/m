@@ -11,10 +11,18 @@ public class AdminGroup extends StatusModel {
 	private String name;
 	@FieldMeta(name="description",type=FieldType.STRING,length=1000,description="描述")
 	private String description;
+	@FieldMeta(name="type",type=FieldType.STRING,length=1,defaultValue="A",description="类型|A:组,B:角色")
+	private String type;
 	@FieldMeta(name="sort",type=FieldType.INT,description="排序")
 	private Integer sort;
 	public Integer getSort() {
 		return sort;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 	public void setSort(Integer sort) {
 		this.sort = sort;

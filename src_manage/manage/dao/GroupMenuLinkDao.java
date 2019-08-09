@@ -18,8 +18,8 @@ public class GroupMenuLinkDao extends Dao {
 		}
 		return map;
 	}
-	public String getMenuOid(String group_oid,String menu_oid) throws SQLException{
-		DataRow row=DBManager.queryFirstRow("SELECT mi.oid FROM os_menu_info mi left join os_group_menu_link gm on mi.oid=gm.menu_oid and gm.admin_group_oid=?  where mi.oid=? and (gm.menu_oid=? or mi.is_public='Y')", new String[]{group_oid,menu_oid,menu_oid});
+	public String getMenuOid(String admin_oid,String group_oid,String menu_oid) throws SQLException{
+		DataRow row=DBManager.queryFirstRow("SELECT mi.oid FROM os_menu_info mi left join os_group_menu_link gm on mi.oid=gm.menu_oid and (gm.admin_group_oid=? or gm.admin_group_oid in(select admin_group_oid from os_admin_group_link where admin_oid=?)) where mi.oid=? and (gm.menu_oid=? or mi.is_public='Y')", new String[]{group_oid,admin_oid,menu_oid,menu_oid});
 		if(null==row){
 			return null;
 		}else{

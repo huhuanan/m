@@ -29,7 +29,6 @@ public class AdminGroupPowerAction extends ManageAction {
 			getService(AdminGroupPowerService.class).addAdminGroupPower(model);
 			message.push("code", 0);
 			message.push("msg", "添加权限成功!");
-			clearAdminOperPower(model.getAdminGroup());
 		} catch (Exception e) {
 			message.push("code", 1);
 			message.push("msg", e.getMessage());
@@ -44,7 +43,6 @@ public class AdminGroupPowerAction extends ManageAction {
 			getService(AdminGroupPowerService.class).removeAdminGroupPower(model);
 			message.push("code", 0);
 			message.push("msg", "移除权限成功!");
-			clearAdminOperPower(model.getAdminGroup());
 		} catch (Exception e) {
 			message.push("code", 1);
 			message.push("msg", e.getMessage());

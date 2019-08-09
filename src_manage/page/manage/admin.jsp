@@ -386,6 +386,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						}
 					}
 				});
+				var loginTimer=null;
 				var loginVue=new Vue({
 					el:"#login_page",
 					data:{
@@ -400,6 +401,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					},
 					mounted:function(){
 						this.isLogin();
+						this.setTimer();
 					},
 					methods:{
 						isLogin:function(){
@@ -415,7 +417,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 									loginVue.loginBackground=true;
 									self.modelInfo={};
 								}
-							});
+							},false,true);
 						},
 						doLogin:function(){
 							var self=this;
@@ -434,7 +436,21 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								}
 							});
 						},
-						
+						setTimer:function(){
+							loginTimer=setTimeout(function(){
+								loginVue.isLogin();
+							},10*60*1000);
+						},
+						resetTimer:function(){
+							this.clearTimer();
+							this.setTimer();
+						},
+						clearTimer:function(){
+							if(loginTimer){
+								clearTimeout(loginTimer);
+								loginTimer=null;
+							}
+						}
 					},
 					watch:{
 						loginBackground:function(val,old){
@@ -476,7 +492,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					loginVue.isLogin();
 				});
 				$(window).on('blur',function(){
-					
+					loginVue.clearTimer();
 				});
 				$("#main_page").css({height:$(window).height()});
 				$(document.body).append("<script type=\"text/javascript\" src=\"https://webapi.amap.com/maps?v=1.4.8&key=97aa8a15d5a9bc783e16236cc66d3662\"><\/script>");

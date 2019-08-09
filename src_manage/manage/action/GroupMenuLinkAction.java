@@ -60,8 +60,8 @@ public class GroupMenuLinkAction extends ManageAction {
 		try {
 			String defaultMenuOid=null;
 			ModuleService moduleService = getService(ModuleService.class);
-			AdminGroup group=getSessionAdmin().getAdminGroup();
-			List<ModuleInfo> moduleList=moduleService.getModuleList4Group(group);
+			AdminLogin admin=getSessionAdmin();
+			List<ModuleInfo> moduleList=moduleService.getModuleList4Group(admin);
 			JSONMessage modules=new JSONMessage();
 			for(ModuleInfo moduleInfo : moduleList){
 				JSONMessage module=new JSONMessage();
@@ -69,14 +69,14 @@ public class GroupMenuLinkAction extends ManageAction {
 				module.push("name", moduleInfo.getName());
 				module.push("icon", moduleInfo.getIcoStyle());
 				JSONMessage menus1=new JSONMessage();
-				List<MenuInfo> menulist1=moduleService.getMenuList4Group(moduleInfo.getOid(), group);
+				List<MenuInfo> menulist1=moduleService.getMenuList4Group(moduleInfo.getOid(), admin);
 				if(menulist1.size()>0){
 					for(MenuInfo menuInfo1 : menulist1){
 						JSONMessage menu1=new JSONMessage();
 						menu1.push("oid", menuInfo1.getOid());
 						menu1.push("name", menuInfo1.getName());
 						menu1.push("icon", menuInfo1.getIcoStyle());
-						List<MenuInfo> menulist2=moduleService.getMenuList4Group(moduleInfo.getOid(),menuInfo1.getOid(), group);
+						List<MenuInfo> menulist2=moduleService.getMenuList4Group(moduleInfo.getOid(),menuInfo1.getOid(), admin);
 						if(menulist2.size()>0){
 							JSONMessage menu2=new JSONMessage();
 							for(MenuInfo menuInfo2 : menulist2){
@@ -107,7 +107,7 @@ public class GroupMenuLinkAction extends ManageAction {
 		if(null==admin){
 			throw new MException(this.getClass(),"未登录!");
 		}
-		String menu_oid=getDao(GroupMenuLinkDao.class).getMenuOid(admin.getAdminGroup().getOid(), menu.getOid());
+		String menu_oid=getDao(GroupMenuLinkDao.class).getMenuOid(admin.getOid(),admin.getAdminGroup().getOid(), menu.getOid());
 		if(StringUtil.isSpace(menu_oid)){
 			throw new MException(this.getClass(),"权限错误!");
 		}

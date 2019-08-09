@@ -1,14 +1,19 @@
 package manage.service;
 
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import m.common.model.util.ModelCheckUtil;
 import m.common.model.util.ModelQueryList;
 import m.common.model.util.ModelUpdateUtil;
+import m.common.model.util.QueryCondition;
+import m.common.model.util.QueryOrder;
+import m.common.model.util.QueryPage;
 import m.common.service.Service;
 import m.system.db.TransactionManager;
 import m.system.exception.MException;
@@ -94,5 +99,8 @@ public class AdminLoginService extends Service {
 			throw e;
 		}
 		return msg;
+	}
+	public List<AdminLogin> getAll() throws SQLException, MException{
+		return ModelQueryList.getModelList(AdminLogin.class, new String[] {"*","adminGroup.*"},null, QueryCondition.eq("status", "0"), QueryOrder.asc("adminGroup.sort"));
 	}
 }

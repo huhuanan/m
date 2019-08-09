@@ -14,20 +14,53 @@ import m.system.db.DataRow;
 import m.system.exception.MException;
 import m.system.util.GenerateID;
 import m.system.util.StringUtil;
+import manage.model.AdminGroupLink;
 import manage.model.AdminGroupPower;
+import manage.model.AdminLogin;
 
 public class AdminGroupPowerService extends Service {
 	/**
-	 * 获取权限组对应的权限
+	 * 获取用户对应的权限
+	 * @param admin_oid
+	 * @return
+	 * @throws SQLException
+	 * @throws MException
+	 */
+	public Map<String,Boolean> getPowerMap(String admin_oid) throws SQLException, MException{
+		Map<String,Boolean> powerMap=new HashMap<String, Boolean>();
+		List<AdminGroupPower> list=ModelQueryList.getModelList(AdminGroupPower.class, new String[] {"name"}, null,
+			QueryCondition.or(new QueryCondition[]{
+				QueryCondition.in("adminGroup.oid",
+					ModelQueryList.instance(AdminLogin.class,
+						new String[] {"adminGroup.oid"}, null,
+						QueryCondition.eq("oid", admin_oid)
+					)
+				),
+				QueryCondition.in("adminGroup.oid",
+					ModelQueryList.instance(AdminGroupLink.class,
+						new String[] {"adminGroup.oid"}, null,
+						QueryCondition.eq("admin.oid", admin_oid)
+					)
+				)
+			})
+		);
+		for(AdminGroupPower power : list){
+			powerMap.put(power.getName(), true);
+		}
+		return powerMap;
+	}
+	/**
+	 * 获取用户组对应的权限
 	 * @param admin_group_oid
 	 * @return
 	 * @throws SQLException
 	 * @throws MException
 	 */
-	public Map<String,Boolean> getPowerMap(String admin_group_oid) throws SQLException, MException{
+	public Map<String,Boolean> getPowerMapByGroup(String admin_group_oid) throws SQLException, MException{
 		Map<String,Boolean> powerMap=new HashMap<String, Boolean>();
-		List<AdminGroupPower> list=ModelQueryList.getModelList(AdminGroupPower.class, 
-				new String[]{"name"}, null, QueryCondition.eq("adminGroup.oid", admin_group_oid));
+		List<AdminGroupPower> list=ModelQueryList.getModelList(AdminGroupPower.class, new String[] {"name"}, null,
+			QueryCondition.eq("adminGroup.oid",admin_group_oid)
+		);
 		for(AdminGroupPower power : list){
 			powerMap.put(power.getName(), true);
 		}

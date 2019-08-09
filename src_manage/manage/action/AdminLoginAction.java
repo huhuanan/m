@@ -139,6 +139,22 @@ public class AdminLoginAction extends StatusAction {
 		}
 		return result;
 	}
+	
+	public JSONMessage getAllAdmin() {
+		JSONMessage result=new JSONMessage();
+		try {
+			AdminLogin admin=getSessionAdmin();
+			if(null==admin) throw new MException(this.getClass(),"未登录");
+			verifyAdminOperPower(getStatusPower());
+			result.push("list", getService(AdminLoginService.class).getAll());
+			result.push("code", 0);
+		} catch (Exception e) {
+			result.push("code", 1);
+			result.push("msg", e.getMessage());
+			if(RuntimeData.getDebug()) e.printStackTrace();
+		}
+		return result;
+	}
 	@ActionFormMeta(title="添加管理员信息",
 		rows={
 			@FormRowMeta(fields={

@@ -167,7 +167,7 @@ public class GoodsInfoAction extends StatusAction {
 			@ActionTableColMeta(field = "price", title = "单价", width=130,sort=true,numberFormat="0.00",align="right"),
 			@ActionTableColMeta(field = "stockNum", title = "库存", width=130,sort=true,numberFormat="#,##0",align="right",countType=TableCountType.SUM),
 			@ActionTableColMeta(field = "saleNum", title = "销量", width=130,sort=true,numberFormat="#,##0",align="right",countType=TableCountType.SUM),
-			@ActionTableColMeta(field = "oid",title="操作",width=120,align="center",buttons={
+			@ActionTableColMeta(field = "oid",title="操作",width=120,align="center",power="goods_manager_power",buttons={
 				@ButtonMeta(title="修改", event = ButtonEvent.MODAL,modalWidth=700, url = "action/goodsGoodsInfo/toEdit",
 					params={@ParamMeta(name = "model.oid", field="oid")},success=SuccessMethod.REFRESH,style=ButtonStyle.NORMAL,
 					power="goods_manager_power"

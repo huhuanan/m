@@ -19,47 +19,49 @@
 			<card :padding="10">
 				<p slot="title">{{title}}</p>
 				<div id="action${key}">
-					<div v-for="item in selectAction.methods" class="ivu-table-wrapper">
-						<table class="ivu-table ivu-table-small" style="width:100%" cellspacing="0" cellpadding="0" border="0">
+					<template v-for="item in selectAction.methods">
+						<h4 style="color:#2d8cf0;">{{item.title}} - {{item.description}}</h4>
+						<table style="width:100%;margin-bottom:6px;" cellspacing="0" cellpadding="0" border="0">
 							<tr>
-								<th colspan="6"><h3>{{item.title}} - {{item.description}}</h3></th>
-							</tr>
-							<tr>
-								<td colspan="2" style="padding-left:10px;"><h3>访问路径: {{item.path}}</h3></td>
-								<td colspan="2" style="text-align:center;">权限: {{item.permission}}</td>
-								<td style="text-align:center;"><i-button type="primary" @click.native="showTestModal(item.title,item.path)">测试</i-button></td>
-							</tr>
-							<tr>
-								<th style="text-align:left;">参数名称</th>
-								<th style="text-align:left;">参数描述</th>
-								<th style="text-align:center;">类型</th>
-								<th style="text-align:center;">长度</th>
-								<th style="text-align:center;">必填</th>
-							</tr>
-							<tr v-for="f in item.params">
-								<td style="padding-left:5px;padding-right:5px;">{{f.name}}</td>
-								<td style="padding-left:5px;padding-right:5px;">{{f.description}}</td>
-								<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.type}}</td>
-								<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.length}}</td>
-								<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.notnull}}</td>
-							</tr>
-							<tr>
-								<td colspan="6">
-									<h4>返回:</h4>
-									<pre>{{item.result}}</pre>
-								</td>
+								<td style=""> {{item.path}}</td>
+								<td style="width:100px;text-align:center;">权限: {{item.permission}}</td>
+								<td style="width:100px;text-align:right;"><i-button type="primary" size="small" @click.native="showTestModal(item.title,item.path)">测试</i-button></td>
 							</tr>
 						</table>
-					</div>
+						<div class="ivu-table-wrapper">
+							<table class="ivu-table ivu-table-small" style="width:100%" cellspacing="0" cellpadding="0" border="0">
+								<tr>
+									<th style="text-align:left;">参数名称</th>
+									<th style="text-align:left;">参数描述</th>
+									<th style="text-align:center;">类型</th>
+									<th style="text-align:center;">长度</th>
+									<th style="text-align:center;">必填</th>
+								</tr>
+								<tr v-for="f in item.params">
+									<td style="padding-left:5px;padding-right:5px;">{{f.name}}</td>
+									<td style="padding-left:5px;padding-right:5px;">{{f.description}}</td>
+									<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.type}}</td>
+									<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.length}}</td>
+									<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.notnull}}</td>
+								</tr>
+								<tr>
+									<td colspan="6">
+										<h4>返回:</h4>
+										<pre>{{item.result}}</pre>
+									</td>
+								</tr>
+							</table>
+						</div>
+					</template>
 				</div>
 				<div id="model${key}">
 					<div class="ivu-table-wrapper">
 						<table class="ivu-table ivu-table-small" style="width:100%" cellspacing="0" cellpadding="0" border="0">
 							<tr>
-								<th colspan="6"><h3>{{selectModel.name}} - {{selectModel.description}}</h3></th>
+								<th colspan="6" style="color:#2d8cf0;"><h3>{{selectModel.description}}</h3></th>
 							</tr>
 							<tr>
-								<td colspan="6"><h3>{{selectModel.clazz}}</h3></td>
+								<td colspan="6" style="font-size:14px;"><b>类:</b>{{selectModel.clazz}}  <b>表:</b>{{selectModel.name}}</td>
 							</tr>
 							<tr>
 								<th style="text-align:center;">字段</th>
@@ -84,13 +86,10 @@
 			</card>
 		</i-col>
 	</row>
-	<modal v-model="testModal" width="80%" :mask-closable="false">
-		<p slot="header">{{testTitle}}</p>
+	<modal v-model="testModal" class="table_modal" width="80%" :mask-closable="false">
+		<h3>{{testMethod.title}} - {{testMethod.description}}</h3>
 		<div class="ivu-table-wrapper">
 			<table class="ivu-table ivu-table-default" style="width:100%" cellspacing="0" cellpadding="0" border="0">
-				<tr>
-					<th colspan="6"><h3>{{testMethod.title}} - {{testMethod.description}}</h3></th>
-				</tr>
 				<tr>
 					<td colspan="4" style="padding-left:10px;"><h3>访问路径: {{testMethod.path}}</h3></td>
 					<td style="text-align:right;"><span v-if="testMethod.permission">权限: </span></td>
@@ -105,7 +104,11 @@
 					<th style="text-align:center;">类型</th>
 					<th style="text-align:center;">长度</th>
 					<th style="text-align:center;">必填</th>
-					<th style="text-align:center;"></th>
+					<th style="text-align:right;padding-right:5px;">
+						<i-button size="small" @click.native="testModal=false">关闭</i-button>
+						<i-button type="primary" size="small" @click.native="execTest(false)">普通请求</i-button>
+						<i-button type="primary" size="small" @click.native="execTest(true)">Body请求</i-button>
+					</th>
 				</tr>
 				<tr v-for="f in testMethod.params">
 					<td style="padding-left:5px;padding-right:5px;">{{f.name}}</td>
@@ -127,11 +130,6 @@
 				</tr>
 			</table>
 		</div>
-		<div slot="footer">
-			<i-button type="primary" size="large" @click.native="execTest(false)">普通请求</i-button>
-			<i-button type="primary" size="large" @click.native="execTest(true)">Body请求</i-button>
-			<i-button size="large" @click.native="testModal=false">关闭</i-button>
-		</div>
    </modal>
 </page>
 <script>
@@ -149,7 +147,6 @@
 				models:${map.models},
 				selectModel:{},
 				testModal:false,
-				testTitle:"",
 				testMethod:{},
 				params:{},
 				authorization:'',
@@ -186,7 +183,6 @@
 				$('#model${key}').slideDown(300);
 			},
 			showTestModal:function(title,path){
-				this.testTitle=title;
 				for(var i=0;i<this.selectAction.methods.length;i++){
 					if(path==this.selectAction.methods[i].path){
 						this.testMethod=this.selectAction.methods[i];

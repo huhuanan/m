@@ -322,7 +322,7 @@ public class ModelQueryList {
 	}
 	/**
 	 * 查询列表
-	 * @param expressionMap  sql表达式 map<fieldname,exp>  exp中的fieldname用${}括着    exp例如:concat(#{name},'(',#{backgroud.thumPath},')')
+	 * @param expressionMap  sql表达式 map<fieldname,exp>  exp中的fieldname用#{}括着    exp例如:concat(#{name},'(',#{backgroud.thumPath},')')
 	 */
 	public static <T extends Model> List<T> getModelList(Class<T> clazz,String[] fieldNames,QueryPage page,QueryCondition condition,Map<String,String> expressionMap,QueryOrder... orders) throws SQLException, MException{
 		ModelQueryList modelQueryList=new ModelQueryList(clazz,fieldNames,page,condition,false,expressionMap,orders);
@@ -337,7 +337,7 @@ public class ModelQueryList {
 	}
 	/** 
 	 * 查询列表
-	 * @param expressionMap  sql表达式 map<fieldname,exp>  exp中的fieldname用${}括着    exp例如:concat(#{name},'(',#{backgroud.thumPath},')')
+	 * @param expressionMap  sql表达式 map<fieldname,exp>  exp中的fieldname用#{}括着    exp例如:concat(#{name},'(',#{backgroud.thumPath},')')
 	 */
 	public static <T extends Model> List<T> getModelList(Class<T> clazz,String[] fieldNames,QueryPage page,QueryCondition condition,Map<String,String> expressionMap,boolean isGroup,QueryOrder... orders) throws SQLException, MException{
 		ModelQueryList modelQueryList=new ModelQueryList(clazz,fieldNames,page,condition,isGroup,expressionMap,orders);
