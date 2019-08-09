@@ -273,6 +273,21 @@ Vue.component('json-item', {
 			}
 			return obj;
 		},
+		jsonToParams:function(a,json){
+			var arr={};
+			if(typeof(obj) == "object" && Object.prototype.toString.call(obj).toLowerCase() == "[object object]" && !obj.length){
+				for(var k in json){
+					var key=a+"."+k;
+					var obj=$.jsonToParams(key,json[k]);
+					for(var n in obj){
+						arr[n]=obj[n];
+					}
+				}
+			}else{
+				arr[a]=json;
+			}
+			return arr;
+		},
 		execJSON:function(url,data,fn,isbody,nospin){
 			var spin=nospin?false:true;
 			if(spin) pageVue.$Spin.show();
@@ -288,7 +303,10 @@ Vue.component('json-item', {
 				if(isbody){
 					$.fillJSONData(d,i,tmp);
 				}else{
-					d[i]=tmp
+					var obj=$.jsonToParams(i,tmp);
+					for(var n in obj){
+						d[n]=obj[n];
+					}
 				}
 			}
 			$.ajax({
@@ -325,7 +343,10 @@ Vue.component('json-item', {
 				if(isbody){
 					$.fillJSONData(d,i,tmp);
 				}else{
-					d[i]=tmp
+					var obj=$.jsonToParams(i,tmp);
+					for(var n in obj){
+						d[n]=obj[n];
+					}
 				}
 			}
 			$.ajax({
