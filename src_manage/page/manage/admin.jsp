@@ -390,6 +390,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				var loginVue=new Vue({
 					el:"#login_page",
 					data:{
+						lastTime:0,
 						tologin:false,
 						loginBackground:true,
 						loginInfo:{
@@ -405,19 +406,22 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					},
 					methods:{
 						isLogin:function(){
-							var self=this;
-							$.execJSON('action/manageAdminLogin/isLogin',this.loginInfo,function(json){
-								console.log(json);
-								if(json.code==0&&null!=json.model){
-									loginVue.tologin=false;
-									loginVue.loginBackground=false;
-									self.modelInfo=json.model;
-								}else{
-									loginVue.tologin=true;
-									loginVue.loginBackground=true;
-									self.modelInfo={};
-								}
-							},false,true);
+							if(new Date().getTime()-10*60*1000-1000>this.lastTime){//上次检测时间十分钟后才能检测,1秒误差
+								this.lastTime=new Date().getTime();
+								var self=this;
+								$.execJSON('action/manageAdminLogin/isLogin',this.loginInfo,function(json){
+									console.log(json);
+									if(json.code==0&&null!=json.model){
+										loginVue.tologin=false;
+										loginVue.loginBackground=false;
+										self.modelInfo=json.model;
+									}else{
+										loginVue.tologin=true;
+										loginVue.loginBackground=true;
+										self.modelInfo={};
+									}
+								},false,true);
+							}
 						},
 						doLogin:function(){
 							var self=this;
@@ -439,14 +443,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						setTimer:function(){
 							loginTimer=setTimeout(function(){
 								loginVue.isLogin();
-							},10*60*1000);
+							},10*60*1000);//每过十分钟检查登录是否超时
 						},
-						resetTimer:function(){
+						resetTimer:function(){//重置
 							this.clearTimer();
 							this.setTimer();
 						},
-						clearTimer:function(){
-							if(loginTimer){
+						clearTimer:function(){//window失去焦点调用
+							if(loginTimer){//清除定时检测
 								clearTimeout(loginTimer);
 								loginTimer=null;
 							}

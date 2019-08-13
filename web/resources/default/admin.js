@@ -275,7 +275,7 @@ Vue.component('json-item', {
 		},
 		jsonToParams:function(a,json){
 			var arr={};
-			if(typeof(obj) == "object" && Object.prototype.toString.call(obj).toLowerCase() == "[object object]" && !obj.length){
+			if(typeof(json) == "object" && Object.prototype.toString.call(json).toLowerCase() == "[object object]" && !json.length){
 				for(var k in json){
 					var key=a+"."+k;
 					var obj=$.jsonToParams(key,json[k]);

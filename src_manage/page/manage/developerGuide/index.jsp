@@ -5,7 +5,7 @@
 			<collapse accordion v-model="index">
 				<panel name="action">Action接口
 					<cell-group slot="content" style="max-height:500px;overflow:auto;margin:-16px;">
-						<cell v-for="item in actions" :title="item.title" :selected="id==item.className" @click.native="openAction(item.className,item.title+' - '+item.description)"></cell>
+						<cell v-for="item in actions" :title="item.title" :selected="id==item.className" @click.native="openAction(item.className,item.title+'<br/><small>'+item.description+'</small>')"></cell>
 					</cell-group>
 				</panel>
 				<panel name="model">Model模型
@@ -16,74 +16,68 @@
 			</collapse>
 		</i-col>
 		<i-col span="18">
-			<card :padding="10">
-				<p slot="title">{{title}}</p>
-				<div id="action${key}">
-					<template v-for="item in selectAction.methods">
-						<h4 style="color:#2d8cf0;">{{item.title}} - {{item.description}}</h4>
-						<table style="width:100%;margin-bottom:6px;" cellspacing="0" cellpadding="0" border="0">
-							<tr>
-								<td style=""> {{item.path}}</td>
-								<td style="width:100px;text-align:center;">权限: {{item.permission}}</td>
-								<td style="width:100px;text-align:right;"><i-button type="primary" size="small" @click.native="showTestModal(item.title,item.path)">测试</i-button></td>
-							</tr>
-						</table>
-						<div class="ivu-table-wrapper">
-							<table class="ivu-table ivu-table-small" style="width:100%" cellspacing="0" cellpadding="0" border="0">
-								<tr>
-									<th style="text-align:left;">参数名称</th>
-									<th style="text-align:left;">参数描述</th>
-									<th style="text-align:center;">类型</th>
-									<th style="text-align:center;">长度</th>
-									<th style="text-align:center;">必填</th>
-								</tr>
-								<tr v-for="f in item.params">
-									<td style="padding-left:5px;padding-right:5px;">{{f.name}}</td>
-									<td style="padding-left:5px;padding-right:5px;">{{f.description}}</td>
-									<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.type}}</td>
-									<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.length}}</td>
-									<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.notnull}}</td>
-								</tr>
-								<tr>
-									<td colspan="6">
-										<h4>返回:</h4>
-										<pre>{{item.result}}</pre>
-									</td>
-								</tr>
-							</table>
-						</div>
-					</template>
-				</div>
-				<div id="model${key}">
+			<h3 v-html="title"></h3>
+			<divider :style="{margin:'5px 0'}"/>
+			<div id="action${key}">
+				<template v-for="item in selectAction.methods">
+					<h4 style="color:#2d8cf0;">{{item.title}} - {{item.description}}</h4>
+					<table style="width:100%;margin-bottom:6px;" cellspacing="0" cellpadding="0" border="0">
+						<tr>
+							<td style=""> {{item.path}}</td>
+							<td style="width:100px;text-align:center;">权限: {{item.permission}}</td>
+							<td style="width:100px;text-align:right;"><i-button type="primary" size="small" @click.native="showTestModal(item.title,item.path)">测试</i-button></td>
+						</tr>
+					</table>
 					<div class="ivu-table-wrapper">
 						<table class="ivu-table ivu-table-small" style="width:100%" cellspacing="0" cellpadding="0" border="0">
 							<tr>
-								<th colspan="6" style="color:#2d8cf0;"><h3>{{selectModel.description}}</h3></th>
-							</tr>
-							<tr>
-								<td colspan="6" style="font-size:14px;"><b>类:</b>{{selectModel.clazz}}  <b>表:</b>{{selectModel.name}}</td>
-							</tr>
-							<tr>
-								<th style="text-align:center;">字段</th>
-								<th style="text-align:center;">列名</th>
-								<th style="text-align:center;">描述</th>
+								<th style="text-align:left;">参数名称</th>
+								<th style="text-align:left;">参数描述</th>
 								<th style="text-align:center;">类型</th>
 								<th style="text-align:center;">长度</th>
 								<th style="text-align:center;">必填</th>
 							</tr>
-							<tr v-for="f in selectModel.fields">
-								<td style="padding-left:5px;padding-right:5px;" v-if="f.linkName"><a href="javascript:;" @click="openModel(f.linkClazz)">{{f.field}}</a></td>
-								<td style="padding-left:5px;padding-right:5px;" v-if="!f.linkName">{{f.field}}</td>
+							<tr v-for="f in item.params">
 								<td style="padding-left:5px;padding-right:5px;">{{f.name}}</td>
 								<td style="padding-left:5px;padding-right:5px;">{{f.description}}</td>
 								<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.type}}</td>
 								<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.length}}</td>
 								<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.notnull}}</td>
 							</tr>
+							<tr>
+								<td colspan="6">
+									<h4>返回:</h4>
+									<pre>{{item.result}}</pre>
+								</td>
+							</tr>
 						</table>
 					</div>
+				</template>
+			</div>
+			<div id="model${key}">
+				<h3><span style="color:#2d8cf0;">{{selectModel.description}}</span> <b>类:</b>{{selectModel.clazz}}  <b>表:</b>{{selectModel.name}}</h3>
+				<div class="ivu-table-wrapper">
+					<table class="ivu-table ivu-table-small" style="width:100%" cellspacing="0" cellpadding="0" border="0">
+						<tr>
+							<th style="text-align:center;">字段</th>
+							<th style="text-align:center;">列名</th>
+							<th style="text-align:center;">描述</th>
+							<th style="text-align:center;">类型</th>
+							<th style="text-align:center;">长度</th>
+							<th style="text-align:center;">必填</th>
+						</tr>
+						<tr v-for="f in selectModel.fields">
+							<td style="padding-left:5px;padding-right:5px;" v-if="f.linkName"><a href="javascript:;" @click="openModel(f.linkClazz)">{{f.field}}</a></td>
+							<td style="padding-left:5px;padding-right:5px;" v-if="!f.linkName">{{f.field}}</td>
+							<td style="padding-left:5px;padding-right:5px;">{{f.name}}</td>
+							<td style="padding-left:5px;padding-right:5px;">{{f.description}}</td>
+							<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.type}}</td>
+							<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.length}}</td>
+							<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.notnull}}</td>
+						</tr>
+					</table>
 				</div>
-			</card>
+			</div>
 		</i-col>
 	</row>
 	<modal v-model="testModal" class="table_modal" width="80%" :mask-closable="false">
