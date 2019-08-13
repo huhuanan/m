@@ -70,6 +70,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			},
 			methods:{
 				doModule:function(key){
+					this.active=key;
 					this.$emit("on-click-module",key);
 				}
 			}
