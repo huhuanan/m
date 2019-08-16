@@ -100,7 +100,16 @@ public class ActionFilter implements Filter {
 		String serverName=req.getServerName();
 		String referer = req.getHeader("referer");
 		String authorization = req.getHeader("Authorization");
-		if(!UrlMarker.isEnableUrl(serverName,servletPath,referer,authorization)){
+		Boolean isEnableUrl=(Boolean)req.getAttribute("isEnableUrl");
+		if(null!=isEnableUrl&&isEnableUrl || UrlMarker.isEnableUrl(serverName,servletPath,referer,authorization)){
+			req.setAttribute("isEnableUrl", true);
+			if(RuntimeData.getDebug()) {
+				System.out.print("   referer:");
+				System.out.println(referer);
+				System.out.print("\t Authorization:");
+				System.out.println(authorization);
+			}
+		}else {
 			if(RuntimeData.getDebug()) {
 				System.out.println("Disabled url!");
 				System.out.print("\t referer:");
@@ -109,13 +118,6 @@ public class ActionFilter implements Filter {
 				System.out.println(authorization);
 			}
 			return;
-		}else {
-			if(RuntimeData.getDebug()) {
-				System.out.print("   referer:");
-				System.out.println(referer);
-				System.out.print("\t Authorization:");
-				System.out.println(authorization);
-			}
 		}
 		Object result=null;
 		String redirectPath=UrlMarker.getRedirectUrl(serverName,servletPath);

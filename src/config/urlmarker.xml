@@ -5,9 +5,9 @@
 	</redirect>
 	<enable><!-- 允许访问的路径 -->
 		<tag><![CDATA[/resources/]]></tag>
+		<tag><![CDATA[/custom/]]></tag>
 	</enable>
 	<referer><!-- 允许来路的域名 -->
-		<tag><![CDATA[192.168.137.1]]></tag>
 		<tag><![CDATA[192.168.85.131]]></tag>
 		<tag><![CDATA[192.168.85.132]]></tag>
 		<tag><![CDATA[123.207.181.225]]></tag>

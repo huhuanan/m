@@ -55,9 +55,9 @@ public class UrlMarker {
 						}
 						if("enable"==utype.getNodeName()){
 							fillList(utype,enableList);
-							enableList.add("/action/");
-							enableList.add("/page/");
-							enableList.add("/WEB-INF/classes/");
+							//enableList.add("/action/");
+							//enableList.add("/page/");
+							//enableList.add("/WEB-INF/classes/page/");
 						}
 						if("referer"==utype.getNodeName()){
 							fillList(utype,refererList);
@@ -108,7 +108,6 @@ public class UrlMarker {
 	 */
 	public static boolean isEnableUrl(String serverName,String servletPath,String referer,String authorization){
 		initXML();
-		boolean b=false;
 		if(!StringUtil.isSpace(authorization)) {
 			for(String key : authorizationList) {
 				if(authorization.indexOf(key)==0) {
@@ -116,10 +115,17 @@ public class UrlMarker {
 				}
 			}
 		}
-		//判断路径是否允许访问
-		if(servletPath.indexOf("/")==servletPath.lastIndexOf("/")){//跟目录不限制
+		if(null!=referer) {//referer和serverName相同时直接过
+			referer=referer.substring(referer.indexOf("//")+2);
+			referer=referer.substring(0, referer.indexOf("/"));
+			if(referer.indexOf(":")>=0) referer=referer.substring(0, referer.indexOf(":"));
+			if(referer.equals(serverName)) return true;
+		}else if(servletPath.indexOf("/")==servletPath.lastIndexOf("/")){//跟目录不限制
 			return true;
-		}else if(servletPath.indexOf(RuntimeData.getFilePath())==1){//文件路径
+		}
+		boolean b=false;
+		//判断路径是否允许访问
+		if(servletPath.indexOf(RuntimeData.getFilePath())==1){//文件路径
 			if(RuntimeData.accessFilePath()) {
 				return true;
 			}else {
@@ -133,7 +139,7 @@ public class UrlMarker {
 			}
 			if(!b) {
 				for(String key : redirectMap.keySet()){//自定义跳转列表
-					if(servletPath.indexOf(key)==0){
+					if(servletPath.indexOf(key)==0||servletPath.indexOf(redirectMap.get(key))==0){
 						b=true; break;
 					}
 				}
@@ -146,24 +152,6 @@ public class UrlMarker {
 						||null!=referer&&referer.indexOf(key)==0){
 					return true;
 				}
-			}
-			if(null!=referer) {
-				referer=referer.substring(referer.indexOf("//")+2);
-				referer=referer.substring(0, referer.indexOf("/"));
-				if(referer.indexOf(":")>=0) referer=referer.substring(0, referer.indexOf(":"));
-				if(referer.equals(serverName)) return true;//referer和serverName相同时直接过
-			}else {//来路为空的处理
-				referer="";
-				if(servletPath.indexOf("/WEB-INF/classes/")==0) {//内部跳转
-					referer=serverName;
-				}else {
-					for(String key : redirectMap.keySet()) {//允许重定向
-						if(servletPath.indexOf(key)==0 || redirectMap.get(key).indexOf(servletPath)==0) {
-							referer=serverName; break;
-						}
-					}
-				}
-				if(StringUtil.isSpace(referer)) return false;
 			}
 			b=isReferer(referer);//通过域名实现类检查
 		}
@@ -225,10 +213,5 @@ public class UrlMarker {
 			if(null!=url) break;
 		}
 		return url;
-	}
-	public static void main(String[] a) {
-		int x=9;
-		System.out.println((x++));
-		//System.out.println(++x);
 	}
 }
