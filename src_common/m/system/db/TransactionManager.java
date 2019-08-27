@@ -13,8 +13,9 @@ import m.system.util.StringUtil;
  */
 public class TransactionManager {
 	//定义ThreadLocal静态变量，确定存取类型为Connection
-	private static ThreadLocal<Connection> dbConnection = new ThreadLocal<Connection>(); 
-	private static ThreadLocal<Boolean> dbRun = new ThreadLocal<Boolean>();  
+	private static ThreadLocal<Connection> dbConnection = new ThreadLocal<Connection>();
+	private static ThreadLocal<Boolean> dbRun = new ThreadLocal<Boolean>();
+	private static ThreadLocal<Boolean> dbRollback = new ThreadLocal<Boolean>();
 	
 	private Boolean isRun=false;
 	private String synchKey;
@@ -120,6 +121,9 @@ public class TransactionManager {
 			synchKey=null;
 		}
 		if(dbRun.get()&&isRun){
+			if(null!=dbRollback.get()&&dbRollback.get()) {
+				throw new SQLException("事务已回滚");
+			}
 			dbRun.remove();
 			isRun=false;
 			Connection conn = getConnection();
@@ -141,6 +145,7 @@ public class TransactionManager {
 		}
 		if(dbRun.get()&&isRun){
 			dbRun.remove();
+			dbRollback.remove();
 			isRun=false;
 			Connection conn = getConnection();
 			try {
@@ -151,6 +156,8 @@ public class TransactionManager {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+		}else {
+			dbRollback.set(true);
 		}
 	}
 }
