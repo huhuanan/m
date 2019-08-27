@@ -55,7 +55,17 @@
 				</template>
 			</div>
 			<div id="model${key}">
-				<h3><span style="color:#2d8cf0;">{{selectModel.description}}</span> <b>类:</b>{{selectModel.clazz}}  <b>表:</b>{{selectModel.name}}</h3>
+				<table style="widht:100%;">
+					<tr>
+						<td>
+							<h3><span style="color:#2d8cf0;">{{selectModel.description}}</span> <b>类:</b>{{selectModel.clazz}}  <b>表:</b>{{selectModel.name}}</h3>
+						</td>
+						<td style="text-align:right;">
+							<i-button type="primary" size="small" @click.native="showScriptModal(selectModel)">dart</i-button>
+						</td>
+					</tr>
+				</table>
+				
 				<div class="ivu-table-wrapper">
 					<table class="ivu-table ivu-table-small" style="width:100%" cellspacing="0" cellpadding="0" border="0">
 						<tr>
@@ -125,6 +135,10 @@
 			</table>
 		</div>
    </modal>
+	<modal v-model="scriptModal" class="table_modal" width="80%" :mask-closable="false">
+		<h3>{{selectModel.name}} {{selectModel.description}}</h3>
+		<textarea rows="25" style="width:100%;">{{scriptContent}}</textarea>
+	</modal>
 </page>
 <script>
 (function(){
@@ -144,7 +158,9 @@
 				testMethod:{},
 				params:{},
 				authorization:'',
-				json:{}
+				json:{},
+				scriptModal:false,
+				scriptContent:'',
 			};
 		},
 		mounted:function(){
@@ -240,6 +256,74 @@
 						pageVue.$Message.error(res.responseText);
 					}
 				});
+			},
+			showScriptModal:function(table){
+				var ts=table.clazz.split('.');
+				var tab=ts[ts.length-1];
+				var str="///"+table.description+"\r\n";
+				str+="class "+tab+" { \r\n";
+				for(var i=0;i<table.fields.length;i++){
+					str+="\t///"+table.fields[i].description+"\r\n";
+					str+="\t"+this.getFieldType(table.fields[i])+" "+table.fields[i].field+"; \r\n";
+				}
+				str+="\t///构造方法 : "+table.description+"\r\n";
+				str+="\t"+tab+"({\r\n";
+				for(var i=0;i<table.fields.length;i++){
+					str+="\t\tthis."+table.fields[i].field+",\r\n";
+				}
+				str+="\t});\r\n";
+				str+="\t///反序列化 : "+table.description+"\r\n";
+				str+="\tstatic "+tab+" fromJson(Map<String,dynamic> json){\r\n";
+				str+="\t\treturn "+tab+"(\r\n";
+				for(var i=0;i<table.fields.length;i++){
+					str+="\t\t\t"+table.fields[i].field+": "+this.getFieldValue("json",table.fields[i])+",\r\n";
+				}
+				str+="\t\t);\r\n";
+				str+="\t}\r\n";
+				str+="\t///序列化 : "+table.description+"\r\n";
+				str+="\tstatic Map<String,dynamic> toJson("+tab+" instance) => <String,dynamic>{\r\n";
+				for(var i=0;i<table.fields.length;i++){
+					if(table.fields[i].linkClazz){
+						var ts=table.fields[i].linkClazz.split('.');
+						str+="\t\t'"+table.fields[i].field+"': "+ts[ts.length-1]+".toJson(instance."+table.fields[i].field+"),\r\n";
+					}else{
+						str+="\t\t'"+table.fields[i].field+"': instance."+table.fields[i].field+",\r\n";
+					}
+				}
+				str+="\t};\r\n";
+				str+="}";
+				
+				
+				this.scriptContent=str;
+				this.scriptModal=true;
+			},
+			getFieldType:function(field){
+				if(field.linkClazz){
+					var ts=field.linkClazz.split('.');
+					return ts[ts.length-1];
+				}else if(field.type=='STRING'){
+					return 'String';
+				}else if(field.type=='INT'){
+					return 'int';
+				}else if(field.type=='DOUBLE'){
+					return 'double';
+				}else if(field.type=='DATE'){
+					return 'DateTime';
+				}
+			},
+			getFieldValue:function(a,field){
+				if(field.linkClazz){
+					var ts=field.linkClazz.split('.');
+					return ts[ts.length-1]+".fromJson("+a+"['"+field.field+"'])";
+				}else if(field.type=='STRING'){
+					return a+"['"+field.field+"'] as String";
+				}else if(field.type=='INT'){
+					return a+"['"+field.field+"'] as int";
+				}else if(field.type=='DOUBLE'){
+					return a+"['"+field.field+"'] as double";
+				}else if(field.type=='DATE'){
+					return a+"['"+field.field+"']==null?null:DateTime.parse(json['"+field.field+"'] as String)";
+				}
 			}
 			//backHandler:function(success,msg){//打开窗体的回调
 			//}

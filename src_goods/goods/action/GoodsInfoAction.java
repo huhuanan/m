@@ -45,6 +45,7 @@ import manage.util.page.table.ActionTableColMeta.TableColSort;
 import manage.util.page.table.ActionTableColMeta.TableColType;
 import manage.util.page.table.ActionTableColMeta.TableCountType;
 import manage.util.page.table.ActionTableMeta;
+import manage.util.page.table.TableColData;
 
 @ActionMeta(name="goodsGoodsInfo")
 public class GoodsInfoAction extends StatusAction {
@@ -167,7 +168,7 @@ public class GoodsInfoAction extends StatusAction {
 			@ActionTableColMeta(field = "price", title = "单价", width=130,sort=true,numberFormat="0.00",align="right"),
 			@ActionTableColMeta(field = "stockNum", title = "库存", width=130,sort=true,numberFormat="#,##0",align="right",countType=TableCountType.SUM),
 			@ActionTableColMeta(field = "saleNum", title = "销量", width=130,sort=true,numberFormat="#,##0",align="right",countType=TableCountType.SUM),
-			@ActionTableColMeta(field = "oid",title="操作",width=120,align="center",power="goods_manager_power",buttons={
+			@ActionTableColMeta(field = "name",title="操作",width=120,align="center",buttons={
 				@ButtonMeta(title="修改", event = ButtonEvent.MODAL,modalWidth=700, url = "action/goodsGoodsInfo/toEdit",
 					params={@ParamMeta(name = "model.oid", field="oid")},success=SuccessMethod.REFRESH,style=ButtonStyle.NORMAL,
 					power="goods_manager_power"
