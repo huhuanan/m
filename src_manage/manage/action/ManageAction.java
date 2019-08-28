@@ -17,7 +17,6 @@ import m.common.model.util.QueryCondition;
 import m.common.model.util.QueryOrder;
 import m.common.model.util.QueryPage;
 import m.system.RuntimeData;
-import m.system.cache.CacheUtil;
 import m.system.exception.MException;
 import m.system.lang.PageInfo;
 import m.system.util.AnnotationUtil;
@@ -27,7 +26,6 @@ import m.system.util.ObjectUtil;
 import m.system.util.StringUtil;
 import manage.dao.AdminLoginDao;
 import manage.model.AdminGroup;
-import manage.model.AdminGroupPower;
 import manage.model.AdminLogin;
 import manage.service.AdminGroupPowerService;
 import manage.util.excel.ExcelObject;
@@ -69,6 +67,8 @@ public abstract class ManageAction extends Action {
 	public UserModel getSessionLogUser(){
 		return getSessionAdmin();
 	}
+	public static MException noLoginException=new MException(ManageAction.class, "NoLogin:未登录");
+	public static MException noPowerException=new MException(ManageAction.class, "NoPower:权限不足");
 	/**
 	 * 获取登录用户信息 返回null说明没有登录
 	 * @return
@@ -181,7 +181,7 @@ public abstract class ManageAction extends Action {
 	public Map<String,Boolean> getAdminOperPower() throws Exception{
 		AdminLogin admin=getSessionAdmin();
 		if(null==admin){
-			throw new MException(this.getClass(),"未登录");
+			throw noLoginException;
 		}
 		return getAdminOperPower(admin);
 	}
@@ -195,7 +195,7 @@ public abstract class ManageAction extends Action {
 		if(null!=adminGroupPowerMap.get(power)&&adminGroupPowerMap.get(power)){
 			
 		}else{
-			throw new MException(this.getClass(),"操作权限不足");
+			throw noPowerException;
 		}
 	}
 
@@ -209,7 +209,7 @@ public abstract class ManageAction extends Action {
 		if(null!=model){
 			return model;
 		}else{
-			throw new MException(this.getClass(),"未登录");
+			throw noLoginException;
 		}
 	}
 	/**

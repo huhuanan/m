@@ -288,6 +288,10 @@ Vue.component('json-item', {
 			}
 			return arr;
 		},
+		//execJSON 后台返回后的处理, 返回true后才执行execJSON的回调
+		execProcessJSON:function(json){
+			return true;
+		},
 		execJSON:function(url,data,fn,isbody,nospin){
 			var spin=nospin?false:true;
 			if(spin) pageVue.$Spin.show();
@@ -316,7 +320,7 @@ Vue.component('json-item', {
 				dataType:"json",
 				headers: {'Content-Type': isbody?'application/json':'application/x-www-form-urlencoded'},
 				success:function(ele){
-					if(fn) fn(ele);
+					if($.execProcessJSON(ele)&&fn) fn(ele);
 					else pageVue.$Message.info(ele);
 					pageVue.$Spin.hide();
 					pageVue.$Loading.finish();

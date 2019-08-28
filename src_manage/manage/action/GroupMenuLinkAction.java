@@ -105,11 +105,11 @@ public class GroupMenuLinkAction extends ManageAction {
 		ActionResult result=new ActionResult("manage/groupMenuLink/menuPage");
 		AdminLogin admin=getSessionAdmin();
 		if(null==admin){
-			throw new MException(this.getClass(),"未登录!");
+			throw noLoginException;
 		}
 		String menu_oid=getDao(GroupMenuLinkDao.class).getMenuOid(admin.getOid(),admin.getAdminGroup().getOid(), menu.getOid());
 		if(StringUtil.isSpace(menu_oid)){
-			throw new MException(this.getClass(),"权限错误!");
+			throw noPowerException;
 		}
 		menu.setOid(menu_oid);
 		menu=ModelQueryList.getModel(menu,1);
