@@ -10,7 +10,6 @@ import m.common.model.util.QueryPage;
 import m.common.service.Service;
 import m.system.exception.MException;
 import m.system.util.JSONMessage;
-import manage.model.AdminGroup;
 import manage.model.AdminGroupLink;
 import manage.model.AdminLogin;
 import manage.model.GroupMenuLink;
@@ -71,8 +70,10 @@ public class ModuleService extends Service {
 						ModelQueryList.instance(GroupMenuLink.class, 
 							new String[]{"module.oid"}, null, 
 							QueryCondition.or(new QueryCondition[]{
-								QueryCondition.eq("adminGroup.oid",admin.getAdminGroup().getOid()),
-								QueryCondition.eq("adminGroup.status","0"),
+								QueryCondition.and(new QueryCondition[] {
+									QueryCondition.eq("adminGroup.oid",admin.getAdminGroup().getOid()),
+									QueryCondition.eq("adminGroup.status","0")
+								}),
 								QueryCondition.in("adminGroup.oid",
 									ModelQueryList.instance(AdminGroupLink.class,
 										new String[] {"adminGroup.oid"}, null,
@@ -114,8 +115,10 @@ public class ModuleService extends Service {
 						ModelQueryList.instance(GroupMenuLink.class, 
 							new String[]{"menu.oid"}, null, 
 							QueryCondition.or(new QueryCondition[]{
-								QueryCondition.eq("adminGroup.oid",admin.getAdminGroup().getOid()),
-								QueryCondition.eq("adminGroup.status","0"),
+								QueryCondition.and(new QueryCondition[] {
+									QueryCondition.eq("adminGroup.oid",admin.getAdminGroup().getOid()),
+									QueryCondition.eq("adminGroup.status","0")
+								}),
 								QueryCondition.in("adminGroup.oid",
 									ModelQueryList.instance(AdminGroupLink.class,
 										new String[] {"adminGroup.oid"}, null,
@@ -165,8 +168,10 @@ public class ModuleService extends Service {
 						ModelQueryList.instance(GroupMenuLink.class, 
 							new String[]{"menu.oid"}, null, 
 							QueryCondition.or(new QueryCondition[]{
-								QueryCondition.eq("adminGroup.oid",admin.getAdminGroup().getOid()),
-								QueryCondition.eq("adminGroup.status","0"),
+								QueryCondition.and(new QueryCondition[] {
+									QueryCondition.eq("adminGroup.oid",admin.getAdminGroup().getOid()),
+									QueryCondition.eq("adminGroup.status","0")
+								}),
 								QueryCondition.in("adminGroup.oid",
 									ModelQueryList.instance(AdminGroupLink.class,
 										new String[] {"adminGroup.oid"}, null,
