@@ -66,7 +66,7 @@ public class ImageInfoAction extends ManageAction {
 			ImageAdmin ia=new ImageAdmin();
 			if(StringUtil.isSpace(adminToken)||StringUtil.noSpace(adminToken).length()<3){
 				AdminLogin admin=getSessionAdmin();
-				if(null==admin) throw new Exception("未登录");
+				if(null==admin) throw noLoginException;
 				ia.setOid(admin.getOid());
 			}else{
 				ia.setOid(getService(ImageAdminService.class).getOid(adminToken));
@@ -104,7 +104,7 @@ public class ImageInfoAction extends ManageAction {
 			ImageAdmin ia=new ImageAdmin();
 			if(StringUtil.isSpace(adminToken)||StringUtil.noSpace(adminToken).length()<3){
 				AdminLogin admin=getSessionAdmin();
-				if(null==admin) throw new Exception("未登录");
+				if(null==admin) throw noLoginException;
 				ia.setOid(admin.getOid());
 			}else{
 				ia.setOid(getService(ImageAdminService.class).getOid(adminToken));
@@ -150,7 +150,7 @@ public class ImageInfoAction extends ManageAction {
 			ImageAdmin ia=new ImageAdmin();
 			if(StringUtil.isSpace(adminToken)||StringUtil.noSpace(adminToken).length()<3){
 				AdminLogin admin=getSessionAdmin();
-				if(null==admin) throw new Exception("未登录");
+				if(null==admin) throw noLoginException;
 				ia.setOid(admin.getOid());
 			}else{
 				ia.setOid(getService(ImageAdminService.class).getOid(adminToken));
@@ -210,7 +210,7 @@ public class ImageInfoAction extends ManageAction {
 			ImageAdmin ia=new ImageAdmin();
 			if(StringUtil.isSpace(adminToken)||StringUtil.noSpace(adminToken).length()<3){
 				AdminLogin admin=getSessionAdmin();
-				if(null==admin) throw new Exception("未登录");
+				if(null==admin) throw noLoginException;
 				ia.setOid(admin.getOid());
 			}else{
 				ia.setOid(getService(ImageAdminService.class).getOid(adminToken));
@@ -248,7 +248,7 @@ public class ImageInfoAction extends ManageAction {
 			ImageAdmin ia=new ImageAdmin();
 			if(StringUtil.isSpace(adminToken)||StringUtil.noSpace(adminToken).length()<3){
 				AdminLogin admin=getSessionAdmin();
-				if(null==admin) throw new Exception("未登录");
+				if(null==admin) throw noLoginException;
 				ia.setOid(admin.getOid());
 			}else{
 				ia.setOid(getService(ImageAdminService.class).getOid(adminToken));

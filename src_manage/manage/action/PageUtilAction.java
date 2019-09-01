@@ -54,7 +54,7 @@ public class PageUtilAction extends ManageAction {
 		List<JSONMessage> data=new ArrayList<JSONMessage>();
 		try {
 			AdminLogin admin=getSessionAdmin();
-			if(null==admin) throw new MException(this.getClass(), "未登录");
+			if(null==admin) throw noLoginException;
 			if(!StringUtil.isSpace(modelClass)){
 				List<QueryCondition> clist=new ArrayList<QueryCondition>();
 				if(null!=conditions){

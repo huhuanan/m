@@ -122,9 +122,9 @@ public class AdminLoginAction extends StatusAction {
 		JSONMessage result=new JSONMessage();
 		try {
 			AdminLogin admin=getSessionAdmin();
-			if(null==admin) throw new MException(this.getClass(),"未登录");
+			if(null==admin) throw noLoginException;
 			if(null==model||!model.getUsername().equals(admin.getUsername())){
-				throw new MException(this.getClass(),"没有操作权限");
+				throw noPowerException;
 			}
 			model.setAdminGroup(admin.getAdminGroup());
 			String msg=getService(AdminLoginService.class).save(model,password);
@@ -144,7 +144,7 @@ public class AdminLoginAction extends StatusAction {
 		JSONMessage result=new JSONMessage();
 		try {
 			AdminLogin admin=getSessionAdmin();
-			if(null==admin) throw new MException(this.getClass(),"未登录");
+			if(null==admin) throw noLoginException;
 			verifyAdminOperPower(getStatusPower());
 			result.push("list", getService(AdminLoginService.class).getAll());
 			result.push("code", 0);
