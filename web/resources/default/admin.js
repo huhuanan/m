@@ -1077,12 +1077,12 @@ Vue.component('json-item', {
 		var pageVue=new Vue({
 			el:document.createElement("div"),
 			template:`<div>
-				<modal width="60%" v-model="showImageModal" class="table_modal" :closable="false">
+				<modal width="60%" v-model="showImageModal" :footer-hide="true" :closable="false">
 					<div id="show_image_page"></div>
 					<div slot="footer">
 					</div>
 				</modal>
-				<modal v-model="showModal" :width="modalWidth" class="table_modal" :mask-closable="false">
+				<modal v-model="showModal" :width="modalWidth" :footer-hide="true" :mask-closable="false">
 					<div id="show_page"></div>
 					<div slot="footer">
 					</div>

@@ -1,7 +1,10 @@
 package m.common.model.util;
 
 import java.util.List;
-
+/**
+ * 存放执行sql的语句和参数
+ *
+ */
 public class QueryParameter {
 	private String sql;
 	private List<Object> valueList;

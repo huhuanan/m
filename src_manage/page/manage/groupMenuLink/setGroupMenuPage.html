@@ -1,0 +1,121 @@
+<page>
+	<h2>菜单设置</h2>
+	<card>
+		<tree ref="selectTree" :data="dataList" :render="renderContent" show-checkbox></tree>
+	</card>
+	<div style="padding-top:10px;text-align:center;">
+		<i-button type="primary" @click="save">保存</i-button>
+		<i-button @click="close">关闭</i-button>
+	</div>
+</page>
+<script>
+(function(){
+	return { //vue对象属性
+		data(){
+			return {
+				//key:'',
+				//openKey:'',
+				//adminGroupOid:'',
+				dataList:[]
+			};
+		},
+		mounted:function(){
+			$.execJSON("action/manageGroupMenuLink/getGroupMenuLink",
+				{adminGroupOid:this.adminGroupOid},
+				function(json){
+					if(json.code==0){
+						var map=json.map;
+						$.execJSON("action/manageGroupMenuLink/getAllMenuList",
+							{},
+							function(data){
+								if(data.code==0){
+									for(var k in data.modules){
+										var module=data.modules[k];
+										var m1=[];
+										var dis=false;
+										for(var k1 in module.menus){
+											var menu1=module.menus[k1];
+											var m2=[];
+											for(var k2 in menu1.menus){
+												var ts=menu1.menus[k2].split("|");
+												var dis2=map[k2]&&map[k2].length==1;
+												dis=!dis&&dis2?true:dis;
+												m2.push({oid:k2,moid:module.oid,title:ts[0]+(map[k2]?" √":""),desc:ts[1],checked:map[k2],disabled:dis2});
+											}
+											var dis1=map[k1]&&map[k1].length==1;
+											dis=!dis&&dis1?true:dis;
+											m1.push({oid:k1,moid:module.oid,title:menu1.name,icon:menu1.icon,expand:true,children:m2,disabled:dis1});
+										}
+										this.dataList.push({title:module.name,icon:module.icon,expand:true,children:m1,disabled:dis});
+									}
+								}else{
+									this.$Message.error(data.msg);
+								}
+							}.bind(this)
+						);
+					}else{
+						this.$Message.error(data.msg);
+					}
+				}.bind(this)
+			);
+		},
+		methods:{
+			renderContent:function(h,obj){
+				var node=obj.node.node;
+				return h('span',
+					{style:{lineHeight:'25px'}},
+					[
+						node.icon?h('i',{class:'iconfont',style:{fontSize:'18px'}},node.icon):'',
+						h('span',{style:{fontSize:'15px'}},"  "+node.title),
+						node.desc?h('span',{style:{color:'#999'}},"  "+node.desc):''
+					]
+				);
+			},
+			save:function(){
+				var checks=this.$refs['selectTree'].getCheckedAndIndeterminateNodes();
+				var ls=[];
+				for(var i=0,len=checks.length;i<len;i++){
+					if(checks[i].moid){
+						ls.push({module:{oid:checks[i].moid},menu:{oid:checks[i].oid},adminGroup:{oid:this.adminGroupOid}});
+					}
+				}
+				console.log(ls);
+				$.execJSON("action/manageGroupMenuLink/saveAll",
+					{"adminGroupOid":this.adminGroupOid,"modelList":ls},
+					function(data){
+						if(data.code!=0){
+							this.$Message.error(data.msg);
+						}else{
+							this.$Message.success(data.msg);
+							this.close();
+						}
+					}.bind(this),true
+				);
+			},
+			onchange:function(e){
+				var self=this;
+				var flag=this[e];
+				var method=flag?"addAdminGroupPower":"removeAdminGroupPower";
+				$.execJSON("action/manageAdminGroupPower/"+method,
+					{"model.adminGroup.oid":this.adminGroupOid,"model.name":e},
+					function(data){
+						if(data.code!=0){
+							self[e]=!flag;
+							self.$Message.error(data.msg);
+						}else{
+							self.$Message.success(data.msg);
+						}
+					}
+				);
+				console.log(flag);
+			},
+			close:function(){
+				$.vue[this.openKey].backHandler('');
+			}
+			//backHandler:function(success,msg){//打开窗体的回调
+			//}
+		}
+	};
+})();
+</script>
+

@@ -53,9 +53,11 @@ public class ImageLinkService extends Service {
 	/**
 	 * 添加业务对应图片唯一关联
 	 */
-	public static void addOnlyImageLink(String businessOid,String business,String imageOid) throws Exception{
+	public static void addOnlyImageLink(String businessOid,String business,ImageInfo image) throws Exception{
 		removeAllImageLink(businessOid, business);
-		addImageLink(businessOid,business,imageOid);
+		if(null!=image&&!StringUtil.isSpace(image.getOid())) {
+			addImageLink(businessOid,business,image.getOid());
+		}
 	}
 	/**
 	 * 移除业务对应图片关联

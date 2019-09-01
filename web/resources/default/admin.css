@@ -40,6 +40,7 @@ hr{
 h1,h2,h3,h4,h5,h6{
 	padding:5px;
 }
+img{vertical-align:middle;}
 .ivu-form .ivu-form-item-label{font-size:14px;padding:9px 12px 9px 0;}
 .ivu-modal-mask{background-color: rgba(0,0,0,0.1);}
 .ivu-modal-content{box-shadow: 0px 1px 8px rgba(0,0,0,0.5);}
@@ -58,28 +59,26 @@ h1,h2,h3,h4,h5,h6{
 .ivu-select-disabled .ivu-select-selection,
 .ivu-input-number-disabled .ivu-input-number-input {background-color: #f9f9f9;color: #888;}
 .ivu-select-input[disabled] {color: #888;-webkit-text-fill-color: #888;}
-.table_modal .ivu-modal-footer{
-	display:none;
-}
+.ivu-layout{background:rgba(255,255,255,0.3);}
 .image_list_image{
 	display:inline-block;width:150px;height:150px;margin:0 10px 10px 0;
 }
 .image_list_image .image_oper{
 	background-color: rgba(245,245,245,0.8);width:100%;height:30px;
-	line-height:30px;position: relative;text-align:center;margin-top:-34px;
+	line-height:30px;position: relative;text-align:center;margin-top:-30px;
 }
 .image_list_image .image_selected{
 	background-color: rgba(36,120,245,0.8);width:100%;height:30px;color:#fff;
-	line-height:30px;position: relative;text-align:center;margin-top:-34px;
+	line-height:30px;position: relative;text-align:center;margin-top:-30px;
 }
 .image_list_image img,.image_input img{
 	width:100%;height:100%;background-color: rgba(128,128,128,0.5);
 }
 .image_input{
-	vertical-align: middle;margin-left:10px;display:inline-block;width:32px;height:32px;
+	vertical-align: middle;margin-left:10px;display:inline-block;width:30px;height:30px;
 }
 .image_input:before{
-	content:"无";width:32px;line-height:32px;position: absolute;text-align:center;z-index:-1;
+	content:"无";width:30px;line-height:30px;position: absolute;text-align:center;z-index:-1;
 }
 .vue-html5-editor>.toolbar>.dashboard button {
 	line-height: normal;

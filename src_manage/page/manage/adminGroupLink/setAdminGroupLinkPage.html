@@ -3,7 +3,7 @@
 	<card>
 		<tree ref="selectTree" :data="dataList" show-checkbox></tree>
 	</card>
-	<div style="padding-top:10px;text-align:right;">
+	<div style="padding-top:10px;text-align:center;">
 		<i-button type="primary" @click="save">保存</i-button>
 		<i-button @click="close">关闭</i-button>
 	</div>
@@ -38,7 +38,7 @@
 											group={oid:dd.adminGroup.oid,type:'group',title:dd.adminGroup.name,expand:true,children:[]},
 											d[dd.adminGroup.oid]=group;
 										}
-										group.children.push({oid:dd.oid,type:'admin',title:dd.realname+"("+dd.username+")",checked:map[dd.oid]});
+										group.children.push({oid:dd.oid,type:'admin',title:dd.realname+"("+dd.username+")"+(map[dd.oid]?" √":""),checked:map[dd.oid]});
 									}
 									var o={title:'全部用户',expand:true,children:[]};
 									for(var k in d){

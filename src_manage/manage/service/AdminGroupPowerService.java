@@ -1,6 +1,7 @@
 package manage.service;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import m.system.util.StringUtil;
 import manage.model.AdminGroupLink;
 import manage.model.AdminGroupPower;
 import manage.model.AdminLogin;
+import manage.run.ModuleInitRun;
 
 public class AdminGroupPowerService extends Service {
 	/**
@@ -48,6 +50,18 @@ public class AdminGroupPowerService extends Service {
 			powerMap.put(power.getName(), true);
 		}
 		return powerMap;
+	}
+	public List<String> getPowerTitleList(String admin_oid) throws SQLException, MException{
+		List<String> powerList=new ArrayList<String>();
+		Map<String,Boolean> powerMap=getPowerMap(admin_oid);
+		List<String[]> plist=ModuleInitRun.getPowerList();
+		for(String[] ps : plist){
+			Boolean b=powerMap.get(ps[0]);
+			if(null!=b&&powerMap.get(ps[0])) {
+				powerList.add(ps[1]);
+			}
+		}
+		return powerList;
 	}
 	/**
 	 * 获取用户组对应的权限

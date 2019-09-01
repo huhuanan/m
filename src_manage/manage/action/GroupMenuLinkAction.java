@@ -1,6 +1,5 @@
 package manage.action;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,54 +33,60 @@ public class GroupMenuLinkAction extends ManageAction {
 	private GroupMenuLink model;
 	private AdminGroup adminGroup;
 	private MenuInfo menu;
-	private Date path;
-	private Integer path1;
-	private Double path2;
-	public Date getPath() {
-		return path;
-	}
-	public void setPath(Date path) {
-		this.path = path;
-	}
-	public Integer getPath1() {
-		return path1;
-	}
-	public void setPath1(Integer path1) {
-		this.path1 = path1;
-	}
-	public Double getPath2() {
-		return path2;
-	}
-	public void setPath2(Double path2) {
-		this.path2 = path2;
-	}
+	private String adminGroupOid;
+	private List<GroupMenuLink> modelList;
+	private AdminLogin admin;
 	public JSONMessage getModuleList(){
 		JSONMessage message=new JSONMessage();
 		try {
-			String defaultMenuOid=null;
-			ModuleService moduleService = getService(ModuleService.class);
 			AdminLogin admin=getSessionAdmin();
-			List<ModuleInfo> moduleList=moduleService.getModuleList4Group(admin);
+			message.push("defaultMenuOid", getService(ModuleService.class).fillModulesJSON("modules", message, admin,false));
+			message.push("code", 0);
+		} catch (Exception e) {
+			message.push("code", 1);
+			message.push("msg", e.getMessage());
+			e.printStackTrace();
+		}
+		return message;
+	}
+	public JSONMessage getModuleList4Admin() {
+		JSONMessage message=new JSONMessage();
+		try {
+			verifyAdminOperPower("manage_system_power");
+			getService(ModuleService.class).fillModulesJSON("modules", message, admin,true);
+			message.push("code", 0);
+		} catch (Exception e) {
+			message.push("code", 1);
+			message.push("msg", e.getMessage());
+			e.printStackTrace();
+		}
+		return message;
+	}
+	public JSONMessage getAllMenuList() {
+		JSONMessage message=new JSONMessage();
+		try {
+			ModuleService moduleService = getService(ModuleService.class);
+			List<ModuleInfo> moduleList=moduleService.getModuleList();
 			JSONMessage modules=new JSONMessage();
+
 			for(ModuleInfo moduleInfo : moduleList){
 				JSONMessage module=new JSONMessage();
 				module.push("oid", moduleInfo.getOid());
 				module.push("name", moduleInfo.getName());
 				module.push("icon", moduleInfo.getIcoStyle());
 				JSONMessage menus1=new JSONMessage();
-				List<MenuInfo> menulist1=moduleService.getMenuList4Group(moduleInfo.getOid(), admin);
+				List<MenuInfo> menulist1=moduleService.getMenuList(moduleInfo.getOid());
 				if(menulist1.size()>0){
 					for(MenuInfo menuInfo1 : menulist1){
 						JSONMessage menu1=new JSONMessage();
 						menu1.push("oid", menuInfo1.getOid());
 						menu1.push("name", menuInfo1.getName());
 						menu1.push("icon", menuInfo1.getIcoStyle());
-						List<MenuInfo> menulist2=moduleService.getMenuList4Group(moduleInfo.getOid(),menuInfo1.getOid(), admin);
+						List<MenuInfo> menulist2=moduleService.getMenuList(moduleInfo.getOid(), menuInfo1.getOid());
 						if(menulist2.size()>0){
 							JSONMessage menu2=new JSONMessage();
 							for(MenuInfo menuInfo2 : menulist2){
-								if(null==defaultMenuOid)defaultMenuOid=menuInfo2.getOid();
-								menu2.push(menuInfo2.getOid(), menuInfo2.getName());
+								menu2.push(menuInfo2.getOid(), menuInfo2.getName()+"|"+menuInfo2.getDescription());
 							}
 							menu1.push("menus", menu2);
 							menus1.push(menuInfo1.getOid(), menu1);
@@ -91,13 +96,39 @@ public class GroupMenuLinkAction extends ManageAction {
 					modules.push(moduleInfo.getOid(), module);
 				}
 			}
-			message.push("defaultMenuOid", defaultMenuOid);
 			message.push("modules", modules);
 			message.push("code", 0);
 		} catch (Exception e) {
 			message.push("code", 1);
 			message.push("msg", e.getMessage());
 			e.printStackTrace();
+		}
+		return message;
+	}
+	public JSONMessage getGroupMenuLink() {
+		JSONMessage result=new JSONMessage();
+		try {
+			verifyAdminOperPower("manage_system_power");
+			result.push("map", getDao(GroupMenuLinkDao.class).getGroupMenuLink(adminGroupOid));
+			result.push("code", 0);
+		} catch (Exception e) {
+			result.push("code", 1);
+			result.push("msg", e.getMessage());
+			if(RuntimeData.getDebug()) e.printStackTrace();
+		}
+		return result;
+	}
+	public JSONMessage saveAll() {
+		JSONMessage message=new JSONMessage();
+		try {
+			verifyAdminOperPower("manage_system_power");
+			getService(GroupMenuLinkService.class).saveAll(adminGroupOid,modelList);
+			message.push("code", 0);
+			message.push("msg", "保存成功!");
+		} catch (Exception e) {
+			message.push("code", 1);
+			message.push("msg", e.getMessage());
+			if(RuntimeData.getDebug()) e.printStackTrace();
 		}
 		return message;
 	}
@@ -212,6 +243,24 @@ public class GroupMenuLinkAction extends ManageAction {
 	}
 	public void setMenu(MenuInfo menu) {
 		this.menu = menu;
+	}
+	public String getAdminGroupOid() {
+		return adminGroupOid;
+	}
+	public void setAdminGroupOid(String adminGroupOid) {
+		this.adminGroupOid = adminGroupOid;
+	}
+	public List<GroupMenuLink> getModelList() {
+		return modelList;
+	}
+	public AdminLogin getAdmin() {
+		return admin;
+	}
+	public void setAdmin(AdminLogin admin) {
+		this.admin = admin;
+	}
+	public void setModelList(List<GroupMenuLink> modelList) {
+		this.modelList = modelList;
 	}
 	@Override
 	public Class<? extends ManageAction> getActionClass() {

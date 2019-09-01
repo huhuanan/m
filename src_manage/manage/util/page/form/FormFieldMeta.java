@@ -82,7 +82,7 @@ public @interface FormFieldMeta {
 	 * 高度 默认32
 	 * @return
 	 */
-	int height() default 32;
+	int height() default 30;
 	/**
 	 * TEXTAREA 文本域高度行数
 	 * @return

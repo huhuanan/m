@@ -84,12 +84,7 @@ public class AdminGroupAction extends StatusAction {
 			@FormRowMeta(fields={@FormFieldMeta(title="描述", field = "model.description", type = FormFieldType.TEXTAREA,rows=5,hint="请输入描述")})
 		},
 		buttons={
-			@FormButtonMeta(title = "保存", url = "action/manageAdminGroup/doSave",success=FormSuccessMethod.REFRESH_OTHER)
-		},
-		others={
-			@FormOtherMeta(title = "菜单权限", url = "action/manageGroupMenuLink/toList?method=groupMenuLinkData",
-				linkField=@LinkFieldMeta(field="params[adminGroup.oid]",valueField="model.oid")
-			)
+			@FormButtonMeta(title = "保存", url = "action/manageAdminGroup/doSave",success=FormSuccessMethod.DONE_BACK)
 		}
 	)
 	public ActionResult toEditGroup() throws Exception{
@@ -111,16 +106,20 @@ public class AdminGroupAction extends StatusAction {
 			@ActionTableColMeta(field = "description", title = "描述", width=200),
 			@ActionTableColMeta(field = "sort", title = "排序", width=100,align="left"),
 			@ActionTableColMeta(field = "status", title = "状态",type=TableColType.STATUS,power="manage_system_power",dictionaryType="status",align="center"),
-			@ActionTableColMeta(field = "oid",title="操作",width=220,align="center",buttons={
+			@ActionTableColMeta(field = "oid",title="操作",width=180,align="center",buttons={
 				@ButtonMeta(title="修改", event = ButtonEvent.MODAL,modalWidth=700, url = "action/manageAdminGroup/toEditGroup",
 					params={@ParamMeta(name = "model.oid", field="oid")},success=SuccessMethod.REFRESH,style=ButtonStyle.NORMAL,
 					power="manage_system_power"
 				),
-				@ButtonMeta(title="菜单权限", event = ButtonEvent.MODAL,modalWidth=800,  url = "action/manageGroupMenuLink/setGroupMenuPage", 
-					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,
+//				@ButtonMeta(title="菜单权限", event = ButtonEvent.MODAL,modalWidth=800,  url = "action/manageGroupMenuLink/setGroupMenuPage", 
+//					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,
+//					power="manage_system_power"
+//				),
+				@ButtonMeta(title="菜单", event = ButtonEvent.MODAL,modalWidth=800,  url = "page/manage/groupMenuLink/setGroupMenuPage.html", 
+					params={@ParamMeta(name = "adminGroupOid", field="oid")}, style=ButtonStyle.NONE,
 					power="manage_system_power"
 				),
-				@ButtonMeta(title="操作权限", event = ButtonEvent.MODAL,modalWidth=350,  url = "action/manageAdminGroupPower/setAdminGroupPowerPage", 
+				@ButtonMeta(title="权限", event = ButtonEvent.MODAL,modalWidth=350,  url = "action/manageAdminGroupPower/setAdminGroupPowerPage", 
 					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,success=SuccessMethod.MUST_REFRESH,
 					power="manage_system_power"
 				),
@@ -152,12 +151,7 @@ public class AdminGroupAction extends StatusAction {
 			@FormRowMeta(fields={@FormFieldMeta(title="描述", field = "model.description", type = FormFieldType.TEXTAREA,rows=5,hint="请输入描述")})
 		},
 		buttons={
-			@FormButtonMeta(title = "保存", url = "action/manageAdminGroup/doSave",success=FormSuccessMethod.REFRESH_OTHER)
-		},
-		others={
-			@FormOtherMeta(title = "菜单权限", url = "action/manageGroupMenuLink/toList?method=groupMenuLinkData",
-				linkField=@LinkFieldMeta(field="params[adminGroup.oid]",valueField="model.oid")
-			)
+			@FormButtonMeta(title = "保存", url = "action/manageAdminGroup/doSave",success=FormSuccessMethod.DONE_BACK)
 		}
 	)
 	public ActionResult toEditRole() throws Exception{
@@ -179,16 +173,20 @@ public class AdminGroupAction extends StatusAction {
 			@ActionTableColMeta(field = "description", title = "描述", width=200),
 			@ActionTableColMeta(field = "sort", title = "排序", width=100,align="left"),
 			@ActionTableColMeta(field = "status", title = "状态",type=TableColType.STATUS,power="manage_system_power",dictionaryType="status",align="center"),
-			@ActionTableColMeta(field = "oid",title="操作",width=290,align="center",buttons={
+			@ActionTableColMeta(field = "oid",title="操作",width=250,align="center",buttons={
 				@ButtonMeta(title="修改", event = ButtonEvent.MODAL,modalWidth=700, url = "action/manageAdminGroup/toEditRole",
 					params={@ParamMeta(name = "model.oid", field="oid")},success=SuccessMethod.REFRESH,style=ButtonStyle.NORMAL,
 					power="manage_system_power"
 				),
-				@ButtonMeta(title="菜单权限", event = ButtonEvent.MODAL,modalWidth=800,  url = "action/manageGroupMenuLink/setGroupMenuPage", 
-					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,
+//				@ButtonMeta(title="菜单权限", event = ButtonEvent.MODAL,modalWidth=800,  url = "action/manageGroupMenuLink/setGroupMenuPage", 
+//					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,
+//					power="manage_system_power"
+//				),
+				@ButtonMeta(title="菜单", event = ButtonEvent.MODAL,modalWidth=800,  url = "page/manage/groupMenuLink/setGroupMenuPage.html", 
+					params={@ParamMeta(name = "adminGroupOid", field="oid")}, style=ButtonStyle.NONE,
 					power="manage_system_power"
 				),
-				@ButtonMeta(title="操作权限", event = ButtonEvent.MODAL,modalWidth=350,  url = "action/manageAdminGroupPower/setAdminGroupPowerPage", 
+				@ButtonMeta(title="权限", event = ButtonEvent.MODAL,modalWidth=350,  url = "action/manageAdminGroupPower/setAdminGroupPowerPage", 
 					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,success=SuccessMethod.MUST_REFRESH,
 					power="manage_system_power"
 				),

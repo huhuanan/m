@@ -242,10 +242,14 @@ public class AdminLoginAction extends StatusAction {
 			@ActionTableColMeta(field = "lastLoginTime", title = "最后登陆时间", align="center", width=150, dateFormat="yyyy-MM-dd HH:mm"),
 			@ActionTableColMeta(field = "loginCount", title = "登陆次数", width=70, numberFormat="#,##0", align="right"),
 			@ActionTableColMeta(field = "status", title = "状态",type=TableColType.STATUS,power="manage_system_power",dictionaryType="status",align="center"),
-			@ActionTableColMeta(field="oid",title="操作",width=80,buttons={
+			@ActionTableColMeta(field="oid",title="操作",width=150,buttons={
 				@ButtonMeta(title="修改", event = ButtonEvent.MODAL,modalWidth=700, url = "action/manageAdminLogin/toEdit",
 					params={@ParamMeta(name = "model.oid", field="oid")},success=SuccessMethod.REFRESH,style=ButtonStyle.NORMAL,
 					power="manage_system_power"
+				),
+				@ButtonMeta(title="菜单权限", event = ButtonEvent.MODAL,modalWidth=800,  url = "page/manage/adminLogin/viewGroupMenuPage.html", 
+					params={@ParamMeta(name = "adminOid", field="oid"),@ParamMeta(name = "adminGroupOid", field="adminGroup.oid")}, 
+					style=ButtonStyle.NONE,power="manage_system_power"
 				),
 			})
 		},

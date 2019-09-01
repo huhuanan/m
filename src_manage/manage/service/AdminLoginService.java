@@ -90,9 +90,7 @@ public class AdminLoginService extends Service {
 				}
 				msg="修改成功";
 			}
-			if(null!=model.getHeadImage()&&!StringUtil.isSpace(model.getHeadImage().getOid())){
-				ImageLinkService.addOnlyImageLink(model.getOid(),"头像", model.getHeadImage().getOid());//添加业务对应的唯一图片
-			}
+			ImageLinkService.addOnlyImageLink(model.getOid(),"头像", model.getHeadImage());//添加业务对应的唯一图片
 			tm.commit();
 		}catch(Exception e){
 			tm.rollback();

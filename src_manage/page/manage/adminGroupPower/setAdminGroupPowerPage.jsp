@@ -5,7 +5,7 @@
 	<card>
 		<c:forEach var="item" items="${array}">
 		<row style="line-height:40px;">
-			<i-col span="16" style="padding-left:15px;">${item[1] }</i-col>
+			<i-col span="16" style="padding-left:15px;">${item[1] }${power[item[0]]==true?" √":"" }</i-col>
 			<i-col span="8" style="text-align:right;">
 				<i-switch v-model="${item[0] }" @on-change="onchange('${item[0] }')"></i-switch>
 			</i-col>

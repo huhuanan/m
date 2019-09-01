@@ -35,7 +35,6 @@ public class AdminGroupLinkAction extends ManageAction {
 			verifyAdminOperPower("manage_system_power");
 			result.push("map", getService(AdminGroupLinkService.class).getLink(adminGroupOid));
 			result.push("code", 0);
-			result.push("msg", "保存成功");
 		} catch (Exception e) {
 			result.push("code", 1);
 			result.push("msg", e.getMessage());

@@ -1,0 +1,88 @@
+<page>
+	<h2>菜单权限</h2>
+	<card>
+		<row :gutter="16">
+			<i-col :span="18">
+				<tree ref="selectTree" :data="dataList" :render="renderContent"></tree>
+			</i-col>
+			<i-col :span="6">
+				<divider>权限</divider>
+				<div v-for="item in powerList" :style="{lineHeight:'25px'}">{{item}}</div>
+			</i-col>
+		</row>
+	</card>
+	<div style="padding-top:10px;text-align:center;">
+		<i-button @click="close">关闭</i-button>
+	</div>
+</page>
+<script>
+(function(){
+	return { //vue对象属性
+		data(){
+			return {
+				//key:'',
+				//openKey:'',
+				//adminOid:'',
+				//adminGroupOid:'',
+				dataList:[],
+				powerList:[]
+			};
+		},
+		mounted:function(){
+			$.execJSON("action/manageGroupMenuLink/getModuleList4Admin",
+				{admin:{oid:this.adminOid,adminGroup:{oid:this.adminGroupOid}}},
+				function(data){
+					if(data.code==0){
+						for(var k in data.modules){
+							var module=data.modules[k];
+							var m1=[];
+							for(var k1 in module.menus){
+								var menu1=module.menus[k1];
+								var m2=[];
+								for(var k2 in menu1.menus){
+									var ts=menu1.menus[k2].split("|");
+									m2.push({oid:k2,moid:module.oid,title:ts[0],desc:ts[1]});
+								}
+								m1.push({oid:k1,moid:module.oid,title:menu1.name,icon:menu1.icon,expand:true,children:m2});
+							}
+							this.dataList.push({title:module.name,icon:module.icon,expand:true,children:m1});
+						}
+					}else{
+						this.$Message.error(data.msg);
+					}
+				}.bind(this),true
+			);
+			$.execJSON("action/manageAdminGroupPower/getPower4Admin",
+				{adminOid:this.adminOid},
+				function(data){
+					if(data.code==0){
+						console.log(data.powers);
+						this.powerList=data.powers;
+					}else{
+						this.$Message.error(data.msg);
+					}
+				}.bind(this),true
+			);
+		},
+		methods:{
+			renderContent:function(h,obj){
+				var node=obj.node.node;
+				return h('span',
+					{style:{lineHeight:'25px'}},
+					[
+						node.icon?h('i',{class:'iconfont',style:{fontSize:'18px'}},node.icon):'',
+						h('span',{style:{fontSize:'15px'}},"  "+node.title),
+						node.desc?h('span',{style:{color:'#999'}},"  "+node.desc):''
+					]
+				);
+			},
+			close:function(){
+				$.vue[this.openKey].backHandler('');
+			}
+			//backHandler:function(success,msg){//打开窗体的回调
+			//}
+		}
+	};
+})();
+</script>
+

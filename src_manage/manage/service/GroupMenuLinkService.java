@@ -1,11 +1,13 @@
 package manage.service;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import m.common.model.util.ModelUpdateUtil;
 import m.common.service.Service;
 import m.system.db.DBManager;
 import m.system.db.DataRow;
+import m.system.db.TransactionManager;
 import m.system.exception.MException;
 import m.system.util.GenerateID;
 import m.system.util.StringUtil;
@@ -36,6 +38,20 @@ public class GroupMenuLinkService extends Service {
 		}
 		if(!StringUtil.isSpace(model.getOid())){
 			ModelUpdateUtil.deleteModel(model);
+		}
+	}
+	public void saveAll(String adminGroupOid,List<GroupMenuLink> modelList) throws Exception {
+		TransactionManager tm=new TransactionManager();
+		try {
+			tm.begin();
+			DBManager.executeUpdate("delete from os_group_menu_link where length(oid)>1 and admin_group_oid=?",new String[] {adminGroupOid});
+			for(GroupMenuLink model : modelList) {
+				addGroupMenuLink(model);
+			}
+			tm.commit();
+		}catch(Exception e) {
+			tm.rollback();
+			throw e;
 		}
 	}
 }

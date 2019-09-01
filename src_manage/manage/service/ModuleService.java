@@ -9,6 +9,7 @@ import m.common.model.util.QueryOrder;
 import m.common.model.util.QueryPage;
 import m.common.service.Service;
 import m.system.exception.MException;
+import m.system.util.JSONMessage;
 import manage.model.AdminGroup;
 import manage.model.AdminGroupLink;
 import manage.model.AdminLogin;
@@ -17,6 +18,43 @@ import manage.model.MenuInfo;
 import manage.model.ModuleInfo;
 
 public class ModuleService extends Service {
+	
+	public String fillModulesJSON(String key,JSONMessage json,AdminLogin admin,boolean hasDesc) throws SQLException, MException {
+		String defaultMenuOid=null;
+		List<ModuleInfo> moduleList=getModuleList4Group(admin);
+		JSONMessage modules=new JSONMessage();
+		for(ModuleInfo moduleInfo : moduleList){
+			JSONMessage module=new JSONMessage();
+			module.push("oid", moduleInfo.getOid());
+			module.push("name", moduleInfo.getName());
+			module.push("icon", moduleInfo.getIcoStyle());
+			JSONMessage menus1=new JSONMessage();
+			List<MenuInfo> menulist1=getMenuList4Group(moduleInfo.getOid(), admin);
+			if(menulist1.size()>0){
+				for(MenuInfo menuInfo1 : menulist1){
+					JSONMessage menu1=new JSONMessage();
+					menu1.push("oid", menuInfo1.getOid());
+					menu1.push("name", menuInfo1.getName());
+					menu1.push("icon", menuInfo1.getIcoStyle());
+					List<MenuInfo> menulist2=getMenuList4Group(moduleInfo.getOid(),menuInfo1.getOid(), admin);
+					if(menulist2.size()>0){
+						JSONMessage menu2=new JSONMessage();
+						for(MenuInfo menuInfo2 : menulist2){
+							if(null==defaultMenuOid)defaultMenuOid=menuInfo2.getOid();
+							menu2.push(menuInfo2.getOid(), menuInfo2.getName()+(hasDesc?"|"+menuInfo2.getDescription():""));
+						}
+						menu1.push("menus", menu2);
+						menus1.push(menuInfo1.getOid(), menu1);
+					}
+				}
+				module.push("menus", menus1);
+				modules.push(moduleInfo.getOid(), module);
+			}
+		}
+		json.push(key, modules);
+		return defaultMenuOid;
+	}
+	
 	/**
 	 * 获取管理员组模块
 	 * @param group
@@ -34,10 +72,14 @@ public class ModuleService extends Service {
 							new String[]{"module.oid"}, null, 
 							QueryCondition.or(new QueryCondition[]{
 								QueryCondition.eq("adminGroup.oid",admin.getAdminGroup().getOid()),
+								QueryCondition.eq("adminGroup.status","0"),
 								QueryCondition.in("adminGroup.oid",
 									ModelQueryList.instance(AdminGroupLink.class,
 										new String[] {"adminGroup.oid"}, null,
-										QueryCondition.eq("admin.oid", admin.getOid())
+										QueryCondition.and(new QueryCondition[] {
+											QueryCondition.eq("admin.oid", admin.getOid()),
+											QueryCondition.eq("adminGroup.status","0")
+										})
 									)
 								)
 							})
@@ -73,10 +115,14 @@ public class ModuleService extends Service {
 							new String[]{"menu.oid"}, null, 
 							QueryCondition.or(new QueryCondition[]{
 								QueryCondition.eq("adminGroup.oid",admin.getAdminGroup().getOid()),
+								QueryCondition.eq("adminGroup.status","0"),
 								QueryCondition.in("adminGroup.oid",
 									ModelQueryList.instance(AdminGroupLink.class,
 										new String[] {"adminGroup.oid"}, null,
-										QueryCondition.eq("admin.oid", admin.getOid())
+										QueryCondition.and(new QueryCondition[] {
+											QueryCondition.eq("admin.oid", admin.getOid()),
+											QueryCondition.eq("adminGroup.status","0")
+										})
 									)
 								)
 							})
@@ -120,10 +166,14 @@ public class ModuleService extends Service {
 							new String[]{"menu.oid"}, null, 
 							QueryCondition.or(new QueryCondition[]{
 								QueryCondition.eq("adminGroup.oid",admin.getAdminGroup().getOid()),
+								QueryCondition.eq("adminGroup.status","0"),
 								QueryCondition.in("adminGroup.oid",
 									ModelQueryList.instance(AdminGroupLink.class,
 										new String[] {"adminGroup.oid"}, null,
-										QueryCondition.eq("admin.oid", admin.getOid())
+										QueryCondition.and(new QueryCondition[] {
+											QueryCondition.eq("admin.oid", admin.getOid()),
+											QueryCondition.eq("adminGroup.status","0")
+										})
 									)
 								)
 							})

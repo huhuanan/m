@@ -14,12 +14,26 @@ import manage.service.AdminGroupPowerService;
 @ActionMeta(name="manageAdminGroupPower")
 public class AdminGroupPowerAction extends ManageAction {
 	private AdminGroupPower model;
+	private String adminOid;
 	public ActionResult setAdminGroupPowerPage() throws SQLException, MException{
 		ActionResult result=new ActionResult("manage/adminGroupPower/setAdminGroupPowerPage");
 		result.setArray(ModuleInitRun.getPowerList());
 		result.setPower(getAdminOperPower(model.getAdminGroup()));
 		result.setModel(model);
 		return result;
+	}
+	public JSONMessage getPower4Admin() {
+		JSONMessage message=new JSONMessage();
+		try {
+			verifyAdminOperPower("manage_system_power");
+			message.push("powers", getService(AdminGroupPowerService.class).getPowerTitleList(adminOid));
+			message.push("code", 0);
+		} catch (Exception e) {
+			message.push("code", 1);
+			message.push("msg", e.getMessage());
+			if(RuntimeData.getDebug()) e.printStackTrace();
+		}
+		return message;
 	}
 
 	public JSONMessage addAdminGroupPower(){
@@ -55,6 +69,12 @@ public class AdminGroupPowerAction extends ManageAction {
 		return this.getClass();
 	}
 
+	public String getAdminOid() {
+		return adminOid;
+	}
+	public void setAdminOid(String adminOid) {
+		this.adminOid = adminOid;
+	}
 	public AdminGroupPower getModel() {
 		return model;
 	}

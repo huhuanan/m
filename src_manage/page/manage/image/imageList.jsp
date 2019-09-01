@@ -7,7 +7,8 @@
 		<panel name="no">
 			&nbsp;&nbsp;&nbsp;未使用
 			<div slot="content">
-				<upload ref="upload" multiple accept="image/jpg,image/jpeg,image/png" :on-success="uploadSuccess" :before-upload="beforeUpload"
+				<i-button type="default" @click="selectImage('||')">清除选择</i-button>
+				<upload :style="{display:'inline-block',marginLeft:'6px',verticalAlign:'top',width:'600px'}" ref="upload" multiple accept="image/jpg,image/jpeg,image/png" :on-success="uploadSuccess" :before-upload="beforeUpload"
 					action="<%=request.getContextPath() %>/action/manageImageInfo/uploadImage?imageType=${htmlBody}&adminToken=${power}<c:if test="${!empty map['thumWidth']}">&thumWidth=${map['thumWidth']}</c:if><c:if test="${!empty map['thumRatio']}">&thumRatio=${map['thumRatio']}</c:if>">
 					<i-button type="primary" :loading="loading"><i class="iconfont">&#xe71d;</i>&nbsp;上传图片&nbsp;</i-button>
 				</upload>

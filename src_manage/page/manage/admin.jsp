@@ -23,9 +23,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<link rel="stylesheet" type="text/css" href="<%=request.getContextPath() %>/custom/admin.css" />
 		<script type="text/javascript" src="<%=request.getContextPath() %>/custom/admin.js"></script>
 
-		<script type="text/javascript">
+		<script type="text/javascript">//style="display: block;position: absolute;width: 100%;"
 		Vue.component('admin-layout',{
-			template:`<layout>
+			template:`<layout >
 				<slot name="head"></slot>
 				<layout :style="{padding: '60px 0px 0 0px'}">
 					<i-content :style="{padding: '0', background: '#fff'}">
@@ -193,12 +193,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	</head>
 	
 	<body>
-		<div id="main_page" class="layout">
+		<div id="main_page" class="layout" >
+			<div style="z-index:0;display: block;position: absolute;width: 100%;height: 100%;opacity: 0.1;filter: Alpha(opacity=10);background:url(${fn:indexOf('YB',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' }) round;background-size:cover;"></div>
 			<admin-layout>
 				<admin-header slot="head" :modules="modules" :active="activeModule" @on-click-module="doModule">
 					<dropdown transfer style="float:right;">
 						<a href="javascript:void(0)">
-							<avatar :src="modelInfo.headImage.thumPath" ></avatar>
+							<avatar :src="modelInfo.headImage.thumPath"></avatar>
 							<span v-html="modelInfo.realname"></span>&nbsp;&nbsp;&nbsp;
 						</a>
 						<dropdown-menu slot="list">
@@ -208,7 +209,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					</dropdown>
 				</admin-header>
 				<admin-menu slot="menu" :modules="modules" @on-click-menu="doOpenMenu" ></admin-menu>
-				<i-content :style="{padding: '0 10px 0 10px',overflowY:'hidden', background: '#fff'}">
+				<i-content :style="{padding: '0 10px 0 10px',overflowY:'hidden'}">
 					<admin-nav-tags :active="activeTag" :tags="tags" :tag-name="tagName" @on-click-tag="doOpenMenu(arguments[0],arguments[1])" @on-close-tag="doCloseMenu">
 						<i-button slot="first" style="margin:0 8px 8px -12px;float:left;padding:0 10px;" @click="setMenuExpansion">
 							<i class="iconfont" style="font-size:20px;" v-html="menuExpansion?'&#xe6b4;':'&#xe6b5;'"></i>
@@ -228,11 +229,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				</div>
 			</modal>
 		</div>
-		<div id="login_page" class="login_layout" v-show="loginBackground" style="z-index:1000;background:url(resources/img/bg.jpg) round;background-size:cover;">
+		<div id="login_page" class="login_layout" v-show="loginBackground" style="z-index:1000;background:url(${fn:indexOf('YA',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' }) round;background-size:cover;background-color:#eee;">
 			<modal class-name="vertical-center-modal" :closable="false" :mask-closable="false" v-model="tologin">
 				<p slot="header" style="color:#2d8cf0;text-align:center">
 					<icon type="information-circled"></icon>
-					<span>登录</span>
+					<span v-html="'${map.systemInfo.backgroundTitle }'"></span>
 				</p>
 				<row>
 					<i-col offset="6" span="12">
@@ -252,7 +253,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					</i-col>
 				</row>
 				<div slot="footer" style="text-align:center;">
-					<i-button type="primary" size="large" @click="doLogin" >登录</i-button>
+					<i-button type="primary" size="large" @click="doLogin" v-html="'登录'"></i-button>
 				</div>
 			</modal>
 		</div>

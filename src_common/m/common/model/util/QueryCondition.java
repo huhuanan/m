@@ -9,7 +9,7 @@ import m.system.exception.MException;
 public class QueryCondition {
 
 	private enum OperType {
-		EQ,LIKE,ISNULL,NOTNULL,ISEMPTY,NOTEMPTY,GT,GE,LT,LE,BETWEEN,IN,NOTIN,INS,OR,AND,NOT
+		EQ,LIKE,ISNULL,NOTNULL,ISEMPTY,NOTEMPTY,GT,GE,LT,LE,BETWEEN,IN,NOTIN,INS,INSQL,NOTINSQL,OR,AND,NOT
 	}
 	
 	private String name;
@@ -117,8 +117,16 @@ public class QueryCondition {
 				QueryParameter qp=((ModelQueryList) this.value).getQueryParameter();
 				sql.append(" ").append(modelQueryList.getFieldNameSql(a, this.name, clazz, false)).append(" IN(").append(qp.getSql()).append(") ");
 				valueList.addAll(qp.getValueList());
+			}else if(this.oper.equals(OperType.INSQL)){
+				QueryParameter qp=(QueryParameter) this.value;
+				sql.append(" ").append(modelQueryList.getFieldNameSql(a, this.name, clazz, false)).append(" IN(").append(qp.getSql()).append(") ");
+				valueList.addAll(qp.getValueList());
 			}else if(this.oper.equals(OperType.NOTIN)){
 				QueryParameter qp=((ModelQueryList) this.value).getQueryParameter();
+				sql.append(" ").append(modelQueryList.getFieldNameSql(a, this.name, clazz, false)).append(" NOT IN(").append(qp.getSql()).append(") ");
+				valueList.addAll(qp.getValueList());
+			}else if(this.oper.equals(OperType.NOTINSQL)){
+				QueryParameter qp=(QueryParameter) this.value;
 				sql.append(" ").append(modelQueryList.getFieldNameSql(a, this.name, clazz, false)).append(" NOT IN(").append(qp.getSql()).append(") ");
 				valueList.addAll(qp.getValueList());
 			}else if(this.oper.equals(OperType.INS)){
@@ -264,14 +272,21 @@ public class QueryCondition {
 	public static QueryCondition in(String name,ModelQueryList value){
 		return new QueryCondition(name,OperType.IN,value);
 	}
+	public static QueryCondition in(String name,QueryParameter value){
+		return new QueryCondition(name,OperType.INSQL,value);
+	}
+	
 	/**
-	 * in(select)
+	 * not in(select)
 	 * @param name
 	 * @param value
 	 * @return
 	 */
 	public static QueryCondition notIn(String name,ModelQueryList value){
 		return new QueryCondition(name,OperType.NOTIN,value);
+	}
+	public static QueryCondition notIn(String name,QueryParameter value){
+		return new QueryCondition(name,OperType.NOTINSQL,value);
 	}
 	/**
 	 * in(?,?...)

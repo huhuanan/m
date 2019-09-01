@@ -41,12 +41,15 @@ public class SystemInfoAction extends ManageAction {
 			@FormRowMeta(fields={
 				@FormFieldMeta(field = "model.oid", type = FormFieldType.HIDDEN),
 				@FormFieldMeta(title="后台标题", field = "model.backgroundTitle", type = FormFieldType.TEXT,span=14,hint="请输入后台标题"),
-				@FormFieldMeta(field = "model.titleImage.oid", type = FormFieldType.IMAGE,imageType="titleImage",hideTitle=true,span=6),
 				@FormFieldMeta(field = "model.titleType", type = FormFieldType.SELECT,hideTitle=true,span=4,
-					querySelectDatas={@SelectDataMeta(title = "文本", value = "N"),@SelectDataMeta(title = "图片", value = "Y")})
+					querySelectDatas={@SelectDataMeta(title = "文本", value = "N"),@SelectDataMeta(title = "图片", value = "Y")}),
+				@FormFieldMeta(field = "model.titleImage.oid", type = FormFieldType.IMAGE,imageType="titleImage",message="图片标题",hideTitle=true,span=6)
 			}),
 			@FormRowMeta(fields={
-				@FormFieldMeta(title="网站域名",field="model.domainName",type=FormFieldType.TEXT,hint="请输入网站域名  以http://或https://开头")
+				@FormFieldMeta(title="网站域名",field="model.domainName",type=FormFieldType.TEXT,span=14,hint="请输入网站域名  以http://或https://开头"),
+				@FormFieldMeta(field = "model.backgroundType", type = FormFieldType.SELECT,hideTitle=true,span=4,
+					querySelectDatas={@SelectDataMeta(title = "不使用背景", value = "N"),@SelectDataMeta(title = "使用背景", value = "Y"),@SelectDataMeta(title = "仅登录背景", value = "A"),@SelectDataMeta(title = "仅界面背景", value = "B")}),
+				@FormFieldMeta(field = "model.backgroundImage.oid", type = FormFieldType.IMAGE,imageType="backgroundImage",message="背景图片",hideTitle=true,span=6)
 			}),
 			@FormRowMeta(fields={
 				@FormFieldMeta(title="静态域名",field="model.staticDomain",type=FormFieldType.TEXT,span=18,hint="请输入静态加速域名  以http://或https://开头 以/结尾"),

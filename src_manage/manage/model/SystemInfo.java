@@ -24,6 +24,10 @@ public class SystemInfo extends Model implements SystemInfoModel {
 	private String titleType;
 	@LinkTableMeta(name="title_image_oid",table=ImageInfo.class,description="标题图片")
 	private ImageInfo titleImage;
+	@FieldMeta(name="bg_type",type=FieldType.STRING,length=1,defaultValue="A",description="背景显示|N不使用背景,Y使用背景,A仅登录背景,B仅界面背景")
+	private String backgroundType;
+	@LinkTableMeta(name="bg_image_oid",table=ImageInfo.class,description="背景图片")
+	private ImageInfo backgroundImage;
 	@FieldMeta(name="sms_app_id",type=FieldType.STRING,length=50,description="短信appid")
 	private String smsAppId;
 	@FieldMeta(name="sms_app_key",type=FieldType.STRING,length=50,description="短信appkey")
@@ -43,6 +47,18 @@ public class SystemInfo extends Model implements SystemInfoModel {
 	}
 	public void setStaticDomain(String staticDomain) {
 		this.staticDomain = staticDomain;
+	}
+	public String getBackgroundType() {
+		return backgroundType;
+	}
+	public void setBackgroundType(String backgroundType) {
+		this.backgroundType = backgroundType;
+	}
+	public ImageInfo getBackgroundImage() {
+		return backgroundImage;
+	}
+	public void setBackgroundImage(ImageInfo backgroundImage) {
+		this.backgroundImage = backgroundImage;
 	}
 	public String getStaticMode() {
 		return staticMode;

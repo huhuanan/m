@@ -57,9 +57,9 @@
 			<c:if test="${field.type=='IMAGE' }">
 				<span style="display:inline-block;">
 				<c:if test="${!field.disabled}"><i-button type="info" @click="openImageModal('${field.field}','${field.imageType }',${field.thumWidth },${field.thumRatio })">选择图片</i-button></c:if>
-				<div class="image_input" style="margin-left:0;width:${(empty field.height?32:field.height)*field.thumRatio }px;height:${empty field.height?'':field.height }px;" 
+				<div class="image_input" style="margin-left:0;width:${(empty field.height?30:field.height)*field.thumRatio }px;height:${empty field.height?'':field.height }px;" 
 					@click="viewImage('${field.field}');">
-					<img id="image_${key}_${field.field}" border="0" alt="" src="${mm:getThumPath(mc:getInAttribute(map.action,field.field)) }" />
+					<img id="image_${key}_${field.field}" style="vertical-align:initial;" border="0" alt="" src="${mm:getThumPath(mc:getInAttribute(map.action,field.field)) }" />
 				</div>
 				</span>
 			</c:if>
@@ -117,10 +117,8 @@
 		<div id="other_${other.title}_${key}_content"></div>
 	</div>
 	</c:forEach>
-	<modal v-model="showModal" class="table_modal" :width="modalWidth" :mask-closable="false" @on-cancel="handlerResult(backEvent,'MODAL',false)">
+	<modal v-model="showModal" :footer-hide="true" :width="modalWidth" :mask-closable="false" @on-cancel="handlerResult(backEvent,'MODAL',false)">
 		<div id="_table_modal_${key }"></div>
-		<div slot="footer">
-		</div>
 	</modal>
 </page>
 <script>

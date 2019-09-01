@@ -18,7 +18,7 @@
 					<form-item label="搜索:" style="margin-bottom:10px;">
 						<i-input v-model="param['searchText']" placeholder="${map.searchHint }" style="width:260px;"></i-input>
 					</form-item>
-					<hr/>
+					<divider :style="{margin:'3px 0 11px 0'}"></divider>
 				</c:if>
 				<c:forEach var="item" items="${map.tableQueryList }">
 				<c:if test="${item.type=='HIDDEN' }">
@@ -73,15 +73,12 @@
 		<div id="_table_page_${key }"></div>
 	</div>
 	</transition>
-	<modal v-model="showModal" class="table_modal" :width="modalWidth" :mask-closable="false" @on-cancel="handlerResult(backEvent,'MODAL',false)">
+	<modal v-model="showModal" :footer-hide="true" :width="modalWidth" :mask-closable="false" @on-cancel="handlerResult(backEvent,'MODAL',false)">
 		<div id="_table_modal_${key }"></div>
-		<div slot="footer">
-		</div>
 	</modal>
-	<modal v-model="loadModal.show" class="table_modal" width="300" :closable="false">
+	<modal v-model="loadModal.show" :footer-hide="true" width="300" :closable="false">
 		<div style="text-align:center"><i-progress :percent="loadModal.percent"></i-progress></div>
 		<div style="text-align:center" v-html="loadModal.content"></div>
-		<div slot="footer"></div>
 	</modal>
 </page>
 <script>

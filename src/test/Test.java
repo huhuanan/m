@@ -1,41 +1,41 @@
 package test;
 
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import m.common.model.util.ModelQueryList;
-import m.common.model.util.QueryPage;
-import m.common.service.HostInfoService;
-import m.system.cache.CacheUtil;
-import m.system.db.DBConnection;
+import m.system.db.DataSet;
+import m.system.db.SqlBuffer;
 import m.system.db.TransactionManager;
 import m.system.exception.MException;
 import m.system.listener.InitListener;
-import manage.model.AdminLogin;
 
 public class Test {
 	public static void main(String[] a) throws SQLException, MException {
 		InitListener.initDBConfig();
-		
+		Double d=null;
+		SqlBuffer sql=new SqlBuffer()
+			.append("select * from t_goods_info gi")
+			.append("where price>?",100)
+			.append(null!=d?"and stock_num>?":"", d);
+			
+		DataSet ds=sql.executeQuery();
+		System.out.println(ds.size());
 //		Map<String,String> eMap=new HashMap<String,String>();
 //		eMap.put("loginCount", "sum(#{loginCount})");
 //		List<AdminLogin> list=ModelQueryList.getModelList(AdminLogin.class, new String[]{"realname"}, new QueryPage(0,10),null,eMap,true, null);
 //		
 //		System.out.println(list.size());
-		for(int i=0;i<15;i++) {
-			new TestThread(i).start();
-		}
-		for(int n=0;n<100;n++) {
-			System.out.println("db num : "+DBConnection.getUseLinkNum());
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+//		for(int i=0;i<15;i++) {
+//			new TestThread(i).start();
+//		}
+//		for(int n=0;n<100;n++) {
+//			System.out.println("db num : "+DBConnection.getUseLinkNum());
+//			try {
+//				Thread.sleep(100);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
 	}
 	
 }
