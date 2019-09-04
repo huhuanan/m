@@ -25,7 +25,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 		<script type="text/javascript">//style="display: block;position: absolute;width: 100%;"
 		Vue.component('admin-layout',{
-			template:`<layout >
+			template:`<layout style="display: block;position: absolute;width: 100%;">
 				<slot name="head"></slot>
 				<layout :style="{padding: '60px 0px 0 0px'}">
 					<i-content :style="{padding: '0', background: '#fff'}">
@@ -153,7 +153,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			}
 		});
 		Vue.component('admin-nav-tags',{
-			template:`<div :style="{position:'fixed',zIndex:'998',top:'60px',left:menuExpansion?'200px':'60px',right:'1px',padding:'8px 8px',backgroundColor:'#f8f8f9',overflow:'hidden',height:'46px',borderBottom:'solid 1px #ddd'}">
+			template:`<div :style="{position:'fixed',zIndex:'998',top:'60px',left:menuExpansion?'200px':'60px',right:'1px',padding:'8px 8px',backgroundColor:'#eee',overflow:'hidden',height:'46px',borderBottom:'solid 1px #ddd'}">
 				<slot name="first"></slot>
 				<dropdown transfer style="float:right;">
 					<i-button style="padding:0 10px;"><i class="iconfont" style="font-size:20px;">&#xe71b;</i></i-button>
@@ -194,7 +194,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	
 	<body>
 		<div id="main_page" class="layout" >
-			<div style="z-index:0;display: block;position: absolute;width: 100%;height: 100%;opacity: 0.1;filter: Alpha(opacity=10);background:url(${fn:indexOf('YB',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' }) round;background-size:cover;"></div>
+			<div style="z-index:0;display: block;position: absolute;width: 100%;height: 100%;opacity: 0.2;filter: Alpha(opacity=20);background-color:#ddd;background:url(${fn:indexOf('YB',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' }) round;background-size:cover;"></div>
 			<admin-layout>
 				<admin-header slot="head" :modules="modules" :active="activeModule" @on-click-module="doModule">
 					<dropdown transfer style="float:right;">

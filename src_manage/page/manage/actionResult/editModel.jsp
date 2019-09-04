@@ -13,7 +13,7 @@
 	<c:forEach var="row" items="${map.formRows }" varStatus="index">
 		<c:if test="${row.tabs}"><c:if test="${istab}"></tab-pane></c:if><c:if test="${!istab}"><c:set var="istab" value="${true}"></c:set><tabs :style="{marginTop:'-13px'}" :animated="false"></c:if><tab-pane label="${empty row.tabTitle?'无标题':row.tabTitle }"></c:if>
 		<c:if test="${row.line}"><div style="margin-top:${row.tabs&&istab?'-5px':'-18px'};"><divider orientation="left" :style="{color:'#2d8cf0',margin:'${row.title!=''?'10':'15' }px 0'}">${row.title }</divider></div></c:if>
-	<row :style="{marginRight:'${row.marginRight }px',marginBottom:'${index.last?-18:0 }px',minWidth:'${row.minWidth }px'}">
+	<row :gutter="16" :style="{marginRight:'${row.marginRight }px',marginBottom:'${index.last?-18:0 }px',minWidth:'${row.minWidth }px'}">
 		<c:forEach var="field" items="${row.fields}">
 		<c:if test="${field.type=='HIDDEN' }">
 			<input type="hidden"/> 
@@ -93,6 +93,8 @@
 		</i-col>
 		</c:if>
 		</c:forEach>
+	</row>
+	<row :style="{marginRight:'${row.marginRight }px',marginBottom:'${index.last?-18:0 }px',minWidth:'${row.minWidth }px'}">
 		<c:forEach var="other" items="${row.others}">
 			<div id="other_${other.title}_${key}" style="display:none;margin:0 0 10px 0;">
 				<div id="other_${other.title}_${key}_content"></div>
