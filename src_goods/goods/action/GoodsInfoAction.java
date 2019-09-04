@@ -130,15 +130,31 @@ public class GoodsInfoAction extends StatusAction {
 
 	@ActionFormMeta(title="商品信息",
 		rows={
-			@FormRowMeta(fields={
+			@FormRowMeta(tabs=true,fields={
 				@FormFieldMeta(field = "model.oid", type = FormFieldType.HIDDEN),
 				@FormFieldMeta(title="名称",field="model.name",type=FormFieldType.TEXT,hint="请输入名称",span=12),
 				@FormFieldMeta(title="单价",field="model.price",type=FormFieldType.DOUBLE,numberRange="0~",decimalCount=2,hint="请输入单价",span=12),
 			}),
+			@FormRowMeta(endTabs=true,fields={
+				@FormFieldMeta(title="库存1",field="model.stockNum",type=FormFieldType.INT,span=12,disabled=true),
+				@FormFieldMeta(title="销量1",field="model.saleNum",type=FormFieldType.INT,span=12,disabled=true),
+			}),
+			@FormRowMeta(tabs=true,fields={
+				@FormFieldMeta(title="库存2",field="model.stockNum",type=FormFieldType.INT,span=12,disabled=true),
+				@FormFieldMeta(title="销量2",field="model.saleNum",type=FormFieldType.INT,span=12,disabled=true),
+			}),
+			@FormRowMeta(tabs=true,tabTitle="tab",splitLine=true,title="1234",fields={
+				@FormFieldMeta(title="库存3",field="model.stockNum",type=FormFieldType.INT,span=12,disabled=true),
+				@FormFieldMeta(title="销量3",field="model.saleNum",type=FormFieldType.INT,span=12,disabled=true),
+			}),
+			@FormRowMeta(tabs=true,endTabs=true,title="商品库存1",marginRight=0,others= {
+				@FormOtherMeta(title="商品库存1",url="action/goodsGoodsStock/toList?method=goodsStockData",
+					linkField=@LinkFieldMeta(field="params[goods.oid]",valueField="model.oid"))
+			}),
 			@FormRowMeta(fields={
 				@FormFieldMeta(title="库存",field="model.stockNum",type=FormFieldType.INT,span=12,disabled=true),
 				@FormFieldMeta(title="销量",field="model.saleNum",type=FormFieldType.INT,span=12,disabled=true),
-			})
+			}),
 		},
 		buttons={
 			@FormButtonMeta(title = "保存", url = "action/goodsGoodsInfo/doSave",success=FormSuccessMethod.DONE_BACK)

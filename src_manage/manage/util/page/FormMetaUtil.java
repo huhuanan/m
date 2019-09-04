@@ -34,6 +34,9 @@ public class FormMetaUtil {
 			Map<String,Object> map=new HashMap<String, Object>();
 			map.put("line", row.splitLine());
 			map.put("title", row.title());
+			map.put("tabs", row.tabs());
+			map.put("endTabs", row.endTabs());
+			map.put("tabTitle", row.tabTitle());
 			map.put("minWidth", row.minWidth());
 			map.put("marginRight", row.marginRight());
 			List<Map<String,Object>> fm=new ArrayList<Map<String,Object>>();

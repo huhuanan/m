@@ -9,9 +9,11 @@
 	<h2 style="padding:0 5px 10px;"><c:if test="${map.openMode=='PAGE' }"><a @click="back(false)" ><i class="iconfont" style="font-size:23px;font-weight:100;">&#xe718;</i>&nbsp;&nbsp;</a></c:if>${map.formTitle }</h2>
 	<i-form>
 	<card :style="{marginBottom:'15px',paddingBottom:'0px'}">
+	<c:set var="istab" value="${false}"></c:set>
 	<c:forEach var="row" items="${map.formRows }" varStatus="index">
-		<c:if test="${row.line}"><div style="margin-top:-18px;"><divider orientation="left" :style="{color:'#2d8cf0',margin:'${row.title!=''?'10':'15' }px 0'}">${row.title }</divider></div></c:if>
-	<row :gutter="10" :style="{marginRight:'${row.marginRight }px',marginBottom:'${index.last?-18:0 }px',minWidth:'${row.minWidth }px'}">
+		<c:if test="${row.tabs}"><c:if test="${istab}"></tab-pane></c:if><c:if test="${!istab}"><c:set var="istab" value="${true}"></c:set><tabs :style="{marginTop:'-13px'}" :animated="false"></c:if><tab-pane label="${empty row.tabTitle?'无标题':row.tabTitle }"></c:if>
+		<c:if test="${row.line}"><div style="margin-top:${row.tabs&&istab?'-5px':'-18px'};"><divider orientation="left" :style="{color:'#2d8cf0',margin:'${row.title!=''?'10':'15' }px 0'}">${row.title }</divider></div></c:if>
+	<row :style="{marginRight:'${row.marginRight }px',marginBottom:'${index.last?-18:0 }px',minWidth:'${row.minWidth }px'}">
 		<c:forEach var="field" items="${row.fields}">
 		<c:if test="${field.type=='HIDDEN' }">
 			<input type="hidden"/> 
@@ -97,7 +99,9 @@
 			</div>
 		</c:forEach>
 	</row>
+		<c:if test="${istab&&row.endTabs}"><c:set var="istab" value="${false}"></c:set></tabs></c:if>
 	</c:forEach>
+	<c:if test="${istab}"></tabs></c:if>
 	</card>
 	<form-item label=" " style="margin-bottom:10px;width:100%;${map.openMode=='MODAL'?'text-align:center;':'' }" :label-width="${map.openMode=='MODAL'?'0':'100' }">
 		<c:forEach var="btn" items="${map.formButtons}">
