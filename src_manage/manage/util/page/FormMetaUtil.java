@@ -87,7 +87,7 @@ public class FormMetaUtil {
 					}catch(Exception e){
 					}
 				}
-				if(field.type()==FormFieldType.SELECT||field.type()==FormFieldType.CHECKBOX||field.type()==FormFieldType.RADIO){
+				if(field.type()==FormFieldType.SELECT||field.type()==FormFieldType.CHECKBOX||field.type()==FormFieldType.RADIO||field.type()==FormFieldType.STEPS){
 					if(!StringUtil.isSpace(field.querySelect().modelClass())||!StringUtil.isSpace(field.dictType())){
 						m.put("selectData", new ArrayList<Map<String,Object>>());
 						JSONMessage json=QueryMetaUtil.toSelectParam(field.querySelect(),field.dictType(),field.linkField());

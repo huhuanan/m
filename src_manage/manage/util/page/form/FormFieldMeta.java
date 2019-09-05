@@ -22,6 +22,7 @@ public @interface FormFieldMeta {
 		SELECT,//选择框
 		CHECKBOX,//多选框
 		RADIO,//单选框
+		STEPS,//步骤, 不可修改
 		DATE,//日期选择器
 		DATETIME,//时间选择器
 		INT,//整型
@@ -93,17 +94,17 @@ public @interface FormFieldMeta {
 	 * @return 
 	 */
 	String hint() default "";
-	/** SELECT CHECKBOX RADIO
+	/** SELECT CHECKBOX RADIO STEPS
 	 * select的查询  优先
 	 * @return
 	 */
 	QuerySelectMeta querySelect() default @QuerySelectMeta(modelClass = "", title = "", value = "");
-	/** SELECT CHECKBOX RADIO
+	/** SELECT CHECKBOX RADIO STEPS
 	 * 字典类型 其次
 	 * @return
 	 */
 	String dictType() default "";
-	/** SELECT CHECKBOX RADIO
+	/** SELECT CHECKBOX RADIO STEPS
 	 * select的数据  最终
 	 * @return
 	 */
@@ -128,7 +129,7 @@ public @interface FormFieldMeta {
 	 * @return
 	 */
 	String clearField() default "";
-	/** 只有 SELECT CHECKBOX RADIO 支持
+	/** 只有 SELECT CHECKBOX RADIO STEPS 支持
 	 * 其他字段填充,用其他字段结合起来填充
 	 * @return
 	 */

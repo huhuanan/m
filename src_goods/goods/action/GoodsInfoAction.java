@@ -40,6 +40,7 @@ import manage.util.page.form.FormRowMeta;
 import manage.util.page.query.LinkFieldMeta;
 import manage.util.page.query.QueryMeta;
 import manage.util.page.query.QueryMeta.QueryType;
+import manage.util.page.query.SelectDataMeta;
 import manage.util.page.table.ActionTableColMeta;
 import manage.util.page.table.ActionTableColMeta.TableColSort;
 import manage.util.page.table.ActionTableColMeta.TableColType;
@@ -130,6 +131,19 @@ public class GoodsInfoAction extends StatusAction {
 
 	@ActionFormMeta(title="商品信息",
 		rows={
+			@FormRowMeta(fields={
+				@FormFieldMeta(title="名称",field="model.name",type=FormFieldType.TEXT,hint="请输入名称",span=12),
+				@FormFieldMeta(title="单价",field="model.price",type=FormFieldType.DOUBLE,numberRange="0~",decimalCount=2,hint="请输入单价",span=12),
+			}),
+			@FormRowMeta(fields={
+				@FormFieldMeta(field = "model.status", type = FormFieldType.STEPS,span=24,querySelectDatas= {
+					@SelectDataMeta(title = "0|111", value = "0"),@SelectDataMeta(title = "9", value = "9"),
+				})
+			}),
+			@FormRowMeta(fields={
+				@FormFieldMeta(title="名称",field="model.name",type=FormFieldType.TEXT,hint="请输入名称",span=12),
+				@FormFieldMeta(title="单价",field="model.price",type=FormFieldType.DOUBLE,numberRange="0~",decimalCount=2,hint="请输入单价",span=12),
+			}),
 			@FormRowMeta(tabs=true,fields={
 				@FormFieldMeta(field = "model.oid", type = FormFieldType.HIDDEN),
 				@FormFieldMeta(title="名称",field="model.name",type=FormFieldType.TEXT,hint="请输入名称",span=12),

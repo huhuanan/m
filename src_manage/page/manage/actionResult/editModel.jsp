@@ -11,7 +11,7 @@
 	<card :style="{marginBottom:'15px',paddingBottom:'0px'}">
 	<c:set var="istab" value="${false}"></c:set>
 	<c:forEach var="row" items="${map.formRows }" varStatus="index">
-		<c:if test="${row.tabs}"><c:if test="${istab}"></tab-pane></c:if><c:if test="${!istab}"><c:set var="istab" value="${true}"></c:set><tabs :style="{marginTop:'-13px'}" :animated="false"></c:if><tab-pane label="${empty row.tabTitle?'无标题':row.tabTitle }"></c:if>
+		<c:if test="${row.tabs}"><c:if test="${istab}"></tab-pane></c:if><c:if test="${!istab}"><c:set var="istab" value="${true}"></c:set><row><i-col span="24"><tabs :style="{marginTop:'-13px'}" :animated="false"></c:if><tab-pane label="${empty row.tabTitle?'无标题':row.tabTitle }"></c:if>
 		<c:if test="${row.line}"><div style="margin-top:${row.tabs&&istab?'-5px':'-18px'};"><divider orientation="left" :style="{color:'#2d8cf0',margin:'${row.title!=''?'10':'15' }px 0'}">${row.title }</divider></div></c:if>
 	<row :gutter="16" :style="{marginRight:'${row.marginRight }px',marginBottom:'${index.last?-18:0 }px',minWidth:'${row.minWidth }px'}">
 		<c:forEach var="field" items="${row.fields}">
@@ -47,6 +47,11 @@
 			<radio-group v-model="fields['${field.field }']" @on-change="doClearField('${field.field }');">
 				<radio v-for="item in selectDatas['${field.field }']" :label="item.value" ${field.disabled?'disabled':'' }><span>{{item.label}}&nbsp;</span></radio>
 			</radio-group>
+			</c:if>
+			<c:if test="${field.type=='STEPS' }">
+			<steps :current="getCurrentStep('${field.field }')">
+				<step v-for="item in selectDatas['${field.field }']" :title="item.label.split('|')[0]" :content="item.label.split('|').length>1?item.label.split('|')[1]:''"></step>
+			</steps>
 			</c:if>
 			<c:if test="${field.type=='CHECKBOX' }">
 			<checkbox-group v-model="fields['${field.field }']" @on-change="doClearField('${field.field }');">
@@ -96,14 +101,16 @@
 	</row>
 	<row :style="{marginRight:'${row.marginRight }px',marginBottom:'${index.last?-18:0 }px',minWidth:'${row.minWidth }px'}">
 		<c:forEach var="other" items="${row.others}">
+			<i-col span="24">
 			<div id="other_${other.title}_${key}" style="display:none;margin:0 0 10px 0;">
 				<div id="other_${other.title}_${key}_content"></div>
 			</div>
+			</i-col>
 		</c:forEach>
 	</row>
 		<c:if test="${istab&&row.endTabs}"><c:set var="istab" value="${false}"></c:set></tabs></c:if>
 	</c:forEach>
-	<c:if test="${istab}"></tabs></c:if>
+	<c:if test="${istab}"></tabs></i-col></row></c:if>
 	</card>
 	<form-item label=" " style="margin-bottom:10px;width:100%;${map.openMode=='MODAL'?'text-align:center;':'' }" :label-width="${map.openMode=='MODAL'?'0':'100' }">
 		<c:forEach var="btn" items="${map.formButtons}">
@@ -143,11 +150,11 @@
 				fields:{
 					<c:forEach var="row" items="${map.formRows }">
 						<c:forEach var="field" items="${row.fields}">
-						<c:if test="${field.type=='SELECT'||field.type=='CHECKBOX'||field.type=='RADIO'}">
+						<c:if test="${field.type=='SELECT'||field.type=='CHECKBOX'||field.type=='RADIO'||field.type=='STEPS'}">
 							<c:if test="${field.type!='CHECKBOX'}">'${field.field}':""+${mc:getInAttribute(map.action,field.field)},</c:if>
 							<c:if test="${field.type=='CHECKBOX'}">'${field.field}':[${mc:getInAttributeByArray(map.action,field.field)}],</c:if>
 						</c:if>
-						<c:if test="${!(field.type=='SELECT'||field.type=='CHECKBOX'||field.type=='RADIO')}">
+						<c:if test="${!(field.type=='SELECT'||field.type=='CHECKBOX'||field.type=='RADIO'||field.type=='STEPS')}">
 							'${field.field}':${mc:getInAttribute(map.action,field.field)},
 						</c:if>
 						</c:forEach>
@@ -176,7 +183,7 @@
 				<c:forEach var="field" items="${row.fields}">
 				this.requiredField['${field.field}']=${field.required};
 				this.clearField['${field.field}']='${field.clearField}';
-				<c:if test="${field.type=='SELECT'||field.type=='CHECKBOX'||field.type=='RADIO'}">
+				<c:if test="${field.type=='SELECT'||field.type=='CHECKBOX'||field.type=='RADIO'||field.type=='STEPS'}">
 					this.$set(this.selectDatas,"${field.field}",[]);
 					<c:forEach var="op" items="${field.selectData}">this.selectDatas["${field.field}"].push({value:"${op[0] }",label:"${op[1] }"});</c:forEach>
 					<c:if test="${!empty field.selectParam}">this.selectMethod["${field.field}"]=${field.selectParam};</c:if>

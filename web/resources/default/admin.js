@@ -697,6 +697,14 @@ Vue.component('json-item', {
 			},
 			updateEditerData:function(content,field){
 				this.fields[field]=content;
+			},
+			getCurrentStep:function(field){
+				var arr=this.selectDatas[field];
+				if(arr){
+					for(var i=0;i<arr.length;i++){
+						if(arr[i].value==this.fields[field]) return i;
+					}
+				}
 			}
 		},
 		vueTableListMethods:{
