@@ -29,7 +29,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<slot name="head"></slot>
 				<layout :style="{padding: '60px 0px 0 0px'}">
 					<i-content :style="{padding: '0', background: '#fff'}">
-						<sider hide-trigger :style="{position: 'fixed',top:'60px', bottom:0,left:0,overflow:'auto',background:'#fff',minWidth:width,maxWidth:width}">
+						<sider hide-trigger :style="{position: 'fixed',top:'60px', bottom:0,left:0,overflow:'auto',background:'transparent',minWidth:width,maxWidth:width}">
 							<slot name="menu"></slot>
 						</sider>
 						<layout :style="{marginLeft:width}">
@@ -59,7 +59,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<c:if test="${map.systemInfo.titleType!='Y'}">${map.systemInfo.backgroundTitle }</c:if>
 					</div>
 					<menu-item v-for="(module,key) in modules" :name="key" @click.native="doModule(key)" :class="active==key?'ivu-menu-item-active':''">
-						<i class="iconfont" v-html="module.icon"></i><span v-html="module.name"></span>
+						<i class="iconfont" style="font-size:19px;" v-html="module.icon"></i><span style="font-size:15px;" v-html="module.name"></span>
 					</menu-item>
 					<slot></slot>
 				</i-menu>
@@ -79,7 +79,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			template:`<div :style="{height:'100%',width:menuExpansion?'200px':'60px'}">
 				<div style="height:100%;" v-if="menuExpansion">
 					<transition name="slide-fade-down" v-for="(module,key) in modules">
-						<i-menu style="min-height:100%;" :ref="'menu'+key" v-show="key==activeModule" :accordion="true" :active-name="activeMenu2" theme="light" width="auto" :open-names="[activeMenu1]">
+						<i-menu style="min-height:100%;background:rgba(255,255,255,0.7)" :ref="'menu'+key" v-show="key==activeModule" :accordion="true" :active-name="activeMenu2" theme="light" width="auto" :open-names="[activeMenu1]">
 							<submenu v-for="(menu1,key1) in module.menus" :name="key1">
 								<template slot="title">
 								<i class="iconfont" v-html="menu1.icon"></i><span v-html="menu1.name"></span>
@@ -153,7 +153,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			}
 		});
 		Vue.component('admin-nav-tags',{
-			template:`<div :style="{position:'fixed',zIndex:'998',top:'60px',left:menuExpansion?'200px':'60px',right:'1px',padding:'8px 8px',backgroundColor:'#eee',overflow:'hidden',height:'46px',borderBottom:'solid 1px #ddd'}">
+			template:`<div :style="{position:'fixed',zIndex:'998',top:'60px',left:menuExpansion?'200px':'60px',right:'1px',padding:'8px 8px',backgroundColor:'rgba(238,238,238,0.6)',overflow:'hidden',height:'46px',borderBottom:'solid 1px #ddd'}">
 				<slot name="first"></slot>
 				<dropdown transfer style="float:right;">
 					<i-button style="padding:0 10px;"><i class="iconfont" style="font-size:20px;">&#xe71b;</i></i-button>
@@ -194,7 +194,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	
 	<body>
 		<div id="main_page" class="layout" >
-			<div style="z-index:0;display: block;position: absolute;width: 100%;height: 100%;opacity: 0.2;filter: Alpha(opacity=20);background-color:#ddd;background:url(${fn:indexOf('YB',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' }) round;background-size:cover;"></div>
+			<div style="z-index:0;display: block;position: fixed;width: 100%;height: 100%;opacity: 0.2;filter: Alpha(opacity=20);background-color:#ddd;background:url(${fn:indexOf('YB',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' });background-size:cover;"></div>
 			<admin-layout>
 				<admin-header slot="head" :modules="modules" :active="activeModule" @on-click-module="doModule">
 					<dropdown transfer style="float:right;">
@@ -209,7 +209,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					</dropdown>
 				</admin-header>
 				<admin-menu slot="menu" :modules="modules" @on-click-menu="doOpenMenu" ></admin-menu>
-				<i-content :style="{padding: '0 10px 0 10px',overflowY:'hidden'}">
+				<i-content :style="{padding: '0 10px 0 10px',overflowY:'hidden','background':'rgba(255,255,255,0.3)!important'}">
 					<admin-nav-tags :active="activeTag" :tags="tags" :tag-name="tagName" @on-click-tag="doOpenMenu(arguments[0],arguments[1])" @on-close-tag="doCloseMenu">
 						<i-button slot="first" style="margin:0 8px 8px -12px;float:left;padding:0 10px;" @click="setMenuExpansion">
 							<i class="iconfont" style="font-size:20px;" v-html="menuExpansion?'&#xe6b4;':'&#xe6b5;'"></i>
@@ -223,10 +223,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					<div id="main_content" style="margin:56px 0 10px 0;"></div>
 				</i-content>
 			</admin-layout>
-			<modal :mask-closable="false" :width="470" v-model="toModify" class="table_modal">
+			<modal :mask-closable="false" :width="470" v-model="toModify" :footer-hide="true">
 				<div id="modifyModelInfo"></div>
-				<div slot="footer" style="text-align:center;">
-				</div>
 			</modal>
 		</div>
 		<div id="login_page" class="login_layout" v-show="loginBackground" style="z-index:1000;background:url(${fn:indexOf('YA',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' }) round;background-size:cover;background-color:#eee;">
@@ -283,7 +281,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						},
 						modify:function(){
 							var self=this;
-							$.loadVuePage($('#modifyModelInfo'),'action/manageAdminLogin/toEdit4Self',{openKey:'main_admin'},function(){
+							$.loadVuePage($('#modifyModelInfo'),'action/manageAdminLogin/toEdit4Self',{openMode:'MODAL',openKey:'main_admin'},function(){
 								self.toModify=true;
 							});
 						},
