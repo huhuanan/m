@@ -87,34 +87,6 @@ img{vertical-align:middle;}
 .vue-html5-editor img {
 	max-width:100%;
 }
-.logo{
-	width:200px;
-	display:inline-block;
-	float:left;
-	color: #2d8cf0;
-	text-align: center;
-	font-size:16px;
-}
-.layout{
-border: 1px solid #d7dde4;
-background: #f5f7f9;
-position: relative;
-border-radius: 4px;
-overflow: auto;
-}
-.login_layout{
-border: 1px solid #d7dde4;
-background: #f5f7f9;
-position: fixed;
-border-radius: 4px;
-overflow: hidden;
-width:100%;
-top:0px;bottom:0px;
-}
-.layout-footer-center{
-text-align: center;
-}
-
 .syntaxhighlighter .toolbar {
 	display:none;
 }

@@ -90,7 +90,7 @@
 			</div>
 		</i-col>
 	</row>
-	<modal v-model="testModal" class="table_modal" width="80%" :mask-closable="false">
+	<modal v-model="testModal" :footer-hide="true" width="80%" :mask-closable="false">
 		<h3>{{testMethod.title}} - {{testMethod.description}}</h3>
 		<div class="ivu-table-wrapper">
 			<table class="ivu-table ivu-table-default" style="width:100%" cellspacing="0" cellpadding="0" border="0">
@@ -135,7 +135,7 @@
 			</table>
 		</div>
    </modal>
-	<modal v-model="scriptModal" class="table_modal" width="80%" :mask-closable="false">
+	<modal v-model="scriptModal" :footer-hide="true" width="80%" :mask-closable="false">
 		<h3>{{selectModel.name}} {{selectModel.description}}</h3>
 		<textarea rows="25" style="width:100%;">{{scriptContent}}</textarea>
 	</modal>

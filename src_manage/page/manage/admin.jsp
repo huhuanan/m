@@ -25,7 +25,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 		<script type="text/javascript">//style="display: block;position: absolute;width: 100%;"
 		Vue.component('admin-layout',{
-			template:`<layout style="display: block;position: absolute;width: 100%;">
+			template:`<layout>
 				<slot name="head"></slot>
 				<layout :style="{padding: '60px 0px 0 0px'}">
 					<i-content :style="{padding: '0', background: '#fff'}">
@@ -54,9 +54,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		Vue.component('admin-header',{
 			template:`<i-header :style="{position:'fixed',width:'100%',padding:0}" style="z-index:999;">
 				<i-menu ref="moduleMenu" mode="horizontal" theme="light" :active-name="active" >
-					<div class="logo" style="${fn:length(map.systemInfo.backgroundTitle)>11?'font-size:13px;':'' }">
-						<c:if test="${map.systemInfo.titleType=='Y'}"><img src="${map.systemInfo.titleImage.imgPath }" style="width:200px;height:60px;"/></c:if>
-						<c:if test="${map.systemInfo.titleType!='Y'}">${map.systemInfo.backgroundTitle }</c:if>
+					<div style="padding:0 20px;display:inline-block;float:left;color: #2d8cf0;font-size:17px;">
+						<c:if test="${map.systemInfo.titleType!='N'}"><img src="${map.systemInfo.titleImage.imgPath }" style="margin-left:-20px;height:60px;"/></c:if>
+						<c:if test="${map.systemInfo.titleType!='Y'}"><span>${map.systemInfo.backgroundTitle }</span></c:if>
 					</div>
 					<menu-item v-for="(module,key) in modules" :name="key" @click.native="doModule(key)" :class="active==key?'ivu-menu-item-active':''">
 						<i class="iconfont" style="font-size:19px;" v-html="module.icon"></i><span style="font-size:15px;" v-html="module.name"></span>
@@ -193,8 +193,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	</head>
 	
 	<body>
-		<div id="main_page" class="layout" >
-			<div style="z-index:0;display: block;position: fixed;width: 100%;height: 100%;opacity: 0.2;filter: Alpha(opacity=20);background-color:#ddd;background:url(${fn:indexOf('YB',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' });background-size:cover;"></div>
+		<div style="z-index:0;display: block;position: fixed;width: 100%;height: 100%;opacity: 0.2;filter: Alpha(opacity=20);background-color:#ddd;background:url(${fn:indexOf('YB',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' });background-size:cover;"></div>
+		<div id="main_page" style="display: block;position: absolute;width: 100%;overflow: auto;" >
 			<admin-layout>
 				<admin-header slot="head" :modules="modules" :active="activeModule" @on-click-module="doModule">
 					<dropdown transfer style="float:right;">
@@ -227,7 +227,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<div id="modifyModelInfo"></div>
 			</modal>
 		</div>
-		<div id="login_page" class="login_layout" v-show="loginBackground" style="z-index:1000;background:url(${fn:indexOf('YA',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' }) round;background-size:cover;background-color:#eee;">
+		<div id="login_page" v-show="loginBackground" style="position: fixed;overflow: hidden;width:100%;top:0px;bottom:0px;z-index:1000;background:url(${fn:indexOf('YA',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' }) round;background-size:cover;background-color:#eee;">
 			<modal class-name="vertical-center-modal" :closable="false" :mask-closable="false" v-model="tologin">
 				<p slot="header" style="color:#2d8cf0;text-align:center">
 					<icon type="information-circled"></icon>

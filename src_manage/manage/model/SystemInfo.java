@@ -20,7 +20,7 @@ public class SystemInfo extends Model implements SystemInfoModel {
 	private String staticMode;
 	@FieldMeta(name="background_title",type=FieldType.STRING,length=50,description="后台标题")
 	private String backgroundTitle;
-	@FieldMeta(name="title_type",type=FieldType.STRING,length=1,description="后台显示类型|N标题,Y图片")
+	@FieldMeta(name="title_type",type=FieldType.STRING,length=1,description="后台显示类型|N标题,Y图片,A图片+文本")
 	private String titleType;
 	@LinkTableMeta(name="title_image_oid",table=ImageInfo.class,description="标题图片")
 	private ImageInfo titleImage;
