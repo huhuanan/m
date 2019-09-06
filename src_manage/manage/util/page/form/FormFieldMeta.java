@@ -94,6 +94,11 @@ public @interface FormFieldMeta {
 	 * @return 
 	 */
 	String hint() default "";
+	/**
+	 * 后缀
+	 * @return
+	 */
+	String suffix() default "";
 	/** SELECT CHECKBOX RADIO STEPS
 	 * select的查询  优先
 	 * @return

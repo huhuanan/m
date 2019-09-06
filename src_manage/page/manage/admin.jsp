@@ -227,7 +227,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<div id="modifyModelInfo"></div>
 			</modal>
 		</div>
-		<div id="login_page" v-show="loginBackground" style="position: fixed;overflow: hidden;width:100%;top:0px;bottom:0px;z-index:1000;background:url(${fn:indexOf('YA',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' }) round;background-size:cover;background-color:#eee;">
+		<div id="login_page" v-show="loginBackground" style="position: fixed;overflow: hidden;width:100%;top:0px;bottom:0px;z-index:1000;background:url(${fn:indexOf('YA',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' });background-size:cover;background-color:#eee;">
 			<modal class-name="vertical-center-modal" :closable="false" :mask-closable="false" v-model="tologin">
 				<p slot="header" style="color:#2d8cf0;text-align:center">
 					<icon type="information-circled"></icon>

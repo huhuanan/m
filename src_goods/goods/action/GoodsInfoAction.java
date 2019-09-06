@@ -136,7 +136,7 @@ public class GoodsInfoAction extends StatusAction {
 				@FormFieldMeta(title="单价",field="model.price",type=FormFieldType.DOUBLE,numberRange="0~",decimalCount=2,hint="请输入单价",span=12),
 			}),
 			@FormRowMeta(fields={
-				@FormFieldMeta(field = "model.status", type = FormFieldType.STEPS,span=24,querySelectDatas= {
+				@FormFieldMeta(hideTitle=true,field = "model.status", type = FormFieldType.STEPS,span=24,querySelectDatas= {
 					@SelectDataMeta(title = "0|111", value = "0"),@SelectDataMeta(title = "9", value = "9"),
 				})
 			}),
@@ -147,10 +147,10 @@ public class GoodsInfoAction extends StatusAction {
 			@FormRowMeta(tabs=true,fields={
 				@FormFieldMeta(field = "model.oid", type = FormFieldType.HIDDEN),
 				@FormFieldMeta(title="名称",field="model.name",type=FormFieldType.TEXT,hint="请输入名称",span=12),
-				@FormFieldMeta(title="单价",field="model.price",type=FormFieldType.DOUBLE,numberRange="0~",decimalCount=2,hint="请输入单价",span=12),
+				@FormFieldMeta(title="单价",field="model.price",type=FormFieldType.DOUBLE,numberRange="0~",decimalCount=2,hint="请输入单价",span=12,suffix="元"),
 			}),
 			@FormRowMeta(endTabs=true,fields={
-				@FormFieldMeta(title="库存1",field="model.stockNum",type=FormFieldType.INT,span=12,disabled=true),
+				@FormFieldMeta(title="库存1",field="model.stockNum",type=FormFieldType.INT,span=12,disabled=true,suffix="件"),
 				@FormFieldMeta(title="销量1",field="model.saleNum",type=FormFieldType.INT,span=12,disabled=true),
 			}),
 			@FormRowMeta(tabs=true,fields={

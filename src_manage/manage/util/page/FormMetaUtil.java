@@ -65,6 +65,7 @@ public class FormMetaUtil {
 					m.put("rows", field.rows());
 				}
 				m.put("hint", field.hint());
+				m.put("suffix", field.suffix());
 				m.put("nullHidden", field.nullHidden());
 				m.put("clearField", field.clearField());
 				m.put("thumWidth", field.thumWidth());

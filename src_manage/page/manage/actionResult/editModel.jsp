@@ -23,23 +23,30 @@
 		<c:if test="${field.message!='' }"><tooltip max-width="350" placement="top"><div slot="content">${field.message }</div></c:if>
 			<form-item label="${field.title }" ${field.required?'required':'' } style="margin-bottom:18px;" :label-width="${field.titleWidth }">
 			<c:if test="${field.type=='TEXT' }">
-				<i-input v-model="fields['${field.field }']" placeholder="${field.hint }" @on-blur="doClearField('${field.field }')" ${field.disabled?'disabled':'' }></i-input>
+				<i-input v-model="fields['${field.field }']" placeholder="${field.hint }" @on-blur="doClearField('${field.field }')" ${field.disabled?'disabled':'' }>
+					<c:if test="${!empty field.suffix}"><span slot="append">${field.suffix}</span></c:if>
+				</i-input>
 			</c:if>
 			<c:if test="${field.type=='TEXTAREA' }">
-				<i-input v-model="fields['${field.field }']" type="textarea" :rows="${field.rows }" placeholder="${field.hint }" @on-blur="doClearField('${field.field }')" ${field.disabled?'disabled':'' }></i-input>
+				<i-input v-model="fields['${field.field }']" type="textarea" :rows="${field.rows }" placeholder="${field.hint }" @on-blur="doClearField('${field.field }')" ${field.disabled?'disabled':'' }>
+					<c:if test="${!empty field.suffix}"><span slot="append">${field.suffix}</span></c:if>
+				</i-input>
 			</c:if>
 			<c:if test="${field.type=='PASSWORD' }">
-				<i-input v-model="fields['${field.field }']" type="password" placeholder="${field.hint }" @on-blur="doClearField('${field.field }')" ${field.disabled?'disabled':'' }></i-input>
+				<i-input v-model="fields['${field.field }']" type="password" placeholder="${field.hint }" @on-blur="doClearField('${field.field }')" ${field.disabled?'disabled':'' }>
+					<c:if test="${!empty field.suffix}"><span slot="append">${field.suffix}</span></c:if>
+				</i-input>
 			</c:if>
 			<c:if test="${field.type=='INT'||field.type=='DOUBLE'}">
 				<input-number v-model="fields['${field.field }']" :style="{width:'100%'}" placeholder="${field.hint }" ${field.disabled?'disabled':'' } @on-blur="parseNumber('${field.field }',${field.decimalCount });doClearField('${field.field }');"
-					<c:if test="${!empty field.numberUp }">:max="${field.numberUp}"</c:if> <c:if test="${!empty field.numberDown }">:min="${field.numberDown}"</c:if>></input-number>
+					<c:if test="${!empty field.numberUp }">:max="${field.numberUp}"</c:if> <c:if test="${!empty field.numberDown }">:min="${field.numberDown}"</c:if>
+					<c:if test="${!empty field.suffix}">:formatter="value=>`\${value}${field.suffix}`" :parser="value=>value.replace('${field.suffix}','')"</c:if>></input-number>
 			</c:if>
 			<c:if test="${field.type=='DATE'||field.type=='DATETIME' }">
 			<date-picker type="${field.type=='DATE'?'date':'datetime' }" :style="{width:'100%'}" v-model="fields['${field.field }']" format="${item.dateFormat }" placeholder="${field.hint }" :transfer="true" @on-change="doClearField('${field.field }');" ${field.disabled?'disabled':'' }></date-picker>
 			</c:if>
 			<c:if test="${field.type=='SELECT' }">
-			<i-select ref="${field.field }" v-model="fields['${field.field }']" :filterable="true" :clearable="true" :transfer="true" @on-change="doClearField('${field.field }');" ${field.disabled?'disabled':'' }>
+			<i-select ref="${field.field }" v-model="fields['${field.field }']" :filterable="true" :clearable="true" :transfer="true" @on-change="doClearField('${field.field }');" placeholder="${field.hint }" ${field.disabled?'disabled':'' }>
 				<i-option v-for="item in selectDatas['${field.field }']" :value="item.value" :key="item.value">{{ item.label }}</i-option>
 			</i-select>
 			</c:if>
@@ -86,7 +93,9 @@
 				<vue-html5-editor :content="fields['${field.field }']" :fieldname="'${field.field }'" @change="updateEditerData" :height="${field.height<300?300:field.height }"></vue-html5-editor>
 			</c:if>
 			<c:if test="${field.type=='MAP' }">
-				<i-input v-model="fields['${field.field }']" icon="ios-pin-outline" placeholder="${field.hint }" @on-blur="doClearField('${field.field }')" @on-click="openMapModal('${field.field }',${field.disabled?false:true })" ${field.disabled?'disabled':'' } readonly ></i-input>
+				<i-input v-model="fields['${field.field }']" icon="ios-pin-outline" placeholder="${field.hint }" @on-blur="doClearField('${field.field }')" @on-click="openMapModal('${field.field }',${field.disabled?false:true })" ${field.disabled?'disabled':'' } readonly >
+					<c:if test="${!empty field.suffix}"><span slot="append">${field.suffix}</span></c:if>
+				</i-input>
 			</c:if>
 			<c:if test="${field.type=='BUTTON' }">
 				<c:forEach var="btn" items="${field.buttons}">
