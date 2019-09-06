@@ -89,7 +89,7 @@ public class TransactionManager {
 	 * 事务开始
 	 * @throws SQLException 
 	 */
-	public void begin() throws SQLException { 
+	public boolean begin() throws SQLException { 
 		if(!dbRun.get()&&!isRun){
 			dbRun.set(true);
 			isRun=true;
@@ -97,6 +97,9 @@ public class TransactionManager {
 			if (conn.getAutoCommit()) {
 				conn.setAutoCommit(false); //手动提交
 			}
+			return true;
+		}else {
+			return false;
 		}
 	}
 	/**
@@ -104,10 +107,14 @@ public class TransactionManager {
 	 * @param key 唯一执行主键 20个长度
 	 * @throws Exception
 	 */
-	public void begin(String key) throws Exception {
-		begin();
-		if(!StringUtil.isSpace(key)) {
-			synchKey=CacheUtil.executeSynch(key);
+	public boolean begin(String key) throws Exception {
+		if(begin()) {
+			if(!StringUtil.isSpace(key)) {
+				synchKey=CacheUtil.executeSynch(key);
+			}
+			return true;
+		}else {
+			return false;
 		}
 	}
 	 
