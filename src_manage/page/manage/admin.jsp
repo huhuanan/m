@@ -228,30 +228,39 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			</modal>
 		</div>
 		<div id="login_page" v-show="loginBackground" style="position: fixed;overflow: hidden;width:100%;top:0px;bottom:0px;z-index:1000;background:url(${fn:indexOf('YA',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' });background-size:cover;background-color:#eee;">
-			<modal class-name="vertical-center-modal" :closable="false" :mask-closable="false" v-model="tologin">
+			<modal class-name="vertical-center-modal" width="350" :closable="false" :mask-closable="false" v-model="tologin">
 				<p slot="header" style="color:#2d8cf0;text-align:center">
-					<icon type="information-circled"></icon>
-					<span v-html="'${map.systemInfo.backgroundTitle }'"></span>
+					<span v-html="'${map.systemInfo.backgroundTitle }'" :style="{fontSize:'19px'}"></span>
 				</p>
 				<row>
-					<i-col offset="6" span="12">
+					<i-col offset="4" span="16">
 						<div style="height:24px;"></div>
-						<i-form :model="loginInfo" :label-width="60" style="padding-top:'24px';">
-							<form-item label="用户名">
+						<i-form :model="loginInfo">
+							<form-item>
 								<i-input type="text" v-model="loginInfo['model.username']" placeholder="用户名">
 									<icon type="ios-person-outline" slot="prepend"></icon>
 								</i-input>
 							</form-item>
-							<form-item label="密码">
-								<i-input type="password" v-model="loginInfo['model.password']" placeholder="密码" @on-enter="doLogin">
+							<form-item>
+								<i-input type="password" v-model="loginInfo['model.password']" placeholder="密码">
 									<icon type="ios-medical-outline" slot="prepend"></icon>
+								</i-input>
+							</form-item>
+							<form-item>
+								<i-input type="text" v-model="loginInfo['imageCode']" placeholder="验证码" @on-enter="doLogin">
+									<icon type="ios-medical-outline" slot="prepend"></icon>
+									<span slot="append"><img height="22" :src="tologin?'action/manageAdminLogin/getCaptchaCode':''" /></span>
 								</i-input>
 							</form-item>
 						</i-form>
 					</i-col>
 				</row>
 				<div slot="footer" style="text-align:center;">
-					<i-button type="primary" size="large" @click="doLogin" v-html="'登录'"></i-button>
+					<row>
+						<i-col offset="4" span="16">
+						<i-button type="primary" size="large" long @click="doLogin" v-html="'登录'"></i-button>
+						</i-col>
+					</row>
 				</div>
 			</modal>
 		</div>
@@ -396,6 +405,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						loginInfo:{
 							'model.username':'',
 							'model.password':'',
+							imageCode:"",
 						},
 						modelInfo:{
 						}

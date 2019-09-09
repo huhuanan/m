@@ -61,6 +61,8 @@ img{vertical-align:middle;}
 .ivu-input-number-disabled .ivu-input-number-input {background-color: #f9f9f9;color: #888;}
 .ivu-select-input[disabled] {color: #888;-webkit-text-fill-color: #888;}
 .ivu-layout,.ivu-layout-content{background:transparent!important;}
+#login_page .ivu-modal,.ivu-modal-content{background-color:rgba(255,255,255,0.8)!important;}
+#login_page .ivu-modal,.ivu-modal-body{padding:0!important;}
 .image_list_image{
 	display:inline-block;width:150px;height:150px;margin:0 10px 10px 0;
 }

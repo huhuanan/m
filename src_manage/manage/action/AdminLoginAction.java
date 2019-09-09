@@ -1,18 +1,29 @@
 package manage.action;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import m.common.action.ActionMeta;
 import m.common.action.ActionResult;
 import m.common.model.util.ModelQueryUtil;
 import m.system.RuntimeData;
 import m.system.exception.MException;
+import m.system.lang.HtmlBodyContent;
 import m.system.util.JSONMessage;
+import m.system.util.StringUtil;
 import manage.dao.AdminLoginDao;
 import manage.model.AdminLogin;
 import manage.run.ModuleInitRun;
 import manage.service.AdminLoginService;
 import manage.service.SystemInfoService;
+import manage.util.CaptchaUtil;
 import manage.util.page.button.ButtonMeta;
 import manage.util.page.button.ButtonMeta.ButtonEvent;
 import manage.util.page.button.ButtonMeta.ButtonStyle;
@@ -36,6 +47,7 @@ import manage.util.page.table.ActionTableMeta;
 public class AdminLoginAction extends StatusAction {
 	
 	private AdminLogin model;
+	private String imageCode;
 	private String autoLogin;
 	private String password;
 	public ActionResult admin() throws MException, Exception{
@@ -58,6 +70,30 @@ public class AdminLoginAction extends StatusAction {
 		}
 		return message;
 	}
+	public HtmlBodyContent getCaptchaCode() throws IOException {
+		HttpServletRequest request=getRequest();
+		HttpServletResponse response=getResponse();
+		response.setDateHeader("Expires", 0);
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setContentType("image/jpeg");
+        
+        OutputStream os = response.getOutputStream();
+        //返回验证码和图片的map
+        Map<String,Object> map = CaptchaUtil.getImageCode(60, 22, os);
+        request.getSession().setAttribute("CaptchaCode", map.get("code").toString().toLowerCase());
+        try {
+            ImageIO.write((BufferedImage) map.get("image"), "jpg", os);
+        }catch(IOException e) {
+        }finally{
+            if (os != null) {
+                os.flush();
+                os.close();
+            }
+        }
+		return new HtmlBodyContent("");
+	}
 	/**
 	 * 登录
 	 * @return
@@ -66,6 +102,13 @@ public class AdminLoginAction extends StatusAction {
 		setLogContent("登陆", "管理员登陆后台");
 		JSONMessage message=new JSONMessage();
 		try {
+			if(StringUtil.isSpace(imageCode)) {
+				throw new MException(this.getClass(), "请输入验证码");
+			}else if(null==getRequest().getSession().getAttribute("CaptchaCode")){
+				throw new MException(this.getClass(), "验证码已失效, 请刷新页面");
+			} if(!imageCode.toLowerCase().equals(getRequest().getSession().getAttribute("CaptchaCode").toString())) {
+				throw new MException(this.getClass(), "验证码错误");
+			}
 			model=getService(AdminLoginService.class).loginVerification(model);
 			setSessionAdmin(model,autoLogin);
 			getDao(AdminLoginDao.class).updateLastInfo(model, getIpAddress());
@@ -292,6 +335,12 @@ public class AdminLoginAction extends StatusAction {
 	}
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public String getImageCode() {
+		return imageCode;
+	}
+	public void setImageCode(String imageCode) {
+		this.imageCode = imageCode;
 	}
 	public String getAutoLogin() {
 		return autoLogin;

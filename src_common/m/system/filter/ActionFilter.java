@@ -273,7 +273,7 @@ public class ActionFilter implements Filter {
 					outString=message.toJSONString();
 				}
 				if(RuntimeData.getDebug()) System.out.println(new StringBuffer("return Object:").append(outString));
-				res.getWriter().print(outString);
+				if(!StringUtil.isSpace(outString)) res.getWriter().print(outString);
 			}
 		}
 	}

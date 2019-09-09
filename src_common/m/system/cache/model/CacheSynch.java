@@ -20,7 +20,6 @@ public class CacheSynch extends Model implements FlushCache {
 		this.synchStatus = synchStatus;
 	}
 
-	@Override
 	public CacheSynch getCacheModel(String key) throws Exception {
 		this.setOid(key);
 		return ModelQueryUtil.getModel(this);
