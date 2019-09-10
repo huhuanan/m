@@ -79,13 +79,17 @@ public class DBConnection {
 	}
 	protected static void closeAll() {
 		for(DBConnection conn : conns) {
-			try {
-				if(null!=conn&&null!=conn.connection)
-					conn.connection.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
+			if(null!=conn) {
+				try {
+					if(null!=conn.connection) {
+						conn.connection.close();
+						conn.connection=null;
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+				conn.isUse=false;
 			}
-			conn.isUse=false;
 		}
 	}
 	

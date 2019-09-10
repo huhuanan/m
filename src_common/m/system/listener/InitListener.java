@@ -11,6 +11,7 @@ import m.system.RuntimeData;
 import m.system.SystemInit;
 import m.system.db.DBConfig;
 import m.system.db.TransactionManager;
+import m.system.task.TaskUtil;
 import m.system.util.StringUtil;
 
 public class InitListener implements ServletContextListener {
@@ -18,6 +19,7 @@ public class InitListener implements ServletContextListener {
 	public void contextDestroyed(ServletContextEvent arg0) {
 		HostSocketUtil.closeClient();
 		HostSocketUtil.closeServer();
+		TaskUtil.closeTask();
 		TransactionManager.closeConnection();
 		TransactionManager.closeAllConection();
 	}
