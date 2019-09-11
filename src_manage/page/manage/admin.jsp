@@ -228,40 +228,34 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			</modal>
 		</div>
 		<div id="login_page" v-show="loginBackground" style="position: fixed;overflow: hidden;width:100%;top:0px;bottom:0px;z-index:1000;background:url(${fn:indexOf('YA',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' });background-size:cover;background-color:#eee;">
-			<modal class-name="vertical-center-modal" width="350" :closable="false" :mask-closable="false" v-model="tologin">
-				<p slot="header" style="color:#2d8cf0;text-align:center">
-					<span v-html="'${map.systemInfo.backgroundTitle }'" :style="{fontSize:'19px'}"></span>
-				</p>
+			<modal class-name="vertical-center-modal" width="350" :closable="false" footer-hide :mask-closable="false" v-model="tologin">
 				<row>
 					<i-col offset="4" span="16">
-						<div style="height:24px;"></div>
+						<p style="color:#2d8cf0;text-align:center">
+							<span v-html="'${map.systemInfo.backgroundTitle }'" :style="{fontSize:'19px'}"></span>
+						</p>
+						<div style="height:16px;"></div>
 						<i-form :model="loginInfo">
-							<form-item>
+							<form-item style="margin-bottom:4px;">
 								<i-input type="text" v-model="loginInfo['model.username']" placeholder="用户名">
 									<icon type="ios-person-outline" slot="prepend"></icon>
 								</i-input>
 							</form-item>
-							<form-item>
+							<form-item style="margin-bottom:4px;">
 								<i-input type="password" v-model="loginInfo['model.password']" placeholder="密码">
 									<icon type="ios-medical-outline" slot="prepend"></icon>
 								</i-input>
 							</form-item>
-							<form-item>
+							<form-item style="margin-bottom:10px;">
 								<i-input type="text" v-model="loginInfo['imageCode']" placeholder="验证码" @on-enter="doLogin">
 									<icon type="ios-medical-outline" slot="prepend"></icon>
 									<span slot="append"><img height="22" :src="tologin?'action/manageAdminLogin/getCaptchaCode':''" /></span>
 								</i-input>
 							</form-item>
 						</i-form>
+						<i-button type="primary" size="large" long @click="doLogin" v-html="'登录'"></i-button>
 					</i-col>
 				</row>
-				<div slot="footer" style="text-align:center;">
-					<row>
-						<i-col offset="4" span="16">
-						<i-button type="primary" size="large" long @click="doLogin" v-html="'登录'"></i-button>
-						</i-col>
-					</row>
-				</div>
 			</modal>
 		</div>
 		
