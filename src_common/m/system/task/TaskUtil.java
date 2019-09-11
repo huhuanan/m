@@ -36,8 +36,10 @@ public class TaskUtil {
 	}
 	public static void closeTask() {
 		try {
-			scheduler.shutdown(true);
-			System.out.println("定时任务已关闭!");
+			if(null!=scheduler) {
+				scheduler.shutdown(true);
+				System.out.println("定时任务已关闭!");
+			}
 		} catch (SchedulerException e) {
 			System.out.println("定时任务关闭失败!");
 			e.printStackTrace();
