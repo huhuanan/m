@@ -19,6 +19,7 @@ public class Test {
 			
 		DataSet ds=sql.executeQuery();
 		System.out.println(ds.size());
+		System.out.println(ds.get(Integer.class, 0, "price"));
 //		Map<String,String> eMap=new HashMap<String,String>();
 //		eMap.put("loginCount", "sum(#{loginCount})");
 //		List<AdminLogin> list=ModelQueryList.getModelList(AdminLogin.class, new String[]{"realname"}, new QueryPage(0,10),null,eMap,true, null);

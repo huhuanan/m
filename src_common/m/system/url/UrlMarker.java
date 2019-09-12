@@ -28,48 +28,52 @@ public class UrlMarker {
 	private static List<String> authorizationList;
 	private static void initXML(){
 		if(null==redirectMap){
-			ruList=new ArrayList<RedirectUrl>();
-			redirectMap=new HashMap<String,String>();
-			enableList=new ArrayList<String>();
-			refererList=new ArrayList<String>();
-			authorizationList=new ArrayList<String>();
-			InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("config/urlmarker.xml");
-			DocumentBuilderFactory domfac=DocumentBuilderFactory.newInstance();
-			DocumentBuilder dombuilder;
-			try {
-				String domainClass=RuntimeData.getDomainClass();
-				if(!StringUtil.isSpace(domainClass)){
-					for(String clazz : domainClass.split(",")){
-						ruList.add((RedirectUrl) ClassUtil.newInstance(clazz));
+			synchronized (UrlMarker.class) {
+				if(null==redirectMap){
+					ruList=new ArrayList<RedirectUrl>();
+					redirectMap=new HashMap<String,String>();
+					enableList=new ArrayList<String>();
+					refererList=new ArrayList<String>();
+					authorizationList=new ArrayList<String>();
+					InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("config/urlmarker.xml");
+					DocumentBuilderFactory domfac=DocumentBuilderFactory.newInstance();
+					DocumentBuilder dombuilder;
+					try {
+						String domainClass=RuntimeData.getDomainClass();
+						if(!StringUtil.isSpace(domainClass)){
+							for(String clazz : domainClass.split(",")){
+								ruList.add((RedirectUrl) ClassUtil.newInstance(clazz));
+							}
+						}
+						dombuilder = domfac.newDocumentBuilder();
+						Document doc=dombuilder.parse(is);
+						Element root=doc.getDocumentElement();
+						NodeList urlType=root.getChildNodes();
+						if(urlType!=null){
+							for(int i=0;i<urlType.getLength();i++){
+								Node utype=urlType.item(i);
+								if("redirect"==utype.getNodeName()){
+									fillMap(utype,redirectMap,"tag");
+								}
+								if("enable"==utype.getNodeName()){
+									fillList(utype,enableList);
+									//enableList.add("/action/");
+									//enableList.add("/page/");
+									//enableList.add("/WEB-INF/classes/page/");
+								}
+								if("referer"==utype.getNodeName()){
+									fillList(utype,refererList);
+									refererList.add("127.0.0.1");
+								}
+								if("authorization"==utype.getNodeName()){
+									fillList(utype,authorizationList);
+								}
+							}
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
 					}
 				}
-				dombuilder = domfac.newDocumentBuilder();
-				Document doc=dombuilder.parse(is);
-				Element root=doc.getDocumentElement();
-				NodeList urlType=root.getChildNodes();
-				if(urlType!=null){
-					for(int i=0;i<urlType.getLength();i++){
-						Node utype=urlType.item(i);
-						if("redirect"==utype.getNodeName()){
-							fillMap(utype,redirectMap,"tag");
-						}
-						if("enable"==utype.getNodeName()){
-							fillList(utype,enableList);
-							//enableList.add("/action/");
-							//enableList.add("/page/");
-							//enableList.add("/WEB-INF/classes/page/");
-						}
-						if("referer"==utype.getNodeName()){
-							fillList(utype,refererList);
-							refererList.add("127.0.0.1");
-						}
-						if("authorization"==utype.getNodeName()){
-							fillList(utype,authorizationList);
-						}
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 	}

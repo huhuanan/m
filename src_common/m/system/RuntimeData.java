@@ -90,11 +90,15 @@ public class RuntimeData {
 	
 	private static Set<String> staticPropertyList=null;
 	public static StringBuffer testStaticDomain(String property){
-		if(null==staticPropertyList){
-			staticPropertyList=new HashSet<String>();
-			String[] sp=staticField.split(",");
-			for(String s : sp){
-				staticPropertyList.add(s);
+		if(null==staticPropertyList) {
+			synchronized (RuntimeData.class) {
+				if(null==staticPropertyList){
+					staticPropertyList=new HashSet<String>();
+					String[] sp=staticField.split(",");
+					for(String s : sp){
+						staticPropertyList.add(s);
+					}
+				}
 			}
 		}
 		if(staticPropertyList.contains(property)){
@@ -106,10 +110,14 @@ public class RuntimeData {
 	private static Set<String> secretFieldList=null;
 	public static boolean isSecretField(String property) {
 		if(null==secretFieldList) {
-			secretFieldList=new HashSet<String>();
-			String[] sf=secretField.split(",");
-			for(String s : sf) {
-				secretFieldList.add(s);
+			synchronized (RuntimeData.class) {
+				if(null==secretFieldList) {
+					secretFieldList=new HashSet<String>();
+					String[] sf=secretField.split(",");
+					for(String s : sf) {
+						secretFieldList.add(s);
+					}
+				}
 			}
 		}
 		return secretFieldList.contains(property);

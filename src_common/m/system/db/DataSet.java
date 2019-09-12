@@ -11,11 +11,11 @@ public class DataSet {
 	}
 	@SuppressWarnings("unchecked")
 	public <T extends Object> T get(Class<T> clazz,int i,String name){
-		return (T) ((Map<String,Object>)list.get(i)).get(name);
+		return new DataRow((Map<String,Object>)list.get(i)).get(clazz,name);
 	}
 	@SuppressWarnings("unchecked")
 	public Object get(int i,String name){
-		return ((Map<String,Object>)list.get(i)).get(name);
+		return new DataRow((Map<String,Object>)list.get(i)).get(name);
 	}
 	public int size(){
 		return list.size();
