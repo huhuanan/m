@@ -27,6 +27,7 @@ import m.system.util.StringUtil;
 import manage.dao.AdminLoginDao;
 import manage.model.AdminGroup;
 import manage.model.AdminLogin;
+import manage.run.AdminLoginSessionTask;
 import manage.service.AdminGroupPowerService;
 import manage.util.excel.ExcelObject;
 import manage.util.excel.SheetObject;
@@ -69,15 +70,36 @@ public abstract class ManageAction extends Action {
 	}
 	public static MException noLoginException=new MException(ManageAction.class, "NoLogin:未登录");
 	public static MException noPowerException=new MException(ManageAction.class, "NoPower:权限不足");
+	
+	/**
+	 * 获取session
+	 * @param oid
+	 * @return
+	 * @throws Exception
+	 */
+	public static AdminLogin getSessionAdmin(String oid) throws Exception{
+		return AdminLoginSessionTask.getSessionAdmin(oid);
+	}
+	/**
+	 * 重置登录信息 
+	 * @param adminOid 登录账号oid
+	 */
+	public void resetSessionAdmin(String adminOid){
+		AdminLoginSessionTask.resetSessionAdmin(adminOid);
+	}
 	/**
 	 * 获取登录用户信息 返回null说明没有登录
 	 * @return
 	 */
 	public AdminLogin getSessionAdmin() {
-		Object oid=getRequest().getSession().getAttribute("login_admin_oid");
+		AdminLogin admin=null;
+		Object oid=AdminLoginSessionTask.getSessionAdminOid(getRequest().getSession());
 		if(null!=oid){
-			return sessionAdminMap.get(oid.toString());
-		}else{
+			try {
+				admin=getSessionAdmin(oid.toString());
+			} catch (Exception e) {}
+		}
+		if(null==admin){
 			String name=null;
 			String key=null;
 			Cookie[] cs=getRequest().getCookies();
@@ -97,22 +119,14 @@ public abstract class ManageAction extends Action {
 				}
 				if(!StringUtil.isSpace(adminOid)){
 					try {
-						AdminLogin admin=new AdminLogin();
-						admin.setOid(adminOid);
-						admin=ModelQueryList.getModel(admin,1);
-						admin.setPassword("");
+						admin=getSessionAdmin(adminOid);
 						setSessionAdmin(admin,"");
 						getDao(AdminLoginDao.class).updateLastInfo(admin, getIpAddress());
-						return admin;
 					} catch (Exception e) {}
 				}
 			}
 		}
-		return null;
-	}
-	private static Map<String,AdminLogin> sessionAdminMap=new HashMap<String, AdminLogin>();
-	public static AdminLogin getSessionAdmin(String oid){
-		return sessionAdminMap.get(oid);
+		return admin;
 	}
 	/**
 	 * 设置session
@@ -130,17 +144,12 @@ public abstract class ManageAction extends Action {
 			cookie.setPath("/");
 			getResponse().addCookie(cookie);
 		}
-		getRequest().getSession().setAttribute("login_admin_oid", admin.getOid());
-		sessionAdminMap.put(admin.getOid(), admin);
+		AdminLoginSessionTask.setSessionAdminOid(getRequest().getSession(), admin.getOid());
 	}
 	/**
 	 * 清除登录信息
 	 */
 	public void clearSessionAdmin(){
-		AdminLogin admin=getSessionAdmin();
-		if(null!=admin){
-			sessionAdminMap.remove(admin.getOid());
-		}
 		Cookie cookie=new Cookie("admin_name","");
 		cookie.setMaxAge(1);
 		cookie.setPath("/");
@@ -149,22 +158,7 @@ public abstract class ManageAction extends Action {
 		cookie.setMaxAge(1);
 		cookie.setPath("/");
 		getResponse().addCookie(cookie);
-		getRequest().getSession().removeAttribute("login_admin_oid");
-		getRequest().getSession().invalidate();
-	}
-	/**
-	 * 重置登录信息 
-	 * @param adminOid 登录账号oid
-	 */
-	public void resetSessionAdmin(String adminOid){
-		AdminLogin session=sessionAdminMap.get(adminOid);
-		if(null!=session){
-			try {
-				sessionAdminMap.put(adminOid, ModelQueryList.getModel(session,1));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		AdminLoginSessionTask.removeSessionAdminOid(getRequest().getSession());
 	}
 	
 	public static Map<String,Boolean> getAdminOperPower(AdminLogin admin) throws SQLException, MException{

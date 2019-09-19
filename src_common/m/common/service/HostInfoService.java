@@ -12,6 +12,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 import m.common.model.HostInfo;
 import m.system.RuntimeData;
+import m.system.SystemSessionTask;
 import m.system.db.DBConnection;
 import m.system.listener.SessionListener;
 import m.system.util.ByteUtil;
@@ -59,7 +60,7 @@ public class HostInfoService extends Service {
 		int totalMemory = NumberUtil.toInt(Runtime.getRuntime().totalMemory() / mb *100);
 		int freeMemory = NumberUtil.toInt(Runtime.getRuntime().freeMemory() / mb *100);
 		int maxMemory = NumberUtil.toInt(Runtime.getRuntime().maxMemory() / mb *100);
-		int sessionNum=SessionListener.getSessionNum();
+		int sessionNum=SystemSessionTask.getSessionNum();
 		int dbUseLinkNum = DBConnection.getUseLinkNum();
 		setHostOtherInfo(totalMemory, freeMemory, maxMemory, sessionNum,dbUseLinkNum);
 	}

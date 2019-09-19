@@ -227,14 +227,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				<div id="modifyModelInfo"></div>
 			</modal>
 		</div>
-		<div id="login_page" v-show="loginBackground" style="position: fixed;overflow: hidden;width:100%;top:0px;bottom:0px;z-index:1000;background:url(${fn:indexOf('YA',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' });background-size:cover;background-color:#eee;">
-			<modal class-name="vertical-center-modal" width="350" :closable="false" footer-hide :mask-closable="false" v-model="tologin">
+		<div id="login_page" v-show="loginBackground" style="position: fixed;overflow: hidden;width:100%;top:0px;bottom:0px;z-index:2000;background:url(${fn:indexOf('YA',map.systemInfo.backgroundType)>-1?map.systemInfo.backgroundImage.imgPath:'' });background-size:cover;background-color:#eee;">
+			<modal id="login_modal" class-name="vertical-center-modal" :style="{zIndex:2001}" width="350" :closable="false" footer-hide :mask-closable="false" v-model="tologin">
 				<row>
 					<i-col offset="4" span="16">
 						<p style="color:#2d8cf0;text-align:center">
 							<span v-html="'${map.systemInfo.backgroundTitle }'" :style="{fontSize:'19px'}"></span>
 						</p>
-						<div style="height:16px;"></div>
+						<div style="height:8px;"></div>
 						<i-form :model="loginInfo">
 							<form-item style="margin-bottom:4px;">
 								<i-input type="text" v-model="loginInfo['model.username']" placeholder="用户名">

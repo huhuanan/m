@@ -102,31 +102,21 @@ public class SystemInit {
 				e.printStackTrace();
 			}
 			initModelTable();
-			initClassRun();
-			taskClassRun();
 		}
 	}
-	private static String initClass;
-	public static void setInitClass(String ic){
-		initClass=ic;
-	}
-	public static void initClassRun(){
+	public static void initClassRun(String initClass){
 		if(StringUtil.isSpace(initClass)) return ;
 		String[] clazzs=initClass.split(",");
 		for(int i=0;i<clazzs.length;i++){
 			try {
-				ClassUtil.executeMethod(Class.forName(clazzs[i]).newInstance(), "execute");
+				ClassUtil.executeMethod(Class.forName(clazzs[i].trim()).newInstance(), "execute");
 			} catch (Exception e) {
 				System.err.println("初始化错误!"+e.getMessage());
 				e.printStackTrace();
 			}
 		}
 	}
-	private static String taskClass;
-	public static void setTaskClass(String tc){
-		taskClass=tc;
-	}
-	public static void taskClassRun(){
+	public static void taskClassRun(String taskClass){
 		if(StringUtil.isSpace(taskClass)) return ;
 		String[] clazzs=taskClass.split("&");
 		List<String[]> list=new ArrayList<String[]>();

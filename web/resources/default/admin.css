@@ -62,6 +62,8 @@ img{vertical-align:middle;}
 .ivu-select-input[disabled] {color: #888;-webkit-text-fill-color: #888;}
 .ivu-layout,.ivu-layout-content{background:transparent!important;}
 .ivu-modal-content{background-color:rgba(250,250,251,0.95)!important;}
+#login_modal .ivu-modal-wrap{z-index:2001!important;}
+#login_modal .ivu-modal-content{background-color:rgba(250,250,251,0.8)!important;}
 .image_list_image{
 	display:inline-block;width:150px;height:150px;margin:0 10px 10px 0;
 }
@@ -80,7 +82,7 @@ img{vertical-align:middle;}
 	vertical-align: middle;margin-left:10px;display:inline-block;width:30px;height:30px;
 }
 .image_input:before{
-	content:"无";width:30px;line-height:30px;position: absolute;text-align:center;z-index:-1;
+	content:"鏃�";width:30px;line-height:30px;position: absolute;text-align:center;z-index:-1;
 }
 .vue-html5-editor>.toolbar>.dashboard button {
 	line-height: normal;

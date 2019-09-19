@@ -22,8 +22,8 @@ public class TaskUtil {
 			scheduler = sFactory.getScheduler();
 			for(String[] strs : list){
 				System.out.println(strs[0]+"--"+strs[1]);
-				scheduler.scheduleJob(JobBuilder.newJob(ClassUtil.getClass(SystemTaskRun.class,strs[0])).build(),
-					TriggerBuilder.newTrigger().withSchedule(CronScheduleBuilder.cronSchedule(strs[1])).build());
+				scheduler.scheduleJob(JobBuilder.newJob(ClassUtil.getClass(SystemTaskRun.class,strs[0].trim())).build(),
+					TriggerBuilder.newTrigger().withSchedule(CronScheduleBuilder.cronSchedule(strs[1].trim())).build());
 			}
 			scheduler.start();
 			System.out.println("定时任务已初始化完毕!");

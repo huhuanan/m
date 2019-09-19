@@ -39,8 +39,6 @@ public class HostSocketClientTimerEvent extends SocketClientTimerEvent {
 			}
 			if(!isInit){
 				SystemInit.initModelTable();
-				SystemInit.initClassRun();
-				SystemInit.taskClassRun();
 				isInit=true;
 			}
 		} catch (Exception e) {

@@ -53,16 +53,16 @@ public class InitListener implements ServletContextListener {
 			String modelPack=StringUtil.noSpace(p.getProperty("model_pack"));
 			SystemInit.initModel(modelPack);
 			
-			String taskClass=StringUtil.noSpace(p.getProperty("task_class"));
-			SystemInit.setTaskClass(taskClass);
-			String initClass=StringUtil.noSpace(p.getProperty("init_class"));
-			SystemInit.setInitClass(initClass);
 			
 			String server_ip=StringUtil.noSpace(dbp.getProperty("server_ip"));
 			int server_port=StringUtil.isSpace(dbp.getProperty("server_port"))?8128:Integer.parseInt(dbp.getProperty("server_port"));
 			RuntimeData.setServerIp(server_ip);
 			RuntimeData.setServerPort(server_port);
 			SystemInit.initServerGroup(server_ip, server_port);
+
+			SystemInit.taskClassRun(StringUtil.noSpace(p.getProperty("task_class")));
+			SystemInit.initClassRun(StringUtil.noSpace(p.getProperty("init_class")));
+			SessionListener.init(StringUtil.noSpace(p.getProperty("session_task_class")));
 			
 			String actionPack=StringUtil.noSpace(p.getProperty("action_pack"));
 			SystemInit.initAction(actionPack);

@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
 encoding//src/config/mconfig.properties=UTF-8
 encoding//src/dbconfig.properties=UTF-8
+encoding//web/resources/default/admin.css=UTF-8
 encoding/<project>=UTF-8
