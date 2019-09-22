@@ -5,6 +5,7 @@ import java.util.Date;
 import m.common.model.HostInfo;
 import m.common.service.HostInfoService;
 import m.system.RuntimeData;
+import m.system.cache.CacheUtil;
 import m.system.netty.NettyEvent;
 import m.system.netty.NettyMessage;
 import m.system.netty.NettyServer;
@@ -29,6 +30,8 @@ public class HostNettyServerEvent extends NettyEvent {
 				return hostMapMessage();
 			}
 		}
+		//缓存处理
+		CacheUtil.forwardNettySynchCache(msg);
 		return null;
 	}
 	public void closeCallback(String ipport) {

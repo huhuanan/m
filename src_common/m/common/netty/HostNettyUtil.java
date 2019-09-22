@@ -101,6 +101,13 @@ public class HostNettyUtil {
 		}
 	}
 	/**
+	 * 获取客户端
+	 * @return
+	 */
+	public static NettyClient getClient() {
+		return client;
+	}
+	/**
 	 * 获取ip部分
 	 * @param ipport
 	 * @return

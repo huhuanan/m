@@ -63,7 +63,6 @@ public class CacheMap<T extends FlushCache> {
 	protected void clear(String key) {
 		this.data.remove(key);
 		System.out.println("清除缓存成功:"+key);
-		//通知其他主机清除
 	}
 	protected void clear() {
 		this.data=new HashMap<String,T>();

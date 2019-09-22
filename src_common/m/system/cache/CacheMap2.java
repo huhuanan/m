@@ -63,7 +63,6 @@ public class CacheMap2<T extends FlushCache2> {
 	protected void clear(String key,String key2) {
 		this.data.remove(key+key2);
 		System.out.println("清除缓存成功:"+key+key2);
-		//通知其他主机清除
 	}
 	protected void clear(String key) {
 		for(String k : this.data.keySet()) {

@@ -4,6 +4,7 @@ import java.util.Map;
 
 import m.common.model.HostInfo;
 import m.common.service.HostInfoService;
+import m.system.cache.CacheUtil;
 import m.system.netty.NettyEvent;
 import m.system.netty.NettyMessage;
 
@@ -29,6 +30,8 @@ public class HostNettyClientEvent extends NettyEvent {
 				HostNettyUtil.closeServer();
 			}
 		}
+		//缓存处理
+		CacheUtil.doNettySynchCache(msg);
 		return null;
 	}
 	public void exceptionCallback(String ipport, Throwable cause) {
