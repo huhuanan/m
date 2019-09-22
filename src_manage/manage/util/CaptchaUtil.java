@@ -9,16 +9,46 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import javax.servlet.http.HttpSession;
+
+import m.system.exception.MException;
+import m.system.util.StringUtil;
+
 public class CaptchaUtil {
+	public static void setMastVerify(HttpSession session) {
+		session.setAttribute("captcha_verify", true);
+	}
+	public static void clearMastVerify(HttpSession session) {
+		session.removeAttribute("captcha_verify");
+	}
+	public static boolean isMastVerify(HttpSession session) {
+		if(null!=session.getAttribute("captcha_verify")) {
+			return (Boolean) session.getAttribute("captcha_verify");
+		}else {
+			return false;
+		}
+	}
+	public static void verifyCaptcha(HttpSession session,String code) throws MException {
+		if(null!=session.getAttribute("captcha_verify")) {
+			if(StringUtil.isSpace(code)) {
+				throw new MException(CaptchaUtil.class, "请输入验证码");
+			}else if(null==session.getAttribute("captcha_code")){
+				throw new MException(CaptchaUtil.class, "验证码已失效");
+			}else if(!code.toLowerCase().equals(session.getAttribute("captcha_code").toString())) {
+				throw new MException(CaptchaUtil.class, "验证码错误");
+			}
+		}
+	}
+	
 	private static char mapTable[] = {
             '0', '1', '2', '3', '4', '5',
             '6', '7', '8', '9', '0', '1',
             '2', '3', '4', '5', '6', '7',
             '8', '9'};
-    public static Map<String, Object> getImageCode(int width, int height, OutputStream os) {
-        Map<String,Object> returnMap = new HashMap<String, Object>();
+    public static BufferedImage getImageCode(HttpSession session,OutputStream os) {
+    	int width=60,height=22;
         if (width <= 0) width = 60;
-        if (height <= 0) height = 20;
+        if (height <= 0) height = 22;
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         // 获取图形上下文
         Graphics g = image.getGraphics();
@@ -52,9 +82,8 @@ public class CaptchaUtil {
         }
         // 释放图形上下文
         g.dispose();
-        returnMap.put("image",image);
-        returnMap.put("code",code);
-        return returnMap;
+        session.setAttribute("captcha_code", code.toLowerCase());
+        return image;
     }
     //给定范围获得随机颜色
     static Color getRandColor(int fc, int bc) {

@@ -153,7 +153,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			}
 		});
 		Vue.component('admin-nav-tags',{
-			template:`<div :style="{position:'fixed',zIndex:'998',top:'60px',left:menuExpansion?'200px':'60px',right:'1px',padding:'8px 8px',backgroundColor:'rgba(238,238,238,0.6)',overflow:'hidden',height:'46px',borderBottom:'solid 1px #ddd'}">
+			template:`<div :style="{position:'fixed',zIndex:'998',top:'60px',left:menuExpansion?'200px':'60px',right:'1px',padding:'8px 8px',backgroundColor:'rgba(238,238,238,0.85)',overflow:'hidden',height:'46px',borderBottom:'solid 1px #ddd'}">
 				<slot name="first"></slot>
 				<dropdown transfer style="float:right;">
 					<i-button style="padding:0 10px;"><i class="iconfont" style="font-size:20px;">&#xe71b;</i></i-button>
@@ -235,6 +235,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 							<span v-html="'${map.systemInfo.backgroundTitle }'" :style="{fontSize:'19px'}"></span>
 						</p>
 						<div style="height:8px;"></div>
+						<alert type="error" show-icon v-if="loginMessage" v-html="loginMessage"></alert>
 						<i-form :model="loginInfo">
 							<form-item style="margin-bottom:4px;">
 								<i-input type="text" v-model="loginInfo['model.username']" placeholder="用户名">
@@ -246,13 +247,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 									<icon type="ios-medical-outline" slot="prepend"></icon>
 								</i-input>
 							</form-item>
-							<form-item style="margin-bottom:10px;">
+							<form-item v-if="codeVerify" style="margin-bottom:4px;">
 								<i-input type="text" v-model="loginInfo['imageCode']" placeholder="验证码" @on-enter="doLogin">
 									<icon type="ios-medical-outline" slot="prepend"></icon>
-									<span slot="append"><img height="22" :src="tologin?'action/manageAdminLogin/getCaptchaCode':''" /></span>
+									<span slot="append"><img height="22" :src="loginCode?'action/manageAdminLogin/getCaptchaCode':''" /></span>
 								</i-input>
 							</form-item>
 						</i-form>
+						<div style="height:8px;"></div>
 						<i-button type="primary" size="large" long @click="doLogin" v-html="'登录'"></i-button>
 					</i-col>
 				</row>
@@ -396,6 +398,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						lastTime:0,
 						tologin:false,
 						loginBackground:true,
+						loginCode:false,
+						codeVerify:false,
+						loginMessage:"",
 						loginInfo:{
 							'model.username':'',
 							'model.password':'',
@@ -415,31 +420,39 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								var self=this;
 								$.execJSON('action/manageAdminLogin/isLogin',this.loginInfo,function(json){
 									console.log(json);
+									if(json.codeVerify) loginVue.codeVerify=true;
 									if(json.code==0&&null!=json.model){
 										loginVue.tologin=false;
 										loginVue.loginBackground=false;
+										loginVue.loginCode=false;
 										self.modelInfo=json.model;
 									}else{
 										loginVue.tologin=true;
 										loginVue.loginBackground=true;
+										loginVue.loginCode=true;
 										self.modelInfo={};
 									}
 								},false,true);
 							}
 						},
 						doLogin:function(){
+							loginVue.loginCode=false;
 							var self=this;
 							$.execJSON('action/manageAdminLogin/doLogin',this.loginInfo,function(json){
 								console.log(json);
 								if(json.code==0){
+									loginVue.loginMessage="";
 									pageVue.$Message.success(json.msg);
 									loginVue.tologin=false;
 									loginVue.loginBackground=false;
+									loginVue.codeVerify=false;
 									self.modelInfo=json.model;
 								}else{
-									pageVue.$Message.error(json.msg);
+									loginVue.loginMessage=json.msg;
 									loginVue.tologin=true;
 									loginVue.loginBackground=true;
+									loginVue.loginCode=true;
+									loginVue.codeVerify=true;
 									self.modelInfo={};
 								}
 							});

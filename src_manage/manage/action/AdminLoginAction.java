@@ -1,10 +1,8 @@
 package manage.action;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
-import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +15,6 @@ import m.system.RuntimeData;
 import m.system.exception.MException;
 import m.system.lang.HtmlBodyContent;
 import m.system.util.JSONMessage;
-import m.system.util.StringUtil;
 import manage.dao.AdminLoginDao;
 import manage.model.AdminLogin;
 import manage.run.ModuleInitRun;
@@ -58,6 +55,7 @@ public class AdminLoginAction extends StatusAction {
 	}
 	public JSONMessage isLogin(){
 		JSONMessage message=new JSONMessage();
+		message.push("codeVerify", CaptchaUtil.isMastVerify(getRequest().getSession()));
 		try {
 			model=getSessionAdmin();
 			message.push("code", 0);
@@ -80,11 +78,8 @@ public class AdminLoginAction extends StatusAction {
         response.setContentType("image/jpeg");
         
         OutputStream os = response.getOutputStream();
-        //返回验证码和图片的map
-        Map<String,Object> map = CaptchaUtil.getImageCode(60, 22, os);
-        request.getSession().setAttribute("CaptchaCode", map.get("code").toString().toLowerCase());
         try {
-            ImageIO.write((BufferedImage) map.get("image"), "jpg", os);
+            ImageIO.write(CaptchaUtil.getImageCode(request.getSession(), os), "jpg", os);
         }catch(IOException e) {
         }finally{
             if (os != null) {
@@ -102,20 +97,16 @@ public class AdminLoginAction extends StatusAction {
 		setLogContent("登陆", "管理员登陆后台");
 		JSONMessage message=new JSONMessage();
 		try {
-			if(StringUtil.isSpace(imageCode)) {
-				throw new MException(this.getClass(), "请输入验证码");
-			}else if(null==getRequest().getSession().getAttribute("CaptchaCode")){
-				throw new MException(this.getClass(), "验证码已失效, 请刷新页面");
-			} if(!imageCode.toLowerCase().equals(getRequest().getSession().getAttribute("CaptchaCode").toString())) {
-				throw new MException(this.getClass(), "验证码错误");
-			}
+			CaptchaUtil.verifyCaptcha(getRequest().getSession(), imageCode);
 			model=getService(AdminLoginService.class).loginVerification(model);
 			setSessionAdmin(model,autoLogin);
 			getDao(AdminLoginDao.class).updateLastInfo(model, getIpAddress());
 			message.push("code", 0);
 			message.push("model", model);
 			message.push("msg", "登录成功!");
+			CaptchaUtil.clearMastVerify(getRequest().getSession());
 		} catch (Exception e) {
+			CaptchaUtil.setMastVerify(getRequest().getSession());
 			message.push("code", 1);
 			message.push("msg", e.getMessage());
 			setLogError(e.getMessage());
