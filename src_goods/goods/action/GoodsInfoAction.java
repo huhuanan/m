@@ -175,7 +175,9 @@ public class GoodsInfoAction extends StatusAction {
 		},
 		others= {
 			@FormOtherMeta(title="商品库存",url="action/goodsGoodsStock/toList?method=goodsStockData",
-				linkField=@LinkFieldMeta(field="params[goods.oid]",valueField="model.oid"))
+				linkField=@LinkFieldMeta(field="params[goods.oid]",valueField="model.oid")),
+			@FormOtherMeta(title="商品库存2",url="action/goodsGoodsStock/toList?method=goodsStockData",
+				linkField=@LinkFieldMeta(field="params[goods.oid]",valueField="model.oid")),
 		}
 	)
 	public ActionResult toEdit() throws Exception{
@@ -199,7 +201,7 @@ public class GoodsInfoAction extends StatusAction {
 			@ActionTableColMeta(field = "stockNum", title = "库存", width=130,sort=true,numberFormat="#,##0",align="right",countType=TableCountType.SUM),
 			@ActionTableColMeta(field = "saleNum", title = "销量", width=130,sort=true,numberFormat="#,##0",align="right",countType=TableCountType.SUM),
 			@ActionTableColMeta(field = "name",title="操作",width=120,align="center",buttons={
-				@ButtonMeta(title="修改", event = ButtonEvent.MODAL,modalWidth=700, url = "action/goodsGoodsInfo/toEdit",
+				@ButtonMeta(title="修改", event = ButtonEvent.PAGE, url = "action/goodsGoodsInfo/toEdit",
 					params={@ParamMeta(name = "model.oid", field="oid")},success=SuccessMethod.REFRESH,style=ButtonStyle.NORMAL,
 					power="goods_manager_power"
 				),

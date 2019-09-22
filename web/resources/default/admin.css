@@ -52,10 +52,9 @@ img{vertical-align:middle;}
 .ivu-menu-submenu-title span>i, .ivu-menu-submenu-title>i {font-size: 18px;vertical-align: middle;}
 .ivu-layout-header {height:60px;line-height:60px;background:transparent;}
 .ivu-layout-header .ivu-menu-light{background:#e7e8ef;box-shadow: 0 1px 1px rgba(80,80,80,.3);}
-.ivu-layout-header .ivu-menu-light .ivu-menu-item{text-shadow: 1px 1px 2px rgba(80,80,80,.5);}
+.ivu-layout-header .ivu-menu-light .ivu-menu-item-active,.ivu-menu-vertical .ivu-menu-submenu .ivu-menu-item-active{text-shadow: 1px 1px 2px rgba(80,80,80,.5);}
 .ivu-menu-dark.ivu-menu-horizontal .ivu-menu-item-active, .ivu-menu-dark.ivu-menu-horizontal .ivu-menu-item-active, .ivu-menu-dark.ivu-menu-horizontal .ivu-menu-item:hover{color: #2d8cf0;}
 .ivu-select-dropdown {z-index: 1010;max-height:300px;}
-.ivu-loading-bar{top:60px;}
 .ivu-input[disabled], fieldset[disabled] .ivu-input, 
 .ivu-select-disabled .ivu-select-selection,
 .ivu-input-number-disabled .ivu-input-number-input {background-color: #f9f9f9;color: #888;}

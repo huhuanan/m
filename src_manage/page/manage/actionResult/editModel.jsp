@@ -121,7 +121,7 @@
 	</c:forEach>
 	<c:if test="${istab}"></tabs></i-col></row></c:if>
 	</card>
-	<form-item label=" " style="margin-bottom:10px;width:100%;${map.openMode=='MODAL'?'text-align:center;':'' }" :label-width="${map.openMode=='MODAL'?'0':'100' }">
+	<form-item label=" " style="margin-bottom:0px;width:100%;${map.openMode=='MODAL'?'text-align:right;':'' }" :label-width="100">
 		<c:forEach var="btn" items="${map.formButtons}">
 			<i-button type="${btn.style}" @click="submitHandler"><i class="iconfont">${btn.icon }</i>&nbsp;<span class="n-btn_title">${btn.title}</span>&nbsp;</i-button>
 		</c:forEach>

@@ -14,11 +14,18 @@ public class HostInfo extends Model {
 	private Double totalMemory=0.0;//JVM总内存
 	private Double freeMemory=0.0;//JVM分配内存
 	private Double maxMemory=0.0;//JVM最大内存
+	private Integer loginNum=0;//登录数量
 	private Integer sessionNum=0;//session数量
 	private Integer dbUseLinkNum=0;//数据库当前连接数
 	
 	public Integer getDbUseLinkNum() {
 		return dbUseLinkNum;
+	}
+	public Integer getLoginNum() {
+		return loginNum;
+	}
+	public void setLoginNum(Integer loginNum) {
+		this.loginNum = loginNum;
 	}
 	public void setDbUseLinkNum(Integer dbUseLinkNum) {
 		this.dbUseLinkNum = dbUseLinkNum;

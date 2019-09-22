@@ -63,23 +63,17 @@ public class HostInfoService extends Service {
 			int freeMemory = NumberUtil.toInt(Runtime.getRuntime().freeMemory() / mb *100);
 			int maxMemory = NumberUtil.toInt(Runtime.getRuntime().maxMemory() / mb *100);
 			int sessionNum=SystemSessionTask.getSessionNum();
+			int loginNum=SystemSessionTask.getLoginNum();
 			int dbUseLinkNum = DBConnection.getUseLinkNum();
-			setHostOtherInfo(currentHost.getIp(), totalMemory, freeMemory, maxMemory,sessionNum,dbUseLinkNum);
-		}
-	}
-	/**
-	 * 其它信息
-	 * @param ip
-	 * @return
-	 */
-	public static void setHostOtherInfo(String ip,int totalMemory,int freeMemory,int maxMemory,int sessionNum,int dbUseLinkNum){
-		HostInfo hi=hostMap.get(ip);
-		if(null!=hi){
-			hi.setTotalMemory(totalMemory/100.0);
-			hi.setFreeMemory(freeMemory/100.0);
-			hi.setMaxMemory(maxMemory/100.0);
-			hi.setSessionNum(sessionNum);
-			hi.setDbUseLinkNum(dbUseLinkNum);
+			HostInfo hi=hostMap.get(currentHost.getIp());
+			if(null!=hi){
+				hi.setTotalMemory(totalMemory/100.0);
+				hi.setFreeMemory(freeMemory/100.0);
+				hi.setMaxMemory(maxMemory/100.0);
+				hi.setSessionNum(sessionNum);
+				hi.setLoginNum(loginNum);
+				hi.setDbUseLinkNum(dbUseLinkNum);
+			}
 		}
 	}
 	private static Map<String,Integer> hostOidMap=new HashMap<String, Integer>();
