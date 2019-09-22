@@ -8,14 +8,14 @@ public abstract class NettyEvent {
 	 * @param result 读取的内容
 	 * @return 发送的内容, null代表不发送
 	 */
-	public abstract String readOrReturn(String ipport,String msg);
+	public abstract NettyMessage readOrReturn(String ipport,NettyMessage msg);
 	/**
 	 * 发送回调 readOrReturn也会调用
 	 * @param ipport
 	 * @param result 发送的内容
 	 * @return
 	 */
-	public void sendCallback(String ipport,String msg){
+	public void sendCallback(String ipport,NettyMessage msg){
 		
 	};
 	/**
@@ -31,5 +31,13 @@ public abstract class NettyEvent {
 	 */
 	public void closeCallback(String ipport){
 		
-	};
+	}
+	/**
+	 * 发生异常
+	 * @param ipport
+	 * @param cause
+	 */
+	public void exceptionCallback(String ipport,Throwable cause) {
+		
+	}
 }

@@ -1,30 +1,31 @@
 package m.common.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.commons.lang.ArrayUtils;
-
 import m.common.model.HostInfo;
 import m.system.RuntimeData;
 import m.system.SystemSessionTask;
 import m.system.db.DBConnection;
-import m.system.listener.SessionListener;
-import m.system.util.ByteUtil;
 import m.system.util.NumberUtil;
 import m.system.util.StringUtil;
 
 public class HostInfoService extends Service {
-	private int currentTotal=1;
-	private int currentOid=0;
-	private HostInfo currentHost;
-	public HostInfo getCurrentHost(){
+	private static int currentTotal=1;
+	private static int currentOid=0;
+	private static HostInfo currentHost=new HostInfo();
+	public static HostInfo getCurrentHost(){
 		return currentHost;
+	}
+	public static void setCurrentHost(HostInfo host) {
+		currentHost=host;
+		RuntimeData.setHostInfo(currentHost);
+		currentOid=Integer.parseInt(host.getOid());
 	}
 	
 	private static Map<String,HostInfo> hostMap=new LinkedHashMap<String,HostInfo>();
@@ -32,7 +33,7 @@ public class HostInfoService extends Service {
 		hostMap=new LinkedHashMap<String,HostInfo>();
 	}
 	public List<HostInfo> getList(){
-		reset();
+		resetCurrentHostOtherInfo();
 		return new ArrayList<HostInfo>(hostMap.values());
 	}
 	private static long lastLong=0l;
@@ -55,38 +56,14 @@ public class HostInfoService extends Service {
 		if(ips.length>0) return ips[random.nextInt(ips.length)];
 		else return "";
 	}
-	public void reset(){
-		double mb = 1024 * 1024 * 1.0;
-		int totalMemory = NumberUtil.toInt(Runtime.getRuntime().totalMemory() / mb *100);
-		int freeMemory = NumberUtil.toInt(Runtime.getRuntime().freeMemory() / mb *100);
-		int maxMemory = NumberUtil.toInt(Runtime.getRuntime().maxMemory() / mb *100);
-		int sessionNum=SystemSessionTask.getSessionNum();
-		int dbUseLinkNum = DBConnection.getUseLinkNum();
-		setHostOtherInfo(totalMemory, freeMemory, maxMemory, sessionNum,dbUseLinkNum);
-	}
-	public synchronized void setHostInfo(String ip,Date lastDate,int total,int oid,int main,int self){
-		HostInfo hi=hostMap.get(ip);
-		if(null==hi){
-			hi=new HostInfo();
-			hi.setOid(String.valueOf(oid));
-			hi.setIp(ip);
-			hi.setLastDate(lastDate);
-			hi.setTotal(total);
-			hi.setMain(main);
-			hi.setSelf(self);
-			hostMap.put(ip, hi);
-		}else{
-			hi.setTotal(total);
-			hi.setLastDate(lastDate);
-		}
-		if(null==currentHost&&self==1){
-			currentHost=hostMap.get(ip);
-			RuntimeData.setHostInfo(currentHost);
-			currentOid=Integer.parseInt(currentHost.getOid());
-		}
-	}
-	public void setHostOtherInfo(int totalMemory,int freeMemory,int maxMemory,int sessionNum,int dbUseLinkNum){
+	public static void resetCurrentHostOtherInfo(){
 		if(null!=currentHost){
+			double mb = 1024 * 1024 * 1.0;
+			int totalMemory = NumberUtil.toInt(Runtime.getRuntime().totalMemory() / mb *100);
+			int freeMemory = NumberUtil.toInt(Runtime.getRuntime().freeMemory() / mb *100);
+			int maxMemory = NumberUtil.toInt(Runtime.getRuntime().maxMemory() / mb *100);
+			int sessionNum=SystemSessionTask.getSessionNum();
+			int dbUseLinkNum = DBConnection.getUseLinkNum();
 			setHostOtherInfo(currentHost.getIp(), totalMemory, freeMemory, maxMemory,sessionNum,dbUseLinkNum);
 		}
 	}
@@ -95,7 +72,7 @@ public class HostInfoService extends Service {
 	 * @param ip
 	 * @return
 	 */
-	public void setHostOtherInfo(String ip,int totalMemory,int freeMemory,int maxMemory,int sessionNum,int dbUseLinkNum){
+	public static void setHostOtherInfo(String ip,int totalMemory,int freeMemory,int maxMemory,int sessionNum,int dbUseLinkNum){
 		HostInfo hi=hostMap.get(ip);
 		if(null!=hi){
 			hi.setTotalMemory(totalMemory/100.0);
@@ -105,111 +82,100 @@ public class HostInfoService extends Service {
 			hi.setDbUseLinkNum(dbUseLinkNum);
 		}
 	}
+	private static Map<String,Integer> hostOidMap=new HashMap<String, Integer>();
+	private static synchronized int getHostOid(String ip) {
+		if(null==hostOidMap.get(ip)) {
+			int oid=hostOidMap.size();
+			hostOidMap.put(ip, oid);
+		}
+		return hostOidMap.get(ip);
+	}
 	/**
-	 * 其它信息
+	 * 主控初始化自己
 	 * @param ip
-	 * @return
 	 */
-	public byte[] getBytesByHostOtherInfo(){
-		if(null!=currentHost){
-			return getBytesByHostOtherInfo(currentHost.getIp());
-		}else{
-			return ByteUtil.toBytes(0, 20);
-		}
+	public static void setMainHost(String ip) {
+		HostInfo host=new HostInfo();
+		host.setOid(String.valueOf(currentOid));
+		host.setIp(ip);
+		host.setTotal(0);
+		host.setMain(1);
+		host.setSelf(1);
+		setHostInfo(ip, host);
+		setCurrentHost(host);
 	}
 	/**
-	 * 其它信息
+	 * 添加主机信息 服务端调用
 	 * @param ip
-	 * @return
+	 * @param host
 	 */
-	public byte[] getBytesByHostOtherInfo(String ip){
-		byte[] nb=new byte[0];
-		HostInfo hi=hostMap.get(ip);
-		if(null!=hi){
-			nb=ArrayUtils.addAll(nb,ByteUtil.toBytes(NumberUtil.toInt(hi.getTotalMemory()*100), 4));
-			nb=ArrayUtils.addAll(nb,ByteUtil.toBytes(NumberUtil.toInt(hi.getFreeMemory()*100), 4));
-			nb=ArrayUtils.addAll(nb,ByteUtil.toBytes(NumberUtil.toInt(hi.getMaxMemory()*100), 4));
-			nb=ArrayUtils.addAll(nb,ByteUtil.toBytes(NumberUtil.toInt(hi.getSessionNum()), 4));
-			nb=ArrayUtils.addAll(nb,ByteUtil.toBytes(hi.getDbUseLinkNum(), 2));
-		}else{
-			nb=ArrayUtils.addAll(nb,ByteUtil.toBytes(0, 20));
+	public static void setHostInfo(String ip,HostInfo host) {
+		host.setOid(String.valueOf(getHostOid(ip)));
+		if(ip.indexOf(RuntimeData.getServerIp())>=0) {
+			host.setMain(1);
+			host.setSelf(1);
+		}else {
+			host.setMain(0);
+			host.setSelf(0);
 		}
-		return nb;
+		hostMap.put(ip, host);
 	}
 	/**
-	 * 将主机信息转换成byte数组
+	 * 返回主机map 服务端调用
 	 * @return
 	 */
-	public byte[] toBytesByHosts(String requestIp){
-		byte[] nb=new byte[0];
-		for(HostInfo host : getList()){
-			byte[] hb=new byte[4];
-			String[] ss=host.getIp().split("\\.");
-			for(int i=0,len=ss.length;i<len;i++){
-				hb[i]=ByteUtil.toBytes(Integer.parseInt(ss[i]), 1)[0];
-			}
-			nb=ArrayUtils.addAll(nb,hb);
-			nb=ArrayUtils.addAll(nb,ByteUtil.toBytes(host.getTotal(), 4));
-			nb=ArrayUtils.addAll(nb,ByteUtil.toBytes(Integer.parseInt(host.getOid()), 1));
-			nb=ArrayUtils.addAll(nb,ByteUtil.toBytes(host.getMain(),1));
-			nb=ArrayUtils.addAll(nb,ByteUtil.toBytes(host.getIp().equals(requestIp)?1:0,1));
-			nb=ArrayUtils.addAll(nb,getBytesByHostOtherInfo(host.getIp()));
-		}
-		return nb;
+	public static Map<String, HostInfo> getHostMap() {
+		return hostMap;
 	}
 	/**
-	 * 将byte数组填充主机信息
-	 * @param nb
+	 * 清除超时主机  服务端调用
 	 */
-	public void setHostByBytes(byte[] nb){
-		clearList();
-		String ip;
-		int totalMemory =0;
-		int freeMemory =0;
-		int maxMemory =0;
-		int sessionNum=0;
-		int dbUseLinkNum =0;
-		for(int i=0,len=nb.length;i<len;i+=29){
-			ip=ByteUtil.toIntJoin(Arrays.copyOfRange(nb, i,i+4), ".");
-			setHostInfo(ip,null, 
-					ByteUtil.toInt(Arrays.copyOfRange(nb, i+4, i+8)), ByteUtil.toInt(Arrays.copyOfRange(nb, i+8, i+9)), 
-					ByteUtil.toInt(Arrays.copyOfRange(nb, i+9, i+10)), ByteUtil.toInt(Arrays.copyOfRange(nb, i+10, i+11)));
-			totalMemory = ByteUtil.toInt(Arrays.copyOfRange(nb, i+11, i+15));
-			freeMemory = ByteUtil.toInt(Arrays.copyOfRange(nb, i+15, i+19));
-			maxMemory = ByteUtil.toInt(Arrays.copyOfRange(nb, i+19, i+23));
-			sessionNum=ByteUtil.toInt(Arrays.copyOfRange(nb, i+23, i+27));
-			dbUseLinkNum = ByteUtil.toInt(Arrays.copyOfRange(nb, i+27, i+29));
-			setHostOtherInfo(ip,totalMemory,freeMemory,maxMemory,sessionNum,dbUseLinkNum);
-		}
-	}
-	public void clearTimeoutHost(){
-		HostInfo hi;
+	public static List<HostInfo> getTimeoutHost(){
+		List<HostInfo> list=new ArrayList<HostInfo>();
 		long time=new Date().getTime();
-		for(String ip : hostMap.keySet()){
-			hi=hostMap.get(ip);
+		for(HostInfo hi : hostMap.values()){
 			if(hi.getSelf()==1) continue;
 			if(hi.getLastDate().getTime()<time-20*1000){
-				hostMap.remove(ip);
+				list.add(hi);
 			}
 		}
+		return list;
 	}
-	public void clearOtherHost(){
-		HostInfo hi;
-		for(String ip : hostMap.keySet()){
-			hi=hostMap.get(ip);
-			if(hi.getSelf()!=1) hostMap.remove(ip);
+	/**
+	 * 移除指定ip主机信息 服务器调用
+	 * @param ip
+	 */
+	public static void removeHost(String ip) {
+		hostMap.remove(ip);
+	}
+	/**
+	 * 设置主机map 客户端调用
+	 * @param ipport
+	 * @param hostMap
+	 */
+	public static void setHostMap(String ip,Map<String, HostInfo> hostMap) {
+		for(HostInfo host : hostMap.values()) {
+			if(host.getIp().equals(ip)) {
+				host.setSelf(1);
+				setCurrentHost(host);
+			}
+			if(host.getMain()==1) host.setSelf(0);
 		}
+		HostInfoService.hostMap = hostMap;
+		resetCurrentHostOtherInfo();
 	}
-	public int getCurrentTotal() {
+	
+	
+	public static int getCurrentTotal() {
 		return currentTotal;
 	}
-	public void setCurrentTotal(int currentTotal) {
-		this.currentTotal = currentTotal;
+	public static void setCurrentTotal(int currentTotal) {
+		HostInfoService.currentTotal = currentTotal;
 	}
-	public void addCurrentTotal(int currentTotal) {
-		this.currentTotal += currentTotal;
+	public static void addCurrentTotal(int currentTotal) {
+		HostInfoService.currentTotal += currentTotal;
 	}
-	public int getCurrentOid() {
+	public static int getCurrentOid() {
 		return currentOid;
 	}
 }

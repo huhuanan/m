@@ -249,20 +249,24 @@ public class ModelUtil {
 		}else {
 			message.push(prefix+"oid", null);
 		}
-		for(String key : fieldMap.keySet()){
-			Object obj=ClassUtil.getFieldValue(model, key);
-			if(null!=obj){
-				message.push(prefix+key,obj);
-			}else {
-				message.push(prefix+key,null);
+		if(null!=fieldMap) {
+			for(String key : fieldMap.keySet()){
+				Object obj=ClassUtil.getFieldValue(model, key);
+				if(null!=obj){
+					message.push(prefix+key,obj);
+				}else {
+					message.push(prefix+key,null);
+				}
 			}
 		}
-		for(String key : linkTableMap.keySet()){
-			Model bean=(Model) ClassUtil.getFieldValue(model, key);
-			if(null!=bean){
-				message.push(prefix+key, toJSONMessage("", bean));
-			}else {
-				message.push(prefix+key, new HtmlBodyContent("{}"));
+		if(null!=linkTableMap) {
+			for(String key : linkTableMap.keySet()){
+				Model bean=(Model) ClassUtil.getFieldValue(model, key);
+				if(null!=bean){
+					message.push(prefix+key, toJSONMessage("", bean));
+				}else {
+					message.push(prefix+key, new HtmlBodyContent("{}"));
+				}
 			}
 		}
 		return message;

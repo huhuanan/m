@@ -6,7 +6,7 @@ import java.util.Properties;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import m.common.socket.HostSocketUtil;
+import m.common.netty.HostNettyUtil;
 import m.system.RuntimeData;
 import m.system.SystemInit;
 import m.system.db.DBConfig;
@@ -17,8 +17,10 @@ import m.system.util.StringUtil;
 public class InitListener implements ServletContextListener {
 
 	public void contextDestroyed(ServletContextEvent arg0) {
-		HostSocketUtil.closeClient();
-		HostSocketUtil.closeServer();
+		//HostSocketUtil.closeClient();
+		//HostSocketUtil.closeServer();
+		HostNettyUtil.closeClient();
+		HostNettyUtil.closeServer();
 		TaskUtil.closeTask();
 		TransactionManager.closeConnection();
 		TransactionManager.closeAllConection();
@@ -53,12 +55,13 @@ public class InitListener implements ServletContextListener {
 			String modelPack=StringUtil.noSpace(p.getProperty("model_pack"));
 			SystemInit.initModel(modelPack);
 			
-			
 			String server_ip=StringUtil.noSpace(dbp.getProperty("server_ip"));
 			int server_port=StringUtil.isSpace(dbp.getProperty("server_port"))?8128:Integer.parseInt(dbp.getProperty("server_port"));
 			RuntimeData.setServerIp(server_ip);
 			RuntimeData.setServerPort(server_port);
 			SystemInit.initServerGroup(server_ip, server_port);
+
+			SystemInit.initModelTable();
 
 			SystemInit.taskClassRun(StringUtil.noSpace(p.getProperty("task_class")));
 			SystemInit.initClassRun(StringUtil.noSpace(p.getProperty("init_class")));

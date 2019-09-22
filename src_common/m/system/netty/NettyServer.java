@@ -1,6 +1,9 @@
 package m.system.netty;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -12,14 +15,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.LengthFieldPrepender;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.util.CharsetUtil;
-
-import java.util.HashMap;
-import java.util.Map;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class NettyServer extends NettyObject<NettyServer> {
 	private int port;
@@ -37,7 +35,7 @@ public class NettyServer extends NettyObject<NettyServer> {
 	 * @throws InterruptedException 
 	 * @throws Exception
 	 */
-	public void open() throws InterruptedException{
+	public void open() throws Exception{
 		EventLoopGroup bossGroup = new NioEventLoopGroup();
 		EventLoopGroup group = new NioEventLoopGroup();
 		try{
@@ -46,15 +44,13 @@ public class NettyServer extends NettyObject<NettyServer> {
 			.childHandler(new ChannelInitializer<SocketChannel>() {
 				protected void initChannel(SocketChannel ch) throws Exception {
 					ChannelPipeline pipeline = ch.pipeline();
-					pipeline.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
-					pipeline.addLast(new LengthFieldPrepender(4));
-					pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
-					pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
-					pipeline.addLast(new SimpleChannelInboundHandler<String>(){
+					pipeline.addLast(new ObjectDecoder(1024*1024, ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
+					pipeline.addLast(new ObjectEncoder());
+					pipeline.addLast(new SimpleChannelInboundHandler<NettyMessage>(){
 						//读取
-						protected void channelRead0(ChannelHandlerContext ctx,String msg) throws Exception {
+						protected void channelRead0(ChannelHandlerContext ctx,NettyMessage msg) throws Exception {
 						    String ipport=ctx.channel().remoteAddress().toString();
-					        String result=event.readOrReturn(ipport, msg);
+						    NettyMessage result=event.readOrReturn(ipport, msg);
 					        if(null!=result){
 					        	ctx.channel().writeAndFlush(result);
 					        	event.sendCallback(ipport, result);
@@ -76,16 +72,21 @@ public class NettyServer extends NettyObject<NettyServer> {
 					    }
 						public void exceptionCaught(ChannelHandlerContext ctx,Throwable cause) throws Exception {
 							super.exceptionCaught(ctx, cause);
+						    String ipport=ctx.channel().remoteAddress().toString();
+						    event.exceptionCallback(ipport, cause);
 						}
 					});
 				}
 			});
 			future = bootstrap.bind().sync(); // 服务器异步创建绑定
-			System.out.println("服务启动:" + future.channel().localAddress());
+			System.out.println("服务启动!");
+			runTimerTask();//启动定时任务
 			future.channel().closeFuture().sync(); // 关闭服务器通道
+		}catch(Exception e) {
+			throw e;
 		}finally{
-			group.shutdownGracefully();
-			bossGroup.shutdownGracefully();
+			group.shutdownGracefully().sync();
+			bossGroup.shutdownGracefully().sync();
 		}
 	}
 	/**
@@ -98,6 +99,17 @@ public class NettyServer extends NettyObject<NettyServer> {
 		if(null!=future){
 			future.addListener(ChannelFutureListener.CLOSE);
 		}
+		this.clearTimerTask();
+	}
+	/**
+	 * 关闭指定客户端
+	 * @param ipport
+	 */
+	public void closeClient(String ipport) {
+		ChannelHandlerContext ctx=channelMap.get(ipport);
+		if(null!=ctx) {
+			ctx.close();
+		}
 	}
 	/**
 	 * 发送给指定ipport
@@ -105,7 +117,7 @@ public class NettyServer extends NettyObject<NettyServer> {
 	 * @param msg
 	 * @return
 	 */
-	public boolean send(String ipport,String msg){
+	public boolean send(String ipport,NettyMessage msg){
 		boolean b=false;
 		ChannelHandlerContext ctx=channelMap.get(ipport);
 		if(null!=ctx){
@@ -119,7 +131,7 @@ public class NettyServer extends NettyObject<NettyServer> {
 	 * 发送给所有连接
 	 * @param msg
 	 */
-	public void sendAll(String msg){
+	public void sendAll(NettyMessage msg){
 		for(String ipport : channelMap.keySet()){
 			channelMap.get(ipport).channel().writeAndFlush(msg);
 			event.sendCallback(ipport, msg);

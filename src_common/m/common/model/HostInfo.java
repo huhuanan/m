@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class HostInfo extends Model {
 	private String ip;
+	private String ipport;
 	private Integer total;//
 
 	private Integer main;//0 or 1(主控)
@@ -57,6 +58,12 @@ public class HostInfo extends Model {
 	}
 	public Double getFreeMemory() {
 		return freeMemory;
+	}
+	public String getIpport() {
+		return ipport;
+	}
+	public void setIpport(String ipport) {
+		this.ipport = ipport;
 	}
 	public void setFreeMemory(Double freeMemory) {
 		this.freeMemory = freeMemory;

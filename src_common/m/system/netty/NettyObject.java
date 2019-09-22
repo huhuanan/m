@@ -1,5 +1,7 @@
 package m.system.netty;
 
+import m.system.db.TransactionManager;
+
 public abstract class NettyObject<T extends NettyObject<?>> {
 	private NettyTimerLine<T> timerLine;
 	
@@ -14,6 +16,10 @@ public abstract class NettyObject<T extends NettyObject<?>> {
 		clearTimerTask();
 		if(null!=event){
 			timerLine=new NettyTimerLine<T>((T) this,event,time);
+		}
+	}
+	protected void runTimerTask() {
+		if(null!=timerLine){
 			new Thread(timerLine).start();
 		}
 	}
@@ -31,14 +37,10 @@ public abstract class NettyObject<T extends NettyObject<?>> {
 			if(null!=event){
 				while(!event.isStop()){
 					if(this.isStop) break;
+					event.run(server);
 					try {
-						//TransactionManager.initConnection();
-						event.run(server);
-						//TransactionManager.closeConnection();
-					} catch (Exception e1) {}
-					try { 
-						Thread.sleep(time); 
-					} catch (InterruptedException e) {}
+						Thread.sleep(time);
+					} catch (InterruptedException e) {} 
 				}
 			}
 		}

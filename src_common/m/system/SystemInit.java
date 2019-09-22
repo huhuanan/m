@@ -1,7 +1,6 @@
 package m.system;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,11 +13,10 @@ import m.common.model.Model;
 import m.common.model.TableMeta;
 import m.common.model.config.ModelConfig;
 import m.common.model.util.ModelUtil;
+import m.common.netty.HostNettyUtil;
 import m.common.service.HostInfoService;
-import m.common.socket.HostSocketUtil;
 import m.system.cache.CacheUtil;
 import m.system.cache.model.CacheSynch;
-import m.system.exception.MException;
 import m.system.task.TaskUtil;
 import m.system.util.AnnotationUtil;
 import m.system.util.ClassUtil;
@@ -93,15 +91,11 @@ public class SystemInit {
 	public static void initServerGroup(String ip,int port){
 		if(!StringUtil.isSpace(ip)){
 			System.out.println("主控主机地址："+ip);
-			HostSocketUtil.openServer(port);
-			HostSocketUtil.openClient(ip, port);
+			HostNettyUtil.openServer(port);
+			HostNettyUtil.openClient(ip, port);
+			HostNettyUtil.done();
 		}else{
-			try {
-				RuntimeData.getService(HostInfoService.class).setHostInfo(".", new Date(), 0, 0, 1, 1);
-			} catch (MException e) {
-				e.printStackTrace();
-			}
-			initModelTable();
+			HostInfoService.setMainHost(".");
 		}
 	}
 	public static void initClassRun(String initClass){

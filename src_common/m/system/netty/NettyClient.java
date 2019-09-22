@@ -10,11 +10,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.LengthFieldPrepender;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.util.CharsetUtil;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
 
 public class NettyClient extends NettyObject<NettyClient> {
 	private String ip;
@@ -31,22 +29,20 @@ public class NettyClient extends NettyObject<NettyClient> {
 	 * 启动客户端 在调用线程启动
 	 * @throws InterruptedException
 	 */
-	public void open() throws InterruptedException{
+	public void open() throws Exception{
 		EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 		Bootstrap bootstrap = new Bootstrap();
 		bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
 		.handler(new ChannelInitializer<SocketChannel>(){
 			protected void initChannel(SocketChannel ch) throws Exception {
 				ChannelPipeline pipeline = ch.pipeline();
-				pipeline.addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4, 0, 4));
-				pipeline.addLast(new LengthFieldPrepender(4));
-				pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
-				pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
-				pipeline.addLast(new SimpleChannelInboundHandler<String>(){
+				pipeline.addLast(new ObjectDecoder(1024, ClassResolvers.cacheDisabled(this.getClass().getClassLoader())));
+				pipeline.addLast(new ObjectEncoder());
+				pipeline.addLast(new SimpleChannelInboundHandler<NettyMessage>(){
 					//读取
-					protected void channelRead0(ChannelHandlerContext ctx,String msg) throws Exception {
+					protected void channelRead0(ChannelHandlerContext ctx,NettyMessage msg) throws Exception {
 					    String ipport=ctx.channel().localAddress().toString();
-				        String result=event.readOrReturn(ipport, msg);
+					    NettyMessage result=event.readOrReturn(ipport, msg);
 				        if(null!=result){
 				        	ctx.channel().writeAndFlush(result);
 				        	event.sendCallback(ipport, result);
@@ -68,6 +64,8 @@ public class NettyClient extends NettyObject<NettyClient> {
 				    }
 					public void exceptionCaught(ChannelHandlerContext ctx,Throwable cause) throws Exception {
 						super.exceptionCaught(ctx, cause);
+					    String ipport=ctx.channel().localAddress().toString();
+						event.exceptionCallback(ipport, cause);
 					}
 				});
 			}
@@ -75,22 +73,26 @@ public class NettyClient extends NettyObject<NettyClient> {
         try {
             ChannelFuture future = bootstrap.connect(ip, port).sync();
 			System.out.println("客户端启动:" + future.channel().localAddress());
+			runTimerTask();//启动定时任务
 			future.channel().closeFuture().sync();
+        }catch(Exception e){
+        	throw e;
         }finally {
-            eventLoopGroup.shutdownGracefully();
+            eventLoopGroup.shutdownGracefully().sync();
         }
 	}
 	public void close(){
 		if(null!=channel){
 			channel.close();
 		}
+		this.clearTimerTask();
 	}
 	/**
 	 * 向服务端发送消息
 	 * @param msg
 	 * @return
 	 */
-	public boolean send(String msg){
+	public boolean send(NettyMessage msg){
 		boolean b=false;
 		if(null!=channel){
 			channel.channel().writeAndFlush(msg);
