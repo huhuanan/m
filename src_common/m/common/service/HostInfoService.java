@@ -29,12 +29,14 @@ public class HostInfoService extends Service {
 	}
 	
 	private static Map<String,HostInfo> hostMap=new LinkedHashMap<String,HostInfo>();
-	public void clearList(){
-		hostMap=new LinkedHashMap<String,HostInfo>();
-	}
+//	public void clearList(){
+//		hostMap=new LinkedHashMap<String,HostInfo>();
+//	}
 	public List<HostInfo> getList(){
 		resetCurrentHostOtherInfo();
-		return new ArrayList<HostInfo>(hostMap.values());
+		List<HostInfo> list= new ArrayList<HostInfo>(hostMap.values());
+		System.out.println("主机list:"+list.size());
+		return list;
 	}
 	private static long lastLong=0l;
 	private static String[] ips=new String[] {};
@@ -97,6 +99,7 @@ public class HostInfoService extends Service {
 		host.setSelf(1);
 		setHostInfo(ip, host);
 		setCurrentHost(host);
+		System.out.println("主机数:"+hostMap.size());
 	}
 	/**
 	 * 添加主机信息 服务端调用

@@ -20,7 +20,7 @@
 		},
 		mounted:function(){
 			<c:forEach var="item" items="${list}">
-			this.data.push({ip:'${item.ip }',oid:'${item.oid }',main:'${item.main==1?'主控':'' } ${item.self==1?'本服':'' }',
+			this.data.push({ip:'${item.oid } - ${item.ip }',main:'${item.main==1?'主控':'' } ${item.self==1?'本服':'' }',
 				memory:'${item.freeMemory} / ${item.totalMemory} / ${item.maxMemory}',session:'${item.loginNum} / ${item.sessionNum}',dbUseLinkNum:${item.dbUseLinkNum}});
 			</c:forEach>
 		}

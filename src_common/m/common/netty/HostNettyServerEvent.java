@@ -32,15 +32,18 @@ public class HostNettyServerEvent extends NettyEvent {
 		}
 		//缓存处理
 		CacheUtil.forwardNettySynchCache(msg);
+		CacheUtil.doNettySynchCache(msg);
 		return null;
 	}
 	public void closeCallback(String ipport) {
 		//掉线主机清除，并通知所有主机
 		String ip=HostNettyUtil.getIp(ipport);
-		HostInfoService.removeHost(ip);
-		NettyServer server=HostNettyUtil.getServer();
-		if(null!=server) {
-			server.sendAll(hostMapMessage());
+		if(!ip.equals(RuntimeData.getServerIp())) {
+			HostInfoService.removeHost(ip);
+			NettyServer server=HostNettyUtil.getServer();
+			if(null!=server) {
+				server.sendAll(hostMapMessage());
+			}
 		}
 	}
 	private NettyMessage hostMapMessage() {
