@@ -29,6 +29,7 @@ public @interface FormFieldMeta {
 		DOUBLE,//
 		IMAGE,//图片
 		FILE,//文件
+		ICON,//icon
 		EDITER,//富文本编辑器
 		COLOR,//颜色
 		MAP,//地图坐标

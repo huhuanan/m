@@ -77,6 +77,14 @@
 				</div>
 				</span>
 			</c:if>
+			<c:if test="${field.type=='ICON' }">
+				<span style="display:inline-block;">
+				<c:if test="${!field.disabled}"><i-button type="info" @click="openIconModal('${field.field}')">选择图标</i-button></c:if>
+				<div class="image_input" style="margin-left:0;" >
+					<img id="icon_${key}_${field.field}" style="vertical-align:initial;height:30px;" border="0" alt="" src="${mm:getIconPath(mc:getInAttribute(map.action,field.field)) }" />
+				</div>
+				</span>
+			</c:if>
 			<c:if test="${field.type=='FILE' }">
 				<c:if test="${!field.disabled}">
 					<upload :on-success="fileUploadSuccess" :on-preview="fileUploadPrewiew" :show-upload-list="false" 

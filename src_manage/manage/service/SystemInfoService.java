@@ -53,7 +53,6 @@ public class SystemInfoService extends Service {
 	}
 	public String save(SystemInfo model) throws Exception {
 		ModelUpdateUtil.updateModel(model);
-		ImageLinkService.addOnlyImageLink(model.getOid(),"后台logo图片", model.getTitleImage());//添加业务对应的唯一图片
 		ImageLinkService.addOnlyImageLink(model.getOid(),"后台背景图片", model.getBackgroundImage());//添加业务对应的唯一图片
 		systemInfo=null;
 		getUniqueModel();

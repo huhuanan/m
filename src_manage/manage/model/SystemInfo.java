@@ -22,8 +22,8 @@ public class SystemInfo extends Model implements SystemInfoModel {
 	private String backgroundTitle;
 	@FieldMeta(name="title_type",type=FieldType.STRING,length=1,description="后台显示类型|N标题,Y图片,A图片+文本")
 	private String titleType;
-	@LinkTableMeta(name="title_image_oid",table=ImageInfo.class,description="标题图片")
-	private ImageInfo titleImage;
+	@LinkTableMeta(name="title_icon_oid",table=IconInfo.class,description="标题图片")
+	private IconInfo titleIcon;
 	@FieldMeta(name="bg_type",type=FieldType.STRING,length=1,defaultValue="A",description="背景显示|N不使用背景,Y使用背景,A仅登录背景,B仅界面背景")
 	private String backgroundType;
 	@LinkTableMeta(name="bg_image_oid",table=ImageInfo.class,description="背景图片")
@@ -111,10 +111,10 @@ public class SystemInfo extends Model implements SystemInfoModel {
 	public void setSmsDebug(String smsDebug) {
 		this.smsDebug = smsDebug;
 	}
-	public ImageInfo getTitleImage() {
-		return titleImage;
+	public IconInfo getTitleIcon() {
+		return titleIcon;
 	}
-	public void setTitleImage(ImageInfo titleImage) {
-		this.titleImage = titleImage;
+	public void setTitleIcon(IconInfo titleIcon) {
+		this.titleIcon = titleIcon;
 	}
 }

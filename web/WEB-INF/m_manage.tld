@@ -13,6 +13,11 @@
 		<function-signature>java.lang.String getThumPath(java.lang.String)</function-signature>
 	</function>
 	<function>
+		<name>getIconPath</name>  
+		<function-class>manage.service.IconInfoService</function-class>  
+		<function-signature>java.lang.String getIconPath(java.lang.String)</function-signature>
+	</function>
+	<function>
 		<name>getFileName</name>  
 		<function-class>manage.service.FileInfoService</function-class>  
 		<function-signature>java.lang.String getFileName(java.lang.String)</function-signature>

@@ -55,7 +55,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			template:`<i-header :style="{position:'fixed',width:'100%',padding:0}" style="z-index:999;">
 				<i-menu ref="moduleMenu" mode="horizontal" theme="light" :active-name="active" >
 					<div style="padding:0 20px;display:inline-block;float:left;color: #2d8cf0;font-size:17px;">
-						<c:if test="${map.systemInfo.titleType!='N'}"><img src="${map.systemInfo.titleImage.imgPath }" style="margin-left:-20px;height:60px;"/></c:if>
+						<c:if test="${map.systemInfo.titleType!='N'}"><img src="${map.systemInfo.titleIcon.path }" style="margin-left:-20px;height:60px;"/></c:if>
 						<c:if test="${map.systemInfo.titleType!='Y'}"><span>${map.systemInfo.backgroundTitle }</span></c:if>
 					</div>
 					<menu-item v-for="(module,key) in modules" :name="key" @click.native="doModule(key)" :class="active==key?'ivu-menu-item-active':''">

@@ -477,6 +477,11 @@ Vue.component('json-item', {
 							$("#image_"+this.key+"_"+arr[0].replace(/\./g,'\\.')).attr("src",arr[2]);
 							this.fields[arr[0]]=arr[1];
 							break;
+						case "selectIconBack":
+							var arr=msg.split("|");
+							$("#icon_"+this.key+"_"+arr[0].replace(/\./g,'\\.')).attr("src",arr[2]);
+							this.fields[arr[0]]=arr[1];
+							break;
 						case "selectMapBack":
 							var arr=msg.split("|");
 							this.fields[arr[0]]=arr[1];
@@ -505,6 +510,19 @@ Vue.component('json-item', {
 				$.loadVuePage($("#_table_modal_"+self.key),
 					"action/manageImageInfo/selectImagePage",
 					{"selected":this.fields[f],"field":f,"imageType":imageType,"adminToken":"","thumWidth":width||"","thumRatio":ratio||"",openKey:this.key},
+					(function(vueObj,vueId){
+						self.showModal=true;
+					}).bind(this)
+				);
+			},
+			openIconModal:function(f,imageType,width,ratio){
+				this.backEvent='selectIconBack';
+				this.openMode='MODAL';
+				var self=this;
+				this.modalWidth=840;
+				$.loadVuePage($("#_table_modal_"+self.key),
+					"page/manage/image/iconManageList.html",
+					{"selected":this.fields[f],"field":f,"oper":"select",openKey:this.key},
 					(function(vueObj,vueId){
 						self.showModal=true;
 					}).bind(this)

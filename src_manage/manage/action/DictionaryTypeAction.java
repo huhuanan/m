@@ -57,6 +57,8 @@ public class DictionaryTypeAction extends ManageAction {
 			}),
 		},
 		buttons = {
+			@ButtonMeta(title="图标管理",event = ButtonEvent.MODAL,modalWidth=840, url = "page/manage/image/iconManageList.html?oper=manage",
+				power="manage_system_power",style=ButtonStyle.NONE)
 		}
 	)
 	public JSONMessage dictionayTypeList(){

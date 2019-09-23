@@ -1,0 +1,89 @@
+<page>
+	<h2 v-html="oper=='manage'?'图标管理':'选择图标 <small>点击图标选择</small>'"></h2>
+	<card :padding="0">
+		<div style="padding-top:15px;">
+			<span v-for="img in list" :id="img.oid" :style="{display:'inline-block',width:'100px',textAlign:'center',backgroundColor:(img.oid==selected?'rgba(45,183,254,0.5)':'rgba(255,255,255,0)')}">
+				<img :src="img.path" style="height:70px;" @click="selectIcon(img.oid+'|'+img.path)"/>
+				<div v-html="img.name" style="width:100px;text-align:center;height:18px;line-height:18px;white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></div>
+			</span>
+		</div>
+		<div v-if="has"><i-button type="text" :loading="load" long @click="loadIcon()">加载更多</i-button></div>
+	</card>
+	<div style="padding-top:10px;text-align:right;">
+		<upload v-if="oper=='manage'" :style="{display:'inline-block',marginLeft:'6px',verticalAlign:'top',width:'600px'}" ref="upload" multiple accept="*/*" :on-success="uploadSuccess" :before-upload="beforeUpload"
+			action="action/manageIconInfo/upload">
+			<i-button type="primary" :loading="loading"><i class="iconfont">&#xe71d;</i>&nbsp;上传图标&nbsp;</i-button>
+		</upload>
+		<i-button v-if="oper=='select'" type="default" @click="selectIcon('|')">清除选择</i-button>
+		<i-button @click="close">关闭</i-button>
+	</div>
+</page>
+<script>
+(function(){
+	return { //vue对象属性
+		data(){
+			return {
+				//key:'',
+				//openKey:'',
+				//oper:'',
+				//selected:'',
+				//field:'',
+				loadNum:0,
+				loading:false,
+				list:[],
+				load:false,
+				has:true,
+				pageno:1
+			};
+		},
+		mounted:function(){
+			this.loadIcon();
+		},
+		methods:{
+			beforeUpload:function(){
+				this.loading=true;
+			},
+			uploadSuccess:function(response, file, fileList){
+				if(response.code==1&&response.msg){
+					this.$Message.error(response.msg)
+				}
+				if(this.loadNum==fileList.length-1){
+					this.list.length=0;
+					this.pageno=1;
+					this.loadIcon();
+					this.loadNum=0;
+					this.$refs['upload'].clearFiles();
+					this.loading=false;
+				}else{
+					this.loadNum++;
+				}
+			},
+			loadIcon:function(){
+				var self=this;
+				self.load=true;
+				$.execJSON("action/manageIconInfo/iconList",{"pageNo":self.pageno,"pageNum":50},function(data){
+					self.has=false;
+					if(data.code==0&&data.list.length>=50){
+						self.has=true;
+					}
+					for(var i=0;i<data.list.length;i++){
+						self.list.push(data.list[i]);
+					}
+					self.pageno++;
+					self.load=false;
+				});
+			},
+			selectIcon:function(str){
+				if(this.oper=='select'){
+					this.back(true,this.field+'|'+str);
+				}
+			},
+			close:function(){
+				this.back();
+			}
+			//backHandler:function(success,msg){//打开窗体的回调
+			//}
+		}
+	};
+})();
+</script>

@@ -43,7 +43,7 @@ public class SystemInfoAction extends ManageAction {
 				@FormFieldMeta(title="后台标题", field = "model.backgroundTitle", type = FormFieldType.TEXT,span=14,hint="请输入后台标题"),
 				@FormFieldMeta(field = "model.titleType", type = FormFieldType.SELECT,hideTitle=true,span=4,
 					querySelectDatas={@SelectDataMeta(title = "文本", value = "N"),@SelectDataMeta(title = "图片", value = "Y"),@SelectDataMeta(title = "图片+文本", value = "A")}),
-				@FormFieldMeta(field = "model.titleImage.oid", type = FormFieldType.IMAGE,imageType="titleImage",message="图片标题",hideTitle=true,span=6)
+				@FormFieldMeta(field = "model.titleIcon.oid", type = FormFieldType.ICON,message="标题图标",hideTitle=true,span=6)
 			}),
 			@FormRowMeta(fields={
 				@FormFieldMeta(title="网站域名",field="model.domainName",type=FormFieldType.TEXT,span=14,hint="请输入网站域名  以http://或https://开头"),
