@@ -7,10 +7,7 @@ public class DBConfig {
 	private static String password;
 	private static String initConnect;
 	private static Integer maxConnect;
-	/**
-	 * 
-	 * @param flag true为自动关闭连接, false不关闭连接
-	 */
+	private static Integer queryTimeout;
 	public static void initConfig(String driver,String url,String username,String password){
 		DBConfig.driver=driver;
 		DBConfig.url=url;
@@ -44,5 +41,13 @@ public class DBConfig {
 
 	public static void setMaxConnect(Integer maxConnect) {
 		DBConfig.maxConnect = maxConnect;
+	}
+
+	public static Integer getQueryTimeout() {
+		return queryTimeout;
+	}
+
+	public static void setQueryTimeout(Integer queryTimeout) {
+		DBConfig.queryTimeout = queryTimeout;
 	}
 }

@@ -7,25 +7,29 @@ public class HostInfo extends Model {
 	private String ipport;
 	private Integer total;//
 
-	private Integer main;//0 or 1(主控)
-	private Integer self;//0 or 1(当前主机)
+	private Date createDate=new Date();
 	private Date lastDate;
 
 	private Double totalMemory=0.0;//JVM总内存
 	private Double freeMemory=0.0;//JVM分配内存
 	private Double maxMemory=0.0;//JVM最大内存
-	private Integer loginNum=0;//登录数量
-	private Integer sessionNum=0;//session数量
 	private Integer dbUseLinkNum=0;//数据库当前连接数
+	private Integer dbMaxLinkNum=0;//数据库连接数峰值
 	
+	public Integer getDbMaxLinkNum() {
+		return dbMaxLinkNum;
+	}
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+	public void setDbMaxLinkNum(Integer dbMaxLinkNum) {
+		this.dbMaxLinkNum = dbMaxLinkNum;
+	}
 	public Integer getDbUseLinkNum() {
 		return dbUseLinkNum;
-	}
-	public Integer getLoginNum() {
-		return loginNum;
-	}
-	public void setLoginNum(Integer loginNum) {
-		this.loginNum = loginNum;
 	}
 	public void setDbUseLinkNum(Integer dbUseLinkNum) {
 		this.dbUseLinkNum = dbUseLinkNum;
@@ -47,15 +51,6 @@ public class HostInfo extends Model {
 	}
 	public void setLastDate(Date lastDate) {
 		this.lastDate = lastDate;
-	}
-	public Integer getMain() {
-		return main;
-	}
-	public void setMain(Integer main) {
-		this.main = main;
-	}
-	public Integer getSelf() {
-		return self;
 	}
 	public Double getTotalMemory() {
 		return totalMemory;
@@ -80,14 +75,5 @@ public class HostInfo extends Model {
 	}
 	public void setMaxMemory(Double maxMemory) {
 		this.maxMemory = maxMemory;
-	}
-	public void setSelf(Integer self) {
-		this.self = self;
-	}
-	public Integer getSessionNum() {
-		return sessionNum;
-	}
-	public void setSessionNum(Integer sessionNum) {
-		this.sessionNum = sessionNum;
 	}
 }

@@ -17,13 +17,10 @@ import m.system.util.StringUtil;
 public class InitListener implements ServletContextListener {
 
 	public void contextDestroyed(ServletContextEvent arg0) {
-		//HostSocketUtil.closeClient();
-		//HostSocketUtil.closeServer();
-		HostNettyUtil.closeClient();
-		HostNettyUtil.closeServer();
-		TaskUtil.closeTask();
 		TransactionManager.closeConnection();
 		TransactionManager.closeAllConection();
+		HostNettyUtil.closeAll();
+		TaskUtil.closeTask();
 	}
 	public void contextInitialized(ServletContextEvent arg0) {
 		InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("config/mconfig.properties");
@@ -47,6 +44,7 @@ public class InitListener implements ServletContextListener {
 			DBConfig.initConfig(dbp.getProperty("db_driver"), dbp.getProperty("db_url"), dbp.getProperty("db_username"), dbp.getProperty("db_password"));
 			DBConfig.setInitConnect(dbp.getProperty("db_init_connect"));
 			DBConfig.setMaxConnect(Integer.parseInt(dbp.getProperty("db_max_connect","20")));
+			DBConfig.setQueryTimeout(Integer.parseInt(dbp.getProperty("db_query_timeout", "600")));
 			TransactionManager.initConnection();
 			String tableSchema=dbp.getProperty("table_schema");
 			if(!StringUtil.isSpace(tableSchema)){
@@ -65,7 +63,6 @@ public class InitListener implements ServletContextListener {
 
 			SystemInit.taskClassRun(StringUtil.noSpace(p.getProperty("task_class")));
 			SystemInit.initClassRun(StringUtil.noSpace(p.getProperty("init_class")));
-			SessionListener.init(StringUtil.noSpace(p.getProperty("session_task_class")));
 			
 			String actionPack=StringUtil.noSpace(p.getProperty("action_pack"));
 			SystemInit.initAction(actionPack);
@@ -100,6 +97,7 @@ public class InitListener implements ServletContextListener {
 			DBConfig.initConfig(dbp.getProperty("db_driver"), dbp.getProperty("db_url"), dbp.getProperty("db_username"), dbp.getProperty("db_password"));
 			DBConfig.setInitConnect(dbp.getProperty("db_init_connect"));
 			DBConfig.setMaxConnect(Integer.parseInt(dbp.getProperty("db_max_connect","20")));
+			DBConfig.setQueryTimeout(Integer.parseInt(dbp.getProperty("db_query_timeout", "25")));
 			TransactionManager.initConnection();
 			String tableSchema=dbp.getProperty("table_schema");
 			if(!StringUtil.isSpace(tableSchema)){

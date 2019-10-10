@@ -3,6 +3,8 @@ package m.system.document;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import m.common.action.Action;
 import m.common.action.ActionMeta;
@@ -57,13 +59,25 @@ public class DocumentUtil {
 				method.setPath(new StringBuffer(actionPath).append("/").append(key).toString());
 				method.setTitle(meta.method().title());
 				method.setDescription(meta.method().description());
-				method.setResult(meta.method().result());
+				method.setResult(convertResult(meta.method().result()));
 				method.setPermission(meta.method().permission());
 				method.setParams(getParams(meta.params(),meta.models(),clazz));
 				list.add(method);
 			}
 		}
 		return list.toArray(new DocumentMethod[]{});
+	}
+	private static String convertResult(String result) {
+		result=result.replaceAll("\n", "<br/>");
+		result=result.replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+		Pattern pattern=Pattern.compile("\\#\\{.+?\\}");
+		Matcher matcher=pattern.matcher(result);
+		while(matcher.find()){
+			String str=matcher.group();
+			String str1=str.substring(2,str.length()-1);
+			result=result.replace(str, "{ <a href=\"javascript:;\" onclick=\"window.manageDeveloperGuide('"+str1+"')\">"+str1+"</a> }");
+		}
+		return result;
 	}
 	private static DocumentParam[] getParams(DocumentParamMeta[] params,DocumentModelMeta[] models,Class<? extends Action> actionClazz) throws MException{
 		List<DocumentParam> list=new ArrayList<DocumentParam>();

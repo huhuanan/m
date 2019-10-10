@@ -4,7 +4,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import m.common.model.HostInfo;
+import m.common.service.HostInfoService;
 import m.system.db.TransactionManager;
 import m.system.exception.MException;
 
@@ -19,8 +19,8 @@ public abstract class SystemTaskRun implements Job {
 		try {
 			TransactionManager.initConnection();
 			boolean isMain=false;
-			HostInfo host=RuntimeData.getHostInfo();
-			if(null==host||host.getMain()==1) isMain=true;
+			//HostInfo host=RuntimeData.getHostInfo();
+			if(HostInfoService.isMainHost()) isMain=true;
 			run(isMain);
 		} catch (MException e) {
 			e.printStackTrace();

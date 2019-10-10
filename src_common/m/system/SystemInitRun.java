@@ -1,6 +1,6 @@
 package m.system;
 
-import m.common.model.HostInfo;
+import m.common.service.HostInfoService;
 
 public abstract class SystemInitRun {
 	/**
@@ -11,8 +11,8 @@ public abstract class SystemInitRun {
 	
 	public void execute(){
 		boolean isMain=false;
-		HostInfo host=RuntimeData.getHostInfo();
-		if(null==host||host.getMain()==1) isMain=true;
+		//HostInfo host=RuntimeData.getHostInfo();
+		if(HostInfoService.isMainHost()) isMain=true;
 		run(isMain);
 	}
 }

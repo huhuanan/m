@@ -592,8 +592,12 @@ Vue.component('json-item', {
 						$.execJSON("action/managePageUtil/getSelectData",method,(function(json){
 							var field=json.field;
 							this.selectDatas[field].length=0;
+							this.selectLabels[field].length=0;
 							for(var i=0;i<json.data.length;i++){
 								this.$set(this.selectDatas[field],i,json.data[i]);
+								if(this.selectLabels[field].indexOf(json.data[i].label)<0){
+									this.$set(this.selectLabels[field],this.selectLabels[field].length,json.data[i].label);
+								}
 							}
 							console.log(this.selectDatas[field]);
 							if(this.$refs[field]){
@@ -986,27 +990,54 @@ Vue.component('json-item', {
 			colRender:function(h,params,key){
 				var self=this;
 				var buttons=params.column.buttons;
+				var dropButtons=params.column.dropButtons;
 				var link=params.column.link;
 				var row=params.row;
-				if(!row._count_row&&buttons&&buttons.length){
+				var isFun=false;
+				var onFun={};
+				if(!row._count_row&&link
+						&&(!link.hiddenField||link.hiddenValues.indexOf(row[link.hiddenField])<0)
+						&&(!link.showField||link.showValues.indexOf(row[link.showField])>=0)){
+					isFun=true;
+					onFun['click']=function(e){var ele=$(e.srcElement);self.inlineHandler(link.param,row);};
+				}
+				if(!row._count_row&&(buttons&&buttons.length||dropButtons&&dropButtons.length)){
 					var arr=[];
 					var btnObject={};
 					for(var i=0;i<buttons.length;i++){
 						var btn=buttons[i];btnObject[btn.title]=btn;
 						if((!btn.hiddenField||btn.hiddenValues.indexOf(row[btn.hiddenField])<0)
 								&&(!btn.showField||btn.showValues.indexOf(row[btn.showField])>=0)){
-							arr.push(h('i-button', {props: {type: btn.style,size: 'small',text:"123"},domProps:{innerHTML:'<i class="iconfont">'+btn.icon+'</i>&nbsp;<span>'+btn.title+'</span>&nbsp;'},
+							arr.push(h('i-button', {props: {type: btn.style,size: 'small'},domProps:{innerHTML:'<i class="iconfont">'+btn.icon+'</i>&nbsp;<span>'+btn.title+'</span>&nbsp;'},
 								on: {click:function(e){var ele=$(e.srcElement);ele=ele.attr("type")=="button"?ele:ele.parent();self.inlineHandler(btnObject[ele.find("span").text()].param,row);}}
 							}, ''));
 						}
 					}
+					for(var i=0;i<dropButtons.length;i++){
+						var dbtn=dropButtons[i];
+						var ds=[];
+						for(var n=0;n<dbtn.buttons.length;n++){
+							var db=dbtn.buttons[n];btnObject[dbtn.title+db.title]=db;
+							if((!db.hiddenField||db.hiddenValues.indexOf(row[db.hiddenField])<0)
+									&&(!db.showField||db.showValues.indexOf(row[db.showField])>=0)){
+								ds.push(h('dropdown-item',{props:{name:dbtn.title+db.title},domProps:{innerHTML:'<i class="iconfont">'+db.icon+'</i>&nbsp;<span>'+db.title+'</span>&nbsp;'}},''));
+							}
+						}
+						if((!dbtn.hiddenField||dbtn.hiddenValues.indexOf(row[dbtn.hiddenField])<0)
+								&&(!dbtn.showField||dbtn.showValues.indexOf(row[dbtn.showField])>=0)){
+							arr.push(h('i-button', {props: {type: dbtn.style,size: 'small'}},
+								[h('dropdown',{props:{transfer:true},
+										on:{'on-click':function(e){self.inlineHandler(btnObject[e].param,row);}}},[
+									h('span',{domProps:{innerHTML:'<i class="iconfont">'+dbtn.icon+'</i>&nbsp;<span>'+dbtn.title+'</span>&nbsp;'}},''),
+									h('icon',{props:{type:'ios-arrow-down'}},''),
+									h('dropdown-menu',{slot:'list'},[ds])
+								])]
+							));
+						}
+					}
 					return h('button-group', arr);
-				}else if(!row._count_row&&link
-						&&(!link.hiddenField||link.hiddenValues.indexOf(row[link.hiddenField])<0)
-						&&(!link.showField||link.showValues.indexOf(row[link.showField])>=0)){
-					return h('a',{on:{click:function(e){var ele=$(e.srcElement);self.inlineHandler(link.param,row);}}},row[key]);
 				}else{
-					return h('span', row[key]);
+					return h(isFun?'a':'span',{on:onFun}, row[key]);
 				}
 			},
 			statusRender:function(h,params,key){
@@ -1031,18 +1062,62 @@ Vue.component('json-item', {
 			colorRender:function(h,params,key){
 				return h('span',{props:{},style:{color:'#fff',padding:'0 7px',backgroundColor:params.row[key]}},' ');
 			},
-			query:function(){
+			imageRender:function(h,params,key){
 				var self=this;
-				this.tableLoading=true;
-				$.execJSON(this.dataUrl,this.param,function(json){
-					self.tableLoading=false;
-					if(json.code==0){
-						self.datas=json.data;
-						self.count=json.count;
-					}else{
-						self.$Message.error(json.msg);
+				var link=params.column.link;
+				var row=params.row;
+				var onFun={};
+				if(!row._count_row&&link
+						&&(!link.hiddenField||link.hiddenValues.indexOf(row[link.hiddenField])<0)
+						&&(!link.showField||link.showValues.indexOf(row[link.showField])>=0)){
+					onFun['click']=function(e){var ele=$(e.srcElement);self.inlineHandler(link.param,row);};
+				}
+				if(row[key]){
+					return h('img',{props:{},on:onFun,style:{height:'50px'},attrs:{src:row[key]}});
+				}else{
+					return h('span',{},'');
+				}
+			},
+			summaryMethod:function(obj){
+				var sums={};
+				if(null!=this.countData){
+					var cols=obj.columns;
+					for(var i=0;i<cols.length;i++){
+						var key=cols[i].key;
+						sums[key]={key:key,value:this.countData[key]};
 					}
-				},false,true);
+				}
+				return sums;
+			},
+			spanMethod:function(obj){
+				var row=obj.row, column=obj.column, rowIndex=obj.rowIndex, columnIndex=obj.columnIndex;
+				var span=row['_rowspan_num.'+column.key];
+				if(!isNaN(span)){
+					return [span,1];
+				}else{
+					return [1,1];
+				}
+			},
+			query:function(){
+				this.tableLoading=true;
+				$.execJSON(this.dataUrl,this.param,(function(json){
+					this.tableLoading=false;
+					if(json.code==0){
+						var arr=[];
+						for(var i=0;i<json.data.length;i++){
+							var dd=json.data[i];
+							if(dd._count_row){
+								this.countData=dd;
+							}else{
+								arr.push(dd);
+							}
+						}
+						this.datas=arr;
+						this.count=json.count;
+					}else{
+						this.$Message.error(json.msg);
+					}
+				}).bind(this),false,true);
 				this.searchPanel=false;
 			},
 			queryList:function(){

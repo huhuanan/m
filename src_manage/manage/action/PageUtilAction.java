@@ -12,8 +12,6 @@ import m.common.model.util.ModelQueryList;
 import m.common.model.util.QueryCondition;
 import m.common.model.util.QueryOrder;
 import m.system.RuntimeData;
-import m.system.exception.MException;
-import m.system.util.ArrayUtil;
 import m.system.util.ClassUtil;
 import m.system.util.JSONMessage;
 import m.system.util.StringUtil;
@@ -68,6 +66,10 @@ public class PageUtilAction extends ManageAction {
 							clist.add(QueryCondition.isEmpty(qcm.get("field")));
 						}else if(t.equals(SelectConditionType.IS_NOT_NULL.toString())){
 							clist.add(QueryCondition.not(QueryCondition.isNull(qcm.get("field"))));
+						}else if(t.equals(SelectConditionType.IS_EMPTY.toString())) {
+							clist.add(QueryCondition.isEmpty(qcm.get("field")));
+						}else if(t.equals(SelectConditionType.IS_NOT_EMPTY.toString())) {
+							clist.add(QueryCondition.not(QueryCondition.isEmpty(qcm.get("field"))));
 						}else if(t.equals(SelectConditionType.GE.toString())){
 							clist.add(QueryCondition.ge(qcm.get("field"), qcm.get("value")));
 						}else if(t.equals(SelectConditionType.GT.toString())){
@@ -101,8 +103,8 @@ public class PageUtilAction extends ManageAction {
 				);
 				for(Model m : list){
 					JSONMessage dm=new JSONMessage();
-					dm.push("value", ClassUtil.getFieldValue(m, value).toString());
-					dm.push("label", ClassUtil.getFieldValue(m, title).toString());
+					dm.push("value", ClassUtil.getFieldValue(m, value));
+					dm.push("label", ClassUtil.getFieldValue(m, title));
 					data.add(dm);
 				}
 			}else{

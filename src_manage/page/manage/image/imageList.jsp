@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <page>
-	<h2>选择图片</h2>
+	<h3>选择图片</h3>
 	<collapse :value="['no','yes']">
 		<panel name="no">
 			&nbsp;&nbsp;&nbsp;未使用

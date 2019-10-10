@@ -1,14 +1,16 @@
 package m.system.netty;
 
-import m.system.db.TransactionManager;
-
 public abstract class NettyObject<T extends NettyObject<?>> {
 	private NettyTimerLine<T> timerLine;
-	
+	private Thread timerThread;
 	public void clearTimerTask(){
 		if(null!=timerLine){
 			timerLine.stop();
 			timerLine=null;
+		}
+		if(null!=timerThread) {
+			timerThread.interrupt();
+			timerThread=null;
 		}
 	}
 	@SuppressWarnings("unchecked")
@@ -20,7 +22,8 @@ public abstract class NettyObject<T extends NettyObject<?>> {
 	}
 	protected void runTimerTask() {
 		if(null!=timerLine){
-			new Thread(timerLine).start();
+			timerThread=new Thread(timerLine);
+			timerThread.start();
 		}
 	}
 	class NettyTimerLine<E extends NettyObject<?>> implements Runnable {

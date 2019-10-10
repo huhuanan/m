@@ -14,7 +14,7 @@
 			<poptip confirm title="确定要删除吗?" :transfer="true" @on-ok="deleteImage(img.oid)"><a href="javascript:;" >删除</a></poptip></div></c:if>
 		</div>
 	</div>
-	<div id="link_false"><i-button type="text" :loading="data.load_false" long @click="loadImage(false)">加载更多</i-button></div>
+	<div ref="link_false"><i-button type="text" :loading="data.load_false" long @click="loadImage(false)">加载更多</i-button></div>
 </page>
 <script>
 (function(){
@@ -62,9 +62,7 @@
 					for(var i=0;i<data.list.length;i++){
 						self.data['list_'+isUsed].push(data.list[i]);
 					}
-					if(!has){
-						$("#link_"+isUsed).css("display","none");
-					}
+					self.$refs["link_"+isUsed].style.display=!has?"none":"";
 					self.data['pageno_'+isUsed]++;
 					self.data['load_'+isUsed]=false;
 				});

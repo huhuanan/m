@@ -5,11 +5,14 @@ import java.util.Date;
 
 import m.common.model.FieldMeta;
 import m.common.model.LinkTableMeta;
+import m.common.model.SessionModel;
 import m.common.model.TableMeta;
 import m.common.model.UserModel;
 import m.common.model.type.FieldType;
+import m.common.model.util.ModelQueryList;
+import m.system.cache.FlushCache;
 @TableMeta(name="os_admin_login",description="管理员登录表")
-public class AdminLogin extends StatusModel implements UserModel {
+public class AdminLogin extends StatusModel implements UserModel,SessionModel,FlushCache {
 
 	@LinkTableMeta(name="admin_group_oid",table=AdminGroup.class,notnull=true,description="用户组")
 	private AdminGroup adminGroup;
@@ -95,5 +98,12 @@ public class AdminLogin extends StatusModel implements UserModel {
 	}
 	public void setToken(String token) {
 		this.token = token;
+	}
+	public AdminLogin getCacheModel(String key) throws Exception {
+		AdminLogin admin=new AdminLogin();
+		admin.setOid(key);
+		admin=ModelQueryList.getModel(admin,1);
+		admin.setPassword("");
+		return admin;
 	}
 }

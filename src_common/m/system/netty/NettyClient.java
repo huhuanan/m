@@ -10,17 +10,14 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.serialization.ClassResolvers;
-import io.netty.handler.codec.serialization.ObjectDecoder;
-import io.netty.handler.codec.serialization.ObjectEncoder;
 
-public class NettyClient extends NettyObject<NettyClient> {
+public class NettyClient<T extends Object> extends NettyObject<NettyClient<T>> {
 	private String ip;
 	private int port;
-	private NettyEvent event;
+	private NettyEvent<T> event;
 	private ChannelHandlerContext channel;
 	
-	public NettyClient(NettyEvent event,String ip,int port){
+	public NettyClient(NettyEvent<T> event,String ip,int port){
 		this.ip=ip;
 		this.port=port;
 		this.event=event;
@@ -35,14 +32,13 @@ public class NettyClient extends NettyObject<NettyClient> {
 		bootstrap.group(eventLoopGroup).channel(NioSocketChannel.class)
 		.handler(new ChannelInitializer<SocketChannel>(){
 			protected void initChannel(SocketChannel ch) throws Exception {
+				event.initClientChannel(ch);
 				ChannelPipeline pipeline = ch.pipeline();
-				pipeline.addLast(new ObjectDecoder(1024, ClassResolvers.cacheDisabled(this.getClass().getClassLoader())));
-				pipeline.addLast(new ObjectEncoder());
-				pipeline.addLast(new SimpleChannelInboundHandler<NettyMessage>(){
+				pipeline.addLast(new SimpleChannelInboundHandler<T>(){
 					//读取
-					protected void channelRead0(ChannelHandlerContext ctx,NettyMessage msg) throws Exception {
+					protected void channelRead0(ChannelHandlerContext ctx,T msg) throws Exception {
 					    String ipport=ctx.channel().localAddress().toString();
-					    NettyMessage result=event.readOrReturn(ipport, msg);
+					    T result=event.readOrReturn(ipport, msg);
 				        if(null!=result){
 				        	ctx.channel().writeAndFlush(result);
 				        	event.sendCallback(ipport, result);
@@ -83,7 +79,9 @@ public class NettyClient extends NettyObject<NettyClient> {
 	}
 	public void close(){
 		if(null!=channel){
-			channel.close();
+			try {
+				channel.close().sync();
+			} catch (InterruptedException e) { }
 		}
 		this.clearTimerTask();
 	}
@@ -91,11 +89,14 @@ public class NettyClient extends NettyObject<NettyClient> {
 	 * 向服务端发送消息
 	 * @param msg
 	 * @return
+	 * @throws InterruptedException 
 	 */
-	public boolean send(NettyMessage msg){
+	public boolean send(T msg) {
 		boolean b=false;
 		if(null!=channel){
-			channel.channel().writeAndFlush(msg);
+			try {
+				channel.channel().writeAndFlush(msg).sync();
+			} catch (InterruptedException e) { }
 			event.sendCallback(channel.channel().localAddress().toString(), msg);
 			b=true;
 		}

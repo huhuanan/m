@@ -17,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -66,11 +67,13 @@ public class ActionFilter implements Filter {
 			return;
 		}
 		if(RuntimeData.getDebug()){
+			String path = req.getContextPath();
+			String basePath = req.getScheme()+"://"+req.getServerName()+":"+req.getServerPort()+path+"/";
 			System.out.println("-----------------------------------------------------------");
 			System.out.print(DateUtil.format(startDate, DateUtil.YYYY_MM_DD_HH_MM_SS));
 			System.out.print("\t>>>>>\t\t");
 			System.out.print("url:");
-			System.out.println(servletPath);
+			System.out.println(basePath+servletPath);
 		}
 		try {
 			TransactionManager.initConnection();
@@ -138,6 +141,7 @@ public class ActionFilter implements Filter {
 			}
 			return;
 		}
+		setRequestCookie(req,res);
 		if(servletPath.length()>1){
 			String[] urlParts=servletPath.substring(1).split("/");
 			if("action".equals(urlParts[0])&&urlParts.length==3){
@@ -276,6 +280,20 @@ public class ActionFilter implements Filter {
 				if(!StringUtil.isSpace(outString)) res.getWriter().print(outString);
 			}
 		}
+	}
+	private void setRequestCookie(HttpServletRequest request,HttpServletResponse response) {
+		Cookie[] cs=request.getCookies();
+		if(null!=cs){
+			for(int i=0;i<cs.length;i++){
+				if(cs[i].getName().equals(Action.SESSION_NAME)){
+					return;
+				}
+			}
+		}
+		Cookie cookie=new Cookie(Action.SESSION_NAME,GenerateID.tempKey());
+		cookie.setMaxAge(-1);
+		cookie.setPath("/");
+		response.addCookie(cookie);
 	}
 	private void outFile(HttpServletRequest request,HttpServletResponse response,String path) throws IOException{
 		FileInputStream fis = new FileInputStream(path);

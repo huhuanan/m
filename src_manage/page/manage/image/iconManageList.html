@@ -1,13 +1,14 @@
 <page>
-	<h2 v-html="oper=='manage'?'图标管理':'选择图标 <small>点击图标选择</small>'"></h2>
+	<h3 v-html="oper=='manage'?'图标管理':'选择图标 <small>点击图标选择</small>'"></h3>
 	<card :padding="0">
 		<div style="padding-top:15px;">
-			<span v-for="img in list" :id="img.oid" :style="{display:'inline-block',width:'100px',textAlign:'center',backgroundColor:(img.oid==selected?'rgba(45,183,254,0.5)':'rgba(255,255,255,0)')}">
-				<img :src="img.path" style="height:70px;" @click="selectIcon(img.oid+'|'+img.path)"/>
-				<div v-html="img.name" style="width:100px;text-align:center;height:18px;line-height:18px;white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></div>
+			<span v-for="img in list" :id="img.oid" :style="{display:'inline-block',width:'80px',textAlign:'center',backgroundColor:(img.oid==selected?'rgba(45,183,254,0.5)':'rgba(255,255,255,0)')}">
+				<img :src="img.path" style="height:50px;" @click="selectIcon(img.oid+'|'+img.path)"/>
+				<div v-html="img.name" style="width:80px;text-align:center;height:18px;line-height:18px;white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></div>
 			</span>
 		</div>
 		<div v-if="has"><i-button type="text" :loading="load" long @click="loadIcon()">加载更多</i-button></div>
+		<div v-if="!has" style="text-align:center;line-height:30px;font-size:12px;">没有更多了</div>
 	</card>
 	<div style="padding-top:10px;text-align:right;">
 		<upload v-if="oper=='manage'" :style="{display:'inline-block',marginLeft:'6px',verticalAlign:'top',width:'600px'}" ref="upload" multiple accept="*/*" :on-success="uploadSuccess" :before-upload="beforeUpload"

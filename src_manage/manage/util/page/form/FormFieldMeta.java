@@ -17,6 +17,7 @@ public @interface FormFieldMeta {
 	public enum FormFieldType {
 		HIDDEN,//隐藏域
 		TEXT,//普通输入框
+		TEXTAUTO,//自动填充输入框
 		PASSWORD,//密码框
 		TEXTAREA,//文本域
 		SELECT,//选择框

@@ -20,7 +20,7 @@
 			<divider :style="{margin:'5px 0'}"/>
 			<div id="action${key}">
 				<template v-for="item in selectAction.methods">
-					<h4 style="color:#2d8cf0;">{{item.title}} - {{item.description}}</h4>
+					<divider orientation="left" style="margin-bottom:10px;color:#2d8cf0;">{{item.title}} - {{item.description}}</divider>
 					<table style="width:100%;margin-bottom:6px;" cellspacing="0" cellpadding="0" border="0">
 						<tr>
 							<td style=""> {{item.path}}</td>
@@ -28,11 +28,11 @@
 							<td style="width:100px;text-align:right;"><i-button type="primary" size="small" @click.native="showTestModal(item.title,item.path)">测试</i-button></td>
 						</tr>
 					</table>
-					<div class="ivu-table-wrapper">
+					<div class="ivu-table-wrapper ivu-table-small">
 						<table class="ivu-table ivu-table-small" style="width:100%" cellspacing="0" cellpadding="0" border="0">
 							<tr>
-								<th style="text-align:left;">参数名称</th>
-								<th style="text-align:left;">参数描述</th>
+								<th style="text-align:center;">参数名称</th>
+								<th style="text-align:center;">参数描述</th>
 								<th style="text-align:center;">类型</th>
 								<th style="text-align:center;">长度</th>
 								<th style="text-align:center;">必填</th>
@@ -44,10 +44,15 @@
 								<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.length}}</td>
 								<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.notnull}}</td>
 							</tr>
+							<tr v-if="item.params.length==0">
+								<td colspan="5" style="text-align:center;">无参数</td>
+							</tr>
 							<tr>
 								<td colspan="6">
-									<h4>返回:</h4>
-									<pre>{{item.result}}</pre>
+									<div style="padding:10px;font-size:14px;">
+										<span style="color:#f00">返回示例:&nbsp;</span>
+										<span v-html="item.result"></span>
+									</div>
 								</td>
 							</tr>
 						</table>
@@ -55,18 +60,11 @@
 				</template>
 			</div>
 			<div id="model${key}">
-				<table style="widht:100%;">
-					<tr>
-						<td>
-							<h3><span style="color:#2d8cf0;">{{selectModel.description}}</span> <b>类:</b>{{selectModel.clazz}}  <b>表:</b>{{selectModel.name}}</h3>
-						</td>
-						<td style="text-align:right;">
-							<i-button type="primary" size="small" @click.native="showScriptModal(selectModel)">dart</i-button>
-						</td>
-					</tr>
-				</table>
-				
-				<div class="ivu-table-wrapper">
+				<div style="font-size:14px;line-height:30px;">
+					<b>类: </b>{{selectModel.clazz}}&nbsp;&nbsp;
+					<b>表: </b>{{selectModel.name}}&nbsp;&nbsp;
+				</div>
+				<div class="ivu-table-wrapper ivu-table-small">
 					<table class="ivu-table ivu-table-small" style="width:100%" cellspacing="0" cellpadding="0" border="0">
 						<tr>
 							<th style="text-align:center;">字段</th>
@@ -77,7 +75,7 @@
 							<th style="text-align:center;">必填</th>
 						</tr>
 						<tr v-for="f in selectModel.fields">
-							<td style="padding-left:5px;padding-right:5px;" v-if="f.linkName"><a href="javascript:;" @click="openModel(f.linkClazz)">{{f.field}}</a></td>
+							<td style="padding-left:5px;padding-right:5px;" v-if="f.linkName"><a href="javascript:;" @click="showModelModal(f.linkClazz)">{{f.field}}</a></td>
 							<td style="padding-left:5px;padding-right:5px;" v-if="!f.linkName">{{f.field}}</td>
 							<td style="padding-left:5px;padding-right:5px;">{{f.name}}</td>
 							<td style="padding-left:5px;padding-right:5px;">{{f.description}}</td>
@@ -87,15 +85,52 @@
 						</tr>
 					</table>
 				</div>
+				<div style="line-height:30px;">
+					生成代码: 
+					<i-button type="primary" size="small" @click.native="showScriptModal(selectModel)">dart</i-button>
+				</div>
 			</div>
 		</i-col>
 	</row>
+	<modal v-model="sModelModal" :footer-hide="true" width="80%" :mask-closable="false">
+		<table style="widht:100%;">
+			<tr>
+				<td>
+					<h3>
+						<span style="color:#2d8cf0;">{{sModel.description}}</span> <b>类:</b>{{sModel.clazz}}  <b>表:</b>{{sModel.name}}
+						&nbsp;&nbsp;<i-button type="primary" size="small" @click.native="showScriptModal(sModel)">dart</i-button>
+					</h3>
+				</td>
+			</tr>
+		</table>
+		<div class="ivu-table-wrapper ivu-table-small">
+			<table class="ivu-table ivu-table-small" style="width:100%" cellspacing="0" cellpadding="0" border="0">
+				<tr>
+					<th style="text-align:center;">字段</th>
+					<th style="text-align:center;">列名</th>
+					<th style="text-align:center;">描述</th>
+					<th style="text-align:center;">类型</th>
+					<th style="text-align:center;">长度</th>
+					<th style="text-align:center;">必填</th>
+				</tr>
+				<tr v-for="f in sModel.fields">
+					<td style="padding-left:5px;padding-right:5px;" v-if="f.linkName"><a href="javascript:;" @click="showModelModal(f.linkClazz)">{{f.field}}</a></td>
+					<td style="padding-left:5px;padding-right:5px;" v-if="!f.linkName">{{f.field}}</td>
+					<td style="padding-left:5px;padding-right:5px;">{{f.name}}</td>
+					<td style="padding-left:5px;padding-right:5px;">{{f.description}}</td>
+					<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.type}}</td>
+					<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.length}}</td>
+					<td style="padding-left:5px;padding-right:5px;width:70px;text-align:center;">{{f.notnull}}</td>
+				</tr>
+			</table>
+		</div>
+	</modal>
 	<modal v-model="testModal" :footer-hide="true" width="80%" :mask-closable="false">
 		<h3>{{testMethod.title}} - {{testMethod.description}}</h3>
-		<div class="ivu-table-wrapper">
+		<div class="ivu-table-wrapper ivu-table-small">
 			<table class="ivu-table ivu-table-default" style="width:100%" cellspacing="0" cellpadding="0" border="0">
 				<tr>
-					<td colspan="4" style="padding-left:10px;"><h3>访问路径: {{testMethod.path}}</h3></td>
+					<td colspan="4" style="padding-left:10px;"><h3>{{testMethod.path}}</h3></td>
 					<td style="text-align:right;"><span v-if="testMethod.permission">权限: </span></td>
 					<td style="text-align:center;width:310px;">
 						<span v-if="!testMethod.permission">权限: {{testMethod.permission}}</span>
@@ -126,15 +161,20 @@
 						<input-number v-if="f.type=='INT'||f.type=='DOUBLE'" v-model="params[f.name]" style="width:300px;"></input-number>
 					</td>
 				</tr>
+				<tr v-if="testMethod&&testMethod.params&&testMethod.params.length==0">
+					<td colspan="6" style="text-align:center;">无参数</td>
+				</tr>
 				<tr>
 					<td colspan="6">
-						<h4>返回:</h4>
-						<json-val :json-val="json" :current-depth="0" :max-depth="2" :last="true"></json-val>
+						<div style="padding:10px;">
+							<div>返回:</div>
+							<json-val :json-val="json" :current-depth="0" :max-depth="2" :last="true"></json-val>
+						</div>
 					</td>
 				</tr>
 			</table>
 		</div>
-   </modal>
+	</modal>
 	<modal v-model="scriptModal" :footer-hide="true" width="80%" :mask-closable="false">
 		<h3>{{selectModel.name}} {{selectModel.description}}</h3>
 		<textarea rows="25" style="width:100%;">{{scriptContent}}</textarea>
@@ -154,6 +194,8 @@
 				selectAction:{},
 				models:${map.models},
 				selectModel:{},
+				sModel:{},
+				sModelModal:false,
 				testModal:false,
 				testMethod:{},
 				params:{},
@@ -165,6 +207,10 @@
 		},
 		mounted:function(){
 			this.openModel(this.models[0].clazz);
+			var self=this;
+			window.manageDeveloperGuide=function(clazz){
+				self.showModelModal(clazz);
+			};
 		},
 		
 		methods:{
@@ -182,15 +228,24 @@
 			},
 			openModel:function(id){
 				this.id=id;
-				this.title="模型表";
 				for(var i=0;i<this.models.length;i++){
 					if(id==this.models[i].clazz){
 						this.selectModel=this.models[i];
 						break;
 					}
 				}
+				this.title=this.selectModel.description;
 				$('#action${key}').slideUp(300);
 				$('#model${key}').slideDown(300);
+			},
+			showModelModal:function(id){
+				for(var i=0;i<this.models.length;i++){
+					if(id==this.models[i].clazz){
+						this.sModel=this.models[i];
+						break;
+					}
+				}
+				this.sModelModal=true;
 			},
 			showTestModal:function(title,path){
 				for(var i=0;i<this.selectAction.methods.length;i++){

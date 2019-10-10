@@ -9,6 +9,7 @@ import m.system.util.JSONMessage;
 import m.system.util.StringUtil;
 import manage.util.page.button.ButtonMeta;
 import manage.util.page.button.ButtonMeta.ButtonEvent;
+import manage.util.page.button.DropButtonMeta;
 import manage.util.page.button.ParamMeta;
 import manage.util.page.table.TableColLink;
 
@@ -95,5 +96,27 @@ public class ButtonMetaUtil {
 			list.add(new String[]{b.name(),b.field(),b.value()});
 		}
 		return list;
+	}
+	
+
+	public List<Map<String,Object>> toList(DropButtonMeta[] bms,Map<String,Boolean> powerMap){
+		List<Map<String,Object>> dbs=new ArrayList<Map<String,Object>>();
+		for(DropButtonMeta bm : bms) {
+			if("".equals(bm.power())||null!=powerMap.get(bm.power())&&powerMap.get(bm.power())){
+				Map<String,Object> button=new HashMap<String,Object>();
+				button.put("title", bm.title());
+				button.put("icon", getIcon(bm.title(),bm.icon()));
+				button.put("style", bm.style().toString());
+//				button.put("disabledField", bm.disabledField().replaceAll("\\.", "_"));
+//				button.put("disabledValues", bm.disabledValues());
+				button.put("hiddenField", bm.hiddenField().replaceAll("\\.", "_"));
+				button.put("hiddenValues", bm.hiddenValues());
+				button.put("showField", bm.showField().replaceAll("\\.", "_"));
+				button.put("showValues", bm.showValues());
+				button.put("buttons",toList(bm.buttons(),powerMap));
+				dbs.add(button);
+			}
+		}
+		return dbs;
 	}
 }

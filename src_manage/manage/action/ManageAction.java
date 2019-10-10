@@ -17,6 +17,7 @@ import m.common.model.util.QueryCondition;
 import m.common.model.util.QueryOrder;
 import m.common.model.util.QueryPage;
 import m.system.RuntimeData;
+import m.system.cache.CacheUtil;
 import m.system.exception.MException;
 import m.system.lang.PageInfo;
 import m.system.util.AnnotationUtil;
@@ -27,7 +28,6 @@ import m.system.util.StringUtil;
 import manage.dao.AdminLoginDao;
 import manage.model.AdminGroup;
 import manage.model.AdminLogin;
-import manage.run.AdminLoginSessionTask;
 import manage.service.AdminGroupPowerService;
 import manage.util.excel.ExcelObject;
 import manage.util.excel.SheetObject;
@@ -72,32 +72,26 @@ public abstract class ManageAction extends Action {
 	public static MException noPowerException=new MException(ManageAction.class, "NoPower:权限不足");
 	
 	/**
-	 * 获取session
-	 * @param oid
-	 * @return
-	 * @throws Exception
-	 */
-	public static AdminLogin getSessionAdmin(String oid) throws Exception{
-		return AdminLoginSessionTask.getSessionAdmin(oid);
-	}
-	/**
 	 * 重置登录信息 
-	 * @param adminOid 登录账号oid
 	 */
-	public void resetSessionAdmin(String adminOid){
-		AdminLoginSessionTask.resetSessionAdmin(adminOid);
+	public void resetSessionAdmin(){
+		AdminLogin admin=getSessionModel(AdminLogin.class);
+		if(null!=admin) {
+			removeSessionModel();
+			try {
+				setSessionModel(ModelQueryList.getModel(admin, 1));
+			} catch (Exception e) { }
+		}
 	}
 	/**
 	 * 获取登录用户信息 返回null说明没有登录
 	 * @return
 	 */
 	public AdminLogin getSessionAdmin() {
-		AdminLogin admin=null;
-		Object oid=AdminLoginSessionTask.getSessionAdminOid(getRequest().getSession());
-		if(null!=oid){
-			try {
-				admin=getSessionAdmin(oid.toString());
-			} catch (Exception e) {}
+		//AdminLogin admin=AdminLoginSessionTask.getSessionAdmin(getRequest().getSession());
+		AdminLogin admin=getSessionModel(AdminLogin.class);
+		if(null!=admin){
+			return admin;
 		}
 		if(null==admin){
 			String name=null;
@@ -119,7 +113,9 @@ public abstract class ManageAction extends Action {
 				}
 				if(!StringUtil.isSpace(adminOid)){
 					try {
-						admin=getSessionAdmin(adminOid);
+						admin=new AdminLogin();
+						admin.setOid(adminOid);
+						admin=ModelQueryList.getModel(admin, 1);
 						setSessionAdmin(admin,"");
 						getDao(AdminLoginDao.class).updateLastInfo(admin, getIpAddress());
 					} catch (Exception e) {}
@@ -144,7 +140,8 @@ public abstract class ManageAction extends Action {
 			cookie.setPath("/");
 			getResponse().addCookie(cookie);
 		}
-		AdminLoginSessionTask.setSessionAdminOid(getRequest().getSession(), admin.getOid());
+		//AdminLoginSessionTask.setSessionAdmin(getRequest().getSession(), admin.getOid());
+		setSessionModel(admin);
 	}
 	/**
 	 * 清除登录信息
@@ -158,7 +155,8 @@ public abstract class ManageAction extends Action {
 		cookie.setMaxAge(1);
 		cookie.setPath("/");
 		getResponse().addCookie(cookie);
-		AdminLoginSessionTask.removeSessionAdminOid(getRequest().getSession());
+//		AdminLoginSessionTask.removeSessionAdmin(getRequest().getSession());
+		removeSessionModel();
 	}
 	
 	public static Map<String,Boolean> getAdminOperPower(AdminLogin admin) throws SQLException, MException{
@@ -249,10 +247,11 @@ public abstract class ManageAction extends Action {
 		StackTraceElement stacks = new Throwable().getStackTrace()[1];
 		ActionFormMeta meta=AnnotationUtil.getAnnotation4Method(ActionFormMeta.class, getActionClass(), stacks.getMethodName());
 		result.setMap(new HashMap<String,Object>());
+		Map<String,Boolean> powerMap=getAdminOperPower();
 		Map<String,Object> map=result.getMap();
 		map.put("formTitle", meta.title());
-		map.put("formRows", FormMetaUtil.toRows(meta.rows(),getAdminOperPower()));
-		map.put("formButtons", FormMetaUtil.toButtons(meta.buttons(),getAdminOperPower()));
+		map.put("formRows", FormMetaUtil.toRows(meta.rows(),powerMap));
+		map.put("formButtons", FormMetaUtil.toButtons(meta.buttons(),powerMap));
 		map.put("others", FormMetaUtil.toOthers(meta.others()));
 		map.put("action", action);
 		map.put("openKey", openKey);
@@ -387,6 +386,8 @@ public abstract class ManageAction extends Action {
 		Map<String,Object> map=result.getMap();
 		map.put("params", params);
 		map.put("dataUrl", meta.dataUrl());
+		map.put("rowspanIndex",meta.rowspanIndex());
+		map.put("rowspanNum",meta.rowspanNum());
 		if(!isMenu&&meta.tableHeight()!=0){
 			map.put("tableHeight",meta.tableHeight());
 		}else{
@@ -398,10 +399,12 @@ public abstract class ManageAction extends Action {
 		}else if(!QueryMetaUtil.hasNoHiddenQuery(meta.querys())){
 			map.put("hiddenQueryList", true);
 		}
-		map.put("tableCols", ObjectUtil.toString(ActionTableUtil.toList(meta.cols(),getAdminOperPower())));
+		Map<String,Boolean> powerMap=getAdminOperPower();
+		map.put("tableCols", ObjectUtil.toString(ActionTableUtil.toList(meta.cols(),powerMap)));
 		map.put("tableQueryList",QueryMetaUtil.toList(meta.querys()));
 		ButtonMetaUtil bmUtil=new ButtonMetaUtil();
-		map.put("tableButtons",ObjectUtil.toString(bmUtil.toList(meta.buttons(),getAdminOperPower())));
+		map.put("tableButtons",ObjectUtil.toString(bmUtil.toList(meta.buttons(),powerMap)));
+		map.put("tableDropButtons", ObjectUtil.toString(bmUtil.toList(meta.dropButtons(),powerMap)));
 		map.put("openKey", openKey);
 		map.put("openMode", openMode);
 		return result;

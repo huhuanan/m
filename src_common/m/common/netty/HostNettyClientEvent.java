@@ -8,47 +8,38 @@ import m.system.cache.CacheUtil;
 import m.system.netty.NettyEvent;
 import m.system.netty.NettyMessage;
 
-public class HostNettyClientEvent extends NettyEvent {
+public class HostNettyClientEvent extends NettyEvent<NettyMessage> {
 	public NettyMessage readOrReturn(String ipport, NettyMessage msg) {
-		System.out.println("client readOrReturn:"+msg);
+		//System.out.println("client readOrReturn:"+msg);
 		Boolean main=msg.get(Boolean.class,"host_main");
 		if(null!=main&&main) {
 			String ip=HostNettyUtil.getIp(ipport);
 			HostInfoService.setMainHost(ip);
-			if(HostNettyUtil.isClient) {
-				System.out.println("主机服务器关闭当前客户端");
-				HostNettyUtil.setDone();
-				HostNettyUtil.isClient=false;
-				HostNettyUtil.closeClient();
-			}
+			HostNettyUtil.closeClient(false);
 		}else {
 			Map<String, HostInfo> hostMap=msg.get(Map.class, "host_hostMap");
 			if(null!=hostMap) {
 				String ip=HostNettyUtil.getIp(ipport);
 				HostInfoService.setHostMap(ip,hostMap);
-				if(HostNettyUtil.isServer) {
-					HostNettyUtil.setDone();
-					System.out.println("主机客户端关闭当前服务端");
-					HostNettyUtil.isServer=false;
-					HostNettyUtil.closeServer();
-				}
+				HostNettyUtil.closeServer(false);
 			}
 		}
 		//缓存处理
-		CacheUtil.doNettySynchCache(msg);
+		CacheUtil.readNettyClientMessage(ipport, msg);
 		return null;
 	}
 	public void exceptionCallback(String ipport, Throwable cause) {
-		if(HostNettyUtil.isClient) HostNettyUtil.reopenClient();//发生异常重启客户端
+		HostNettyUtil.reopenClient();//发生异常重启客户端
 	}
 	public void closeCallback(String ipport) {
-		if(HostNettyUtil.isClient) HostNettyUtil.reopenClient();
+		HostNettyUtil.reopenClient();
 	}
 
-//	public void sendCallback(String ipport, NettyMessage msg) {
-//		// TODO Auto-generated method stub
-//		super.sendCallback(ipport, msg);
-//	}
+	public void sendCallback(String ipport, NettyMessage msg) {
+		// TODO Auto-generated method stub
+		super.sendCallback(ipport, msg);
+		//System.out.println(ipport+msg);
+	}
 //
 //	public void openCallback(String ipport) {
 //		// TODO Auto-generated method stub

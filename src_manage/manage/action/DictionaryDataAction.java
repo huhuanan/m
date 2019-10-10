@@ -58,15 +58,15 @@ public class DictionaryDataAction extends StatusAction {
 
 	@ActionFormMeta(title="字典值",
 		rows={
-			@FormRowMeta(fields={
+			@FormRowMeta(minWidth=200,fields={
 				@FormFieldMeta(field = "model.oid", type = FormFieldType.HIDDEN),
 				@FormFieldMeta(field = "model.dictionaryType.oid", type = FormFieldType.HIDDEN),
 				@FormFieldMeta(title="名称",field="model.name",type=FormFieldType.TEXT,hint="请输入名称")
 			}),
-			@FormRowMeta(fields={
+			@FormRowMeta(minWidth=200,fields={
 				@FormFieldMeta(title="值",field="model.value",type=FormFieldType.TEXT,hint="请输入真实值")
 			}),
-			@FormRowMeta(fields={
+			@FormRowMeta(minWidth=200,fields={
 				@FormFieldMeta(title="排序",field="model.sort",type=FormFieldType.INT,hint="请输入排序号")
 			})
 		},

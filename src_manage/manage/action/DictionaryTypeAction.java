@@ -51,13 +51,13 @@ public class DictionaryTypeAction extends ManageAction {
 			@ActionTableColMeta(field="oid",type=TableColType.INDEX, title = ""),
 			@ActionTableColMeta(field = "name", title = "名称", width=200,sort=true,initSort=TableColSort.ASC),
 			@ActionTableColMeta(field = "type", title = "类型", width=200,sort=true),
-			@ActionTableColMeta(field="oid",title="操作",width=85,buttons={
+			@ActionTableColMeta(field="oid",title="操作",width=100,buttons={
 				@ButtonMeta(title="字典数据",event = ButtonEvent.MODAL,modalWidth=600, url = "action/manageDictionaryData/toList?method=dictionayDataList",
 					params={@ParamMeta(field="oid",name="params[dictionaryType.oid]")},style=ButtonStyle.NONE)
 			}),
 		},
 		buttons = {
-			@ButtonMeta(title="图标管理",event = ButtonEvent.MODAL,modalWidth=840, url = "page/manage/image/iconManageList.html?oper=manage",
+			@ButtonMeta(title="图标管理",event = ButtonEvent.MODAL,modalWidth=840, url = "page/manage/image/iconManageList.html?oper=manage&selected=&field=",
 				power="manage_system_power",style=ButtonStyle.NONE)
 		}
 	)

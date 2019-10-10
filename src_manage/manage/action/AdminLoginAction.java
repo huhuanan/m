@@ -55,7 +55,7 @@ public class AdminLoginAction extends StatusAction {
 	}
 	public JSONMessage isLogin(){
 		JSONMessage message=new JSONMessage();
-		message.push("codeVerify", CaptchaUtil.isMastVerify(getRequest().getSession()));
+		message.push("codeVerify", CaptchaUtil.isMastVerify(getSessionCookie()));
 		try {
 			model=getSessionAdmin();
 			message.push("code", 0);
@@ -79,7 +79,7 @@ public class AdminLoginAction extends StatusAction {
         
         OutputStream os = response.getOutputStream();
         try {
-            ImageIO.write(CaptchaUtil.getImageCode(request.getSession(), os), "jpg", os);
+            ImageIO.write(CaptchaUtil.getImageCode(getSessionCookie(), os), "jpg", os);
         }catch(IOException e) {
         }finally{
             if (os != null) {
@@ -97,16 +97,17 @@ public class AdminLoginAction extends StatusAction {
 		setLogContent("登陆", "管理员登陆后台");
 		JSONMessage message=new JSONMessage();
 		try {
-			CaptchaUtil.verifyCaptcha(getRequest().getSession(), imageCode);
+			CaptchaUtil.verifyCaptcha(getSessionCookie(), imageCode);
 			model=getService(AdminLoginService.class).loginVerification(model);
 			setSessionAdmin(model,autoLogin);
 			getDao(AdminLoginDao.class).updateLastInfo(model, getIpAddress());
 			message.push("code", 0);
 			message.push("model", model);
 			message.push("msg", "登录成功!");
-			CaptchaUtil.clearMastVerify(getRequest().getSession());
+			CaptchaUtil.clearMastVerify(getSessionCookie());
+			CaptchaUtil.clearCode(getSessionCookie());
 		} catch (Exception e) {
-			CaptchaUtil.setMastVerify(getRequest().getSession());
+			CaptchaUtil.setMastVerify(getSessionCookie());
 			message.push("code", 1);
 			message.push("msg", e.getMessage());
 			setLogError(e.getMessage());
@@ -136,7 +137,6 @@ public class AdminLoginAction extends StatusAction {
 		try {
 			verifyAdminOperPower("manage_system_power");
 			String msg=getService(AdminLoginService.class).save(model,password);
-			resetSessionAdmin(model.getOid());
 			result.push("code", 0);
 			result.push("msg", msg);
 		} catch (Exception e) {
@@ -162,7 +162,7 @@ public class AdminLoginAction extends StatusAction {
 			}
 			model.setAdminGroup(admin.getAdminGroup());
 			String msg=getService(AdminLoginService.class).save(model,password);
-			resetSessionAdmin(model.getOid());
+			resetSessionAdmin();
 			result.push("code", 0);
 			result.push("msg", msg);
 		} catch (Exception e) {
@@ -276,14 +276,14 @@ public class AdminLoginAction extends StatusAction {
 			@ActionTableColMeta(field = "lastLoginTime", title = "最后登陆时间", align="center", width=150, dateFormat="yyyy-MM-dd HH:mm"),
 			@ActionTableColMeta(field = "loginCount", title = "登陆次数", width=70, numberFormat="#,##0", align="right"),
 			@ActionTableColMeta(field = "status", title = "状态",type=TableColType.STATUS,power="manage_system_power",dictionaryType="status",align="center"),
-			@ActionTableColMeta(field="oid",title="操作",width=150,buttons={
+			@ActionTableColMeta(field="oid",title="操作",width=180,buttons={
 				@ButtonMeta(title="修改", event = ButtonEvent.MODAL,modalWidth=700, url = "action/manageAdminLogin/toEdit",
 					params={@ParamMeta(name = "model.oid", field="oid")},success=SuccessMethod.REFRESH,style=ButtonStyle.NORMAL,
 					power="manage_system_power"
 				),
-				@ButtonMeta(title="菜单权限", event = ButtonEvent.MODAL,modalWidth=800,  url = "page/manage/adminLogin/viewGroupMenuPage.html", 
+				@ButtonMeta(title="查看权限", event = ButtonEvent.MODAL,modalWidth=800, url = "page/manage/adminLogin/viewGroupMenuPage.html", 
 					params={@ParamMeta(name = "adminOid", field="oid"),@ParamMeta(name = "adminGroupOid", field="adminGroup.oid")}, 
-					style=ButtonStyle.NONE,power="manage_system_power"
+					style=ButtonStyle.DEFAULT,power="manage_system_power"
 				),
 			})
 		},

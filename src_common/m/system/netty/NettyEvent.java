@@ -1,6 +1,12 @@
 package m.system.netty;
 
-public abstract class NettyEvent {
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.socket.SocketChannel;
+import io.netty.handler.codec.serialization.ClassResolvers;
+import io.netty.handler.codec.serialization.ObjectDecoder;
+import io.netty.handler.codec.serialization.ObjectEncoder;
+
+public abstract class NettyEvent<T extends Object> {
 
 	/**
 	 * 读取或者发送
@@ -8,14 +14,14 @@ public abstract class NettyEvent {
 	 * @param result 读取的内容
 	 * @return 发送的内容, null代表不发送
 	 */
-	public abstract NettyMessage readOrReturn(String ipport,NettyMessage msg);
+	public abstract T readOrReturn(String ipport,T msg);
 	/**
 	 * 发送回调 readOrReturn也会调用
 	 * @param ipport
 	 * @param result 发送的内容
 	 * @return
 	 */
-	public void sendCallback(String ipport,NettyMessage msg){
+	public void sendCallback(String ipport,T msg){
 		
 	};
 	/**
@@ -39,5 +45,16 @@ public abstract class NettyEvent {
 	 */
 	public void exceptionCallback(String ipport,Throwable cause) {
 		
+	}
+	
+	public void initClientChannel(SocketChannel ch) {
+		ChannelPipeline pipeline = ch.pipeline();
+		pipeline.addLast(new ObjectDecoder(1024, ClassResolvers.cacheDisabled(this.getClass().getClassLoader())));
+		pipeline.addLast(new ObjectEncoder());
+	}
+	public void initServerChannel(SocketChannel ch) {
+		ChannelPipeline pipeline = ch.pipeline();
+		pipeline.addLast(new ObjectDecoder(1024*1024, ClassResolvers.weakCachingConcurrentResolver(this.getClass().getClassLoader())));
+		pipeline.addLast(new ObjectEncoder());
 	}
 }

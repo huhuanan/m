@@ -1,7 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <page>
-	<h2>菜单设置</h2>
+	<h3>菜单设置</h3>
 	<collapse :value="[<c:forEach var="item" items="${list}">'${item.oid }',</c:forEach>]">
 	<c:forEach var="item" items="${list}">
 		<panel name="${item.oid}">&nbsp;&nbsp;&nbsp;<i class="iconfont">${item.icoStyle }</i>&nbsp;${item.name }

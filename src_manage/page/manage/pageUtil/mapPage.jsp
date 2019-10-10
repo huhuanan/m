@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <page>
-	<h2>${map.edit?'选择':'查看' }坐标</h2>
+	<h3>${map.edit?'选择':'查看' }坐标</h3>
 	<div id="map${key }" style="width:100%;height:450px;"></div>
 </page>
 <script>

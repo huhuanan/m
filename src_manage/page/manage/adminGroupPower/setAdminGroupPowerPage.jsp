@@ -1,7 +1,7 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <page>
-	<h2>权限设置</h2>
+	<h3>权限设置</h3>
 	<card>
 		<c:forEach var="item" items="${array}">
 		<row style="line-height:40px;">

@@ -7,7 +7,6 @@ import java.util.Map;
 import m.common.action.Action;
 import m.common.action.ActionMeta;
 import m.common.model.FieldMeta;
-import m.common.model.HostInfo;
 import m.common.model.LinkTableMeta;
 import m.common.model.Model;
 import m.common.model.TableMeta;
@@ -78,8 +77,8 @@ public class SystemInit {
 	 */
 	public static void initModelTable(){
 		boolean isMain=false;
-		HostInfo host=RuntimeData.getHostInfo();
-		if(null==host||host.getMain()==1) isMain=true;
+		//HostInfo host=RuntimeData.getHostInfo();
+		if(HostInfoService.isMainHost()) isMain=true;
 		if(!isMain) return;
 		
 		for(Class<? extends Model> clazz : ModelConfig.getTableList()){
@@ -111,15 +110,16 @@ public class SystemInit {
 		}
 	}
 	public static void taskClassRun(String taskClass){
-		if(StringUtil.isSpace(taskClass)) return ;
-		String[] clazzs=taskClass.split("&");
 		List<String[]> list=new ArrayList<String[]>();
-		for(String clazz : clazzs){
-			String[] arr=clazz.split("\\|");
-			if(arr.length==2){
-				list.add(arr);
-			}else{
-				System.err.println("定时类配置错误!"+clazz);
+		if(!StringUtil.isSpace(taskClass)) {
+			String[] clazzs=taskClass.split("&");
+			for(String clazz : clazzs){
+				String[] arr=clazz.split("\\|");
+				if(arr.length==2){
+					list.add(arr);
+				}else{
+					System.err.println("定时类配置错误!"+clazz);
+				}
 			}
 		}
 		TaskUtil.initTask(list);

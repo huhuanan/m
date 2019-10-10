@@ -13,8 +13,11 @@ public class CacheMapList<T extends FlushCacheList> {
 		CacheMapList<T> cache=(CacheMapList<T>) cacheMap.get(clazz);
 		if(null==cache) {
 			synchronized(CacheMapList.class) {
-				cacheMap.put(clazz, new CacheMapList<T>(clazz));
 				cache=(CacheMapList<T>) cacheMap.get(clazz);
+				if(null==cache) {
+					cacheMap.put(clazz, new CacheMapList<T>(clazz));
+					cache=(CacheMapList<T>) cacheMap.get(clazz);
+				}
 			}
 		}
 		return cache;
@@ -45,13 +48,16 @@ public class CacheMapList<T extends FlushCacheList> {
 		List<T> t=this.data.get(key);
 		if(null==t) {
 			synchronized(CacheMap.class) {
-				try {
-					t=(List<T>) ((T)ClassUtil.newInstance(clazz)).getCacheList(key);
-					System.out.println(new StringBuffer("加载缓存成功:").append(clazz).append(", key=").append(key));
-					this.data.put(key, t);
-				} catch (Exception e) {
-					System.out.println(new StringBuffer("加载缓存异常:").append(clazz).append(", key=").append(key).append(", error:").append(e.getMessage()));
-					e.printStackTrace();
+				t=this.data.get(key);
+				if(null==t) {
+					try {
+						t=(List<T>) ((T)ClassUtil.newInstance(clazz)).getCacheList(key);
+						System.out.println(new StringBuffer("加载缓存成功:").append(clazz).append(", key=").append(key));
+						this.data.put(key, t);
+					} catch (Exception e) {
+						System.out.println(new StringBuffer("加载缓存异常:").append(clazz).append(", key=").append(key).append(", error:").append(e.getMessage()));
+						e.printStackTrace();
+					}
 				}
 			}
 		}

@@ -7,10 +7,10 @@
 	<div name="_table_list" v-show="showList">
 		<button-group style="margin-bottom:10px;" >
 		<c:if test="${map.openMode=='PAGE' }">
-			<i-button type="primary" ghost @click="back(false)"><i class="iconfont">&#xe718;</i>&nbsp;返回&nbsp;</i-button>
+			<i-button type="default" @click="back(false)"><i class="iconfont">&#xe718;</i>&nbsp;返回&nbsp;</i-button>
 		</c:if>
 		<c:if test="${!map.hiddenQueryList }">
-			<i-button type="" @click="searchPanel=true;"><i class="iconfont">&#xe6ac;</i>&nbsp;筛选&nbsp;</i-button>
+			<i-button type="default" @click="searchPanel=true;"><i class="iconfont">&#xe6ac;</i>&nbsp;筛选&nbsp;</i-button>
 			<modal width="480" v-model="searchPanel" >
 				<div slot="header" style="font-size:14px;line-height:20px;">筛选条件</div>
 				<i-form :model="param" :label-width="130" inline>
@@ -57,13 +57,23 @@
 				</div>
 			</modal>
 		</c:if>
-			<i-button type="" @click="query"><i class="iconfont">&#xe6aa;</i>&nbsp;刷新&nbsp;</i-button>
+			<i-button type="default" @click="query"><i class="iconfont">&#xe6aa;</i>&nbsp;刷新&nbsp;</i-button>
 		</button-group>
 		<button-group style="margin-left:10px;margin-bottom:10px;">
-			<i-button v-for="item in tableButtons" :type="item.style" @click="toolsHandler(item.param)"><i class="iconfont" v-html="item.icon"></i>&nbsp;<span>{{item.title}}</span>&nbsp;</i-button>
+			<i-button v-for="item in tableButtons" :key="item.title" :type="item.style" @click="toolsHandler(item.param)"><i class="iconfont" v-html="item.icon"></i>&nbsp;<span>{{item.title}}</span>&nbsp;</i-button>
+			<i-button v-for="item in tableDropButtons" :key="item.title" :type="item.style">
+				<dropdown @on-click="toolsHandler(item.buttons[$event].param)" :transfer="true">
+					<i class="iconfont" v-html="item.icon"></i>&nbsp;<span>{{item.title}}</span>&nbsp;
+					<icon type="ios-arrow-down"></icon>
+					<dropdown-menu slot="list">
+						<dropdown-item v-for="(btn,index) in item.buttons" :name="index"><i class="iconfont" v-html="btn.icon"></i>&nbsp;<span>{{btn.title}}</span>&nbsp;</dropdown-item>
+					</dropdown-menu>
+				</dropdown>
+			</i-button>
 		</button-group>
 		<div>
-		<i-table ref="itable" :loading="tableLoading" :height="tableHeight" :columns="columns" :data="datas" size="small" :stripe="false" :border="true" :highlight-row="true" @on-sort-change="sortHandler" @on-selection-change="selectHandler"></i-table>
+		<i-table ref="itable" :loading="tableLoading" :height="tableHeight" :columns="columns" :data="datas" size="small" :stripe="false" :border="true" :highlight-row="true" @on-sort-change="sortHandler" @on-selection-change="selectHandler"
+			:show-summary="null!=countData" :summary-method="summaryMethod" :span-method="spanMethod"></i-table>
 		</div>
 		<page style="margin-top:10px;" size="small" :total="count" :current="param.pageNo" :page-size="param.pageNum" show-elevator show-total show-sizer transfer @on-change="changePageNo" @on-page-size-change="changePageNum"></page>
 	</div>
@@ -105,11 +115,15 @@
 				param:[],
 				tableHeight:${map.tableHeight},
 				dataUrl:'${map.dataUrl}',
+				rowspanIndex:${map.rowspanIndex},
+				rowspanNum:${map.rowspanNum},
 				datas:[],
+				countData:null,
 				selected:[],
 				count:0,
 				page:{no:1,size:10},
 				tableButtons:${map.tableButtons},
+				tableDropButtons:${map.tableDropButtons},
 				columns:${map.tableCols},
 				selectMethod:{},
 				selectDatas:{},

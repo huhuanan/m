@@ -12,8 +12,11 @@ public class CacheMap<T extends FlushCache> {
 		CacheMap<T> cache=(CacheMap<T>) cacheMap.get(clazz);
 		if(null==cache) {
 			synchronized(CacheMap.class) {
-				cacheMap.put(clazz, new CacheMap<T>(clazz));
 				cache=(CacheMap<T>) cacheMap.get(clazz);
+				if(null==cache) {
+					cacheMap.put(clazz, new CacheMap<T>(clazz));
+					cache=(CacheMap<T>) cacheMap.get(clazz);
+				}
 			}
 		}
 		return cache;
@@ -44,13 +47,16 @@ public class CacheMap<T extends FlushCache> {
 		T t=this.data.get(key);
 		if(null==t) {
 			synchronized(CacheMap.class) {
-				try {
-					t=(T) ((T)ClassUtil.newInstance(clazz)).getCacheModel(key);
-					System.out.println(new StringBuffer("加载缓存成功:").append(clazz).append(", key=").append(key));
-					this.data.put(key, t);
-				} catch (Exception e) {
-					System.out.println(new StringBuffer("加载缓存异常:").append(clazz).append(", key=").append(key).append(", error:").append(e.getMessage()));
-					e.printStackTrace();
+				t=this.data.get(key);
+				if(null==t) {
+					try {
+						t=(T) ((T)ClassUtil.newInstance(clazz)).getCacheModel(key);
+						System.out.println(new StringBuffer("加载缓存成功:").append(clazz).append(", key=").append(key));
+						this.data.put(key, t);
+					} catch (Exception e) {
+						System.out.println(new StringBuffer("加载缓存异常:").append(clazz).append(", key=").append(key).append(", error:").append(e.getMessage()));
+						e.printStackTrace();
+					}
 				}
 			}
 		}

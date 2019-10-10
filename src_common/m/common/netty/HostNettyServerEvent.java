@@ -10,11 +10,11 @@ import m.system.netty.NettyEvent;
 import m.system.netty.NettyMessage;
 import m.system.netty.NettyServer;
 
-public class HostNettyServerEvent extends NettyEvent {
+public class HostNettyServerEvent extends NettyEvent<NettyMessage> {
 
 	@Override
 	public NettyMessage readOrReturn(String ipport, NettyMessage msg) {
-		System.out.println("server readOrReturn:"+msg);
+		//System.out.println("server readOrReturn:"+msg);
 		HostInfo host=msg.get(HostInfo.class,"host_host");
 		if(null!=host) {
 			String ip=HostNettyUtil.getIp(ipport);
@@ -31,8 +31,7 @@ public class HostNettyServerEvent extends NettyEvent {
 			}
 		}
 		//缓存处理
-		CacheUtil.forwardNettySynchCache(msg);
-		CacheUtil.doNettySynchCache(msg);
+		CacheUtil.readNettyServerMessage(ipport, msg);
 		return null;
 	}
 	public void closeCallback(String ipport) {
@@ -40,7 +39,7 @@ public class HostNettyServerEvent extends NettyEvent {
 		String ip=HostNettyUtil.getIp(ipport);
 		if(!ip.equals(RuntimeData.getServerIp())) {
 			HostInfoService.removeHost(ip);
-			NettyServer server=HostNettyUtil.getServer();
+			NettyServer<NettyMessage> server=HostNettyUtil.getServer();
 			if(null!=server) {
 				server.sendAll(hostMapMessage());
 			}
@@ -52,11 +51,12 @@ public class HostNettyServerEvent extends NettyEvent {
 		return result;
 	}
 
-//	public void sendCallback(String ipport, NettyMessage msg) {
-//		// TODO Auto-generated method stub
-//		super.sendCallback(ipport, msg);
-//	}
-//
+	public void sendCallback(String ipport, NettyMessage msg) {
+		// TODO Auto-generated method stub
+		super.sendCallback(ipport, msg);
+		//System.out.println(ipport+msg);
+	}
+
 //	public void openCallback(String ipport) {
 //		// TODO Auto-generated method stub
 //		super.openCallback(ipport);

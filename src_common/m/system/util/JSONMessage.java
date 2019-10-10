@@ -25,7 +25,6 @@ public class JSONMessage {
 	 * 转换对象为字符串的展现形式.
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public String toJSONString(){
 		StringBuffer sb=new StringBuffer();
 		for(String key : jsonMap.keySet()){

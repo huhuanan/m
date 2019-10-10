@@ -24,6 +24,9 @@ public class DBManager {
 		return executeUpdate(sql,null);
 	}
 	public static int executeUpdate(String sql, Object[] params) throws SQLException {
+		return executeUpdate(sql,params,DBConfig.getQueryTimeout());
+	}
+	public static int executeUpdate(String sql, Object[] params, int maxSeconds) throws SQLException {
 		if(RuntimeData.getDebug()) System.out.println("print:"+sql);
 		Connection conn=null;
 		PreparedStatement ps=null;
@@ -31,6 +34,7 @@ public class DBManager {
 		try {
 			conn=TransactionManager.getConnection();
 			ps=conn.prepareStatement(sql);
+			ps.setQueryTimeout(maxSeconds);
 			// 参数赋值
 			if (params!=null) {
 				for (int i = 0; i < params.length; i++) {
@@ -48,12 +52,16 @@ public class DBManager {
 		return num;
 	}
 	public static void batchUpdate(String sql, List<Object[]> paramList) throws SQLException{
+		batchUpdate(sql,paramList,DBConfig.getQueryTimeout());
+	}
+	public static void batchUpdate(String sql, List<Object[]> paramList,int maxSeconds) throws SQLException{
 		if(RuntimeData.getDebug()) System.out.println("print:"+sql);
 		Connection conn=null;
 		PreparedStatement ps=null;
 		try {
 			conn=TransactionManager.getConnection();
 			ps=conn.prepareStatement(sql);
+			ps.setQueryTimeout(maxSeconds);
 			// 参数赋值
 			for(Object[] params : paramList){
 				if (params!=null) {
@@ -73,6 +81,9 @@ public class DBManager {
 		}
 	}
 	public static void batchUpdate(String[] sqls) throws SQLException{
+		batchUpdate(sqls,DBConfig.getQueryTimeout());
+	}
+	public static void batchUpdate(String[] sqls,int maxSeconds) throws SQLException{
 		if(RuntimeData.getDebug()){
 			for(String sql : sqls) System.out.println("print:"+sql);
 		}
@@ -81,6 +92,7 @@ public class DBManager {
 		try {
 			conn=TransactionManager.getConnection();
 			ps=conn.createStatement();
+			ps.setQueryTimeout(maxSeconds);
 			// 参数赋值
 			for(String sql : sqls){
 				if (sql!=null&&!"".equals(sql.trim())) {
@@ -101,6 +113,9 @@ public class DBManager {
 		return executeQuery(sql,null);
 	}
 	public static DataSet executeQuery(String sql, Object[] params) throws SQLException {
+		return executeQuery(sql,params,DBConfig.getQueryTimeout());
+	}
+	public static DataSet executeQuery(String sql, Object[] params,int maxSeconds) throws SQLException {
 		if(RuntimeData.getDebug()) System.out.println("print:"+sql);
 		Connection conn=null;
 		PreparedStatement ps=null;
@@ -111,6 +126,7 @@ public class DBManager {
 		try {
 			conn=TransactionManager.getConnection();
 			ps=conn.prepareStatement(sql);
+			ps.setQueryTimeout(maxSeconds);
 			if (params!=null) {
 				for (int i = 0; i < params.length; i++) {
 					ps.setObject(i + 1, params[i]);
@@ -142,6 +158,9 @@ public class DBManager {
 		return queryFirstRow(sql,null);
 	}
 	public static DataRow queryFirstRow(String sql, Object[] params) throws SQLException{
+		return queryFirstRow(sql,params,DBConfig.getQueryTimeout());
+	}
+	public static DataRow queryFirstRow(String sql, Object[] params,int maxSeconds) throws SQLException{
 		if(RuntimeData.getDebug()) System.out.println("print:"+sql);
 		if(sql.toLowerCase().indexOf("limit")==-1) sql=new StringBuffer(sql).append(" LIMIT 1").toString();
 		Connection conn=null;

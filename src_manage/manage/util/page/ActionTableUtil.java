@@ -34,6 +34,7 @@ import manage.util.excel.SheetCell;
 import manage.util.excel.SheetObject;
 import manage.util.excel.SheetRow;
 import manage.util.page.button.ButtonMeta;
+import manage.util.page.button.DropButtonMeta;
 import manage.util.page.button.ParamMeta;
 import manage.util.page.table.ActionTableColMeta;
 import manage.util.page.table.ActionTableColMeta.TableColSort;
@@ -77,10 +78,16 @@ public class ActionTableUtil {
 				col.put("ellipsis", cm.ellipsis());
 				if(cm.colStyles().length>0){
 					col.put("type", TableColType.HTML);
+				}else if(cm.type()==TableColType.IMAGE) {
+					col.put("render", new HtmlBodyContent(new StringBuffer("(h, params)=>{return this.imageRender(h,params,'").append(col.get("key")).append("');}").toString()));
+					col.put("type", TableColType.NORMAL);
+					col.put("width", 80);
+					col.put("align", "center");
 				}else if(cm.type()==TableColType.STATUS){
 					col.put("type", TableColType.NORMAL);
 					col.put("render", new HtmlBodyContent(new StringBuffer("(h, params)=>{return this.statusRender(h,params,'").append(cm.field()).append("');}").toString()));
 					col.put("width", 80);
+					col.put("align", "center");
 				}else if(cm.type()==TableColType.COLOR){
 					col.put("type", TableColType.NORMAL);
 					col.put("render", new HtmlBodyContent(new StringBuffer("(h, params)=>{return this.colorRender(h,params,'").append(cm.field()).append("');}").toString()));
@@ -95,15 +102,17 @@ public class ActionTableUtil {
 					col.put("render", new HtmlBodyContent(new StringBuffer("(h, params)=>{return this.colRender(h,params,'").append(col.get("key")).append("');}").toString()));
 					col.put("type", cm.type());
 					List<Map<String,Object>> btnList=bmUtil.toList(cm.buttons(), powerMap);
-					if(btnList.size()>0){
+					List<Map<String,Object>> dropBtnList=bmUtil.toList(cm.dropButtons(), powerMap);
+					if(btnList.size()>0||dropBtnList.size()>0){
 						col.put("align", "center");
 						col.put("buttons",btnList);
+						col.put("dropButtons", dropBtnList);
 					}
-					if(!StringUtil.isSpace(cm.link().url())) {
-						Map<String,Object> link=bmUtil.toPamams(cm.link(),powerMap);
-						if(null!=link) {
-							col.put("link",link);
-						}
+				}
+				if(!StringUtil.isSpace(cm.link().url())) {
+					Map<String,Object> link=bmUtil.toPamams(cm.link(),powerMap);
+					if(null!=link) {
+						col.put("link",link);
 					}
 				}
 				if(cm.sort()){
@@ -181,7 +190,7 @@ public class ActionTableUtil {
 	@SuppressWarnings("unchecked")
 	private static ModelQueryList getModelQueryList(ActionTableMeta tableMeta,QueryPage page,QueryCondition condition,QueryOrder... orders) throws ClassNotFoundException{
 		return ModelQueryList.instance((Class<Model>)ClassUtil.getClass(tableMeta.modelClass()), 
-				getFieldNames(tableMeta.cols(),tableMeta.buttons()), 
+				getFieldNames(tableMeta.cols(),tableMeta.buttons(),tableMeta.dropButtons()), 
 				page, condition,getFieldExps(tableMeta.cols()), orders);
 	}
 	/**
@@ -197,41 +206,62 @@ public class ActionTableUtil {
 	 * @throws SQLException 
 	 * @throws ClassNotFoundException 
 	 */
-	@SuppressWarnings("unchecked")
 	public static PageInfo toPageInfo(ActionTableMeta tableMeta,QueryPage page,QueryCondition condition,QueryOrder... orders) throws ClassNotFoundException, SQLException, MException{
+		List<QueryOrder> os=new ArrayList<QueryOrder>();
 		for(QueryOrder order : orders) {//处理转换的排序列
 			if(null!=order) order.setName(order.getName().replaceAll("_", "."));
+			if(null!=order) os.add(order);
 		}
-		return ModelQueryList.getModelPageInfo(getModelQueryList(tableMeta, page, condition, orders));
+		for(String o : tableMeta.orders()) {
+			String[] arr=o.trim().split(" ");
+			if(arr.length>1&&arr[1].toLowerCase().equals("desc")) os.add(QueryOrder.desc(arr[0]));
+			else os.add(QueryOrder.asc(arr[0]));
+		}
+		return ModelQueryList.getModelPageInfo(getModelQueryList(tableMeta, page, condition, os.toArray(new QueryOrder[] {})));
 	}
-	private static String[] getFieldNames(ActionTableColMeta[] cols,ButtonMeta[] buttons){
+	private static String[] getFieldNames(ActionTableColMeta[] cols,ButtonMeta[] buttons,DropButtonMeta[] dropButtons){
 		Set<String> fs=new HashSet<String>();
 		for(ActionTableColMeta col : cols){
 			fs.add(col.field());
-			for(ButtonMeta btn : col.buttons()){
-//				if(!StringUtil.isSpace(btn.disabledField())){
-//					fs.add(btn.disabledField());
-//				}
-				if(!StringUtil.isSpace(btn.hiddenField())){
-					fs.add(btn.hiddenField());
+			for(ParamMeta pm : col.link().params()) {
+				if(!StringUtil.isSpace(pm.field())) {
+					fs.add(pm.field());
 				}
+			}
+			for(ButtonMeta btn : col.buttons()){
+				if(!StringUtil.isSpace(btn.hiddenField())) fs.add(btn.hiddenField());
+				if(!StringUtil.isSpace(btn.showField())) fs.add(btn.showField());
 				for(ParamMeta b : btn.params()){
-					if(!StringUtil.isSpace(b.field())){
-						fs.add(b.field());
+					if(!StringUtil.isSpace(b.field())) fs.add(b.field());
+				}
+			}
+			for(DropButtonMeta dbm : col.dropButtons()) {
+				if(!StringUtil.isSpace(dbm.hiddenField())) fs.add(dbm.hiddenField());
+				if(!StringUtil.isSpace(dbm.hiddenField())) fs.add(dbm.hiddenField());
+				for(ButtonMeta btn : dbm.buttons()){
+					if(!StringUtil.isSpace(btn.hiddenField())) fs.add(btn.hiddenField());
+					if(!StringUtil.isSpace(btn.showField())) fs.add(btn.showField());
+					for(ParamMeta b : btn.params()){
+						if(!StringUtil.isSpace(b.field())) fs.add(b.field());
 					}
 				}
 			}
 		}
 		for(ButtonMeta btn : buttons){
-//			if(!StringUtil.isSpace(btn.disabledField())){
-//				fs.add(btn.disabledField());
-//			}
-			if(!StringUtil.isSpace(btn.hiddenField())){
-				fs.add(btn.hiddenField());
-			}
+			if(!StringUtil.isSpace(btn.hiddenField())) fs.add(btn.hiddenField());
+			if(!StringUtil.isSpace(btn.showField())) fs.add(btn.showField());
 			for(ParamMeta b : btn.params()){
-				if(!StringUtil.isSpace(b.field())){
-					fs.add(b.field());
+				if(!StringUtil.isSpace(b.field())) fs.add(b.field());
+			}
+		}
+		for(DropButtonMeta dbm : dropButtons) {
+			if(!StringUtil.isSpace(dbm.hiddenField())) fs.add(dbm.hiddenField());
+			if(!StringUtil.isSpace(dbm.hiddenField())) fs.add(dbm.hiddenField());
+			for(ButtonMeta btn : dbm.buttons()){
+				if(!StringUtil.isSpace(btn.hiddenField())) fs.add(btn.hiddenField());
+				if(!StringUtil.isSpace(btn.showField())) fs.add(btn.showField());
+				for(ParamMeta b : btn.params()){
+					if(!StringUtil.isSpace(b.field())) fs.add(b.field());
 				}
 			}
 		}
@@ -255,10 +285,18 @@ public class ActionTableUtil {
 	public static <T extends Model> List<JSONMessage> getDataList(ActionTableMeta tableMeta,List<T> list) throws MException, ClassNotFoundException{
 		ActionTableColMeta[] cols=tableMeta.cols();
 		ButtonMeta[] buttons=tableMeta.buttons();
+		DropButtonMeta[] dropButtons=tableMeta.dropButtons();
 		List<JSONMessage> data=new ArrayList<JSONMessage>();
-		for(T model : list){
+		List<String> spanFieldList=new ArrayList<String>();
+		for(int t=0,len=list.size();t<len;t++){
+			T model=list.get(t);
 			JSONMessage d=new JSONMessage();
-			for(ActionTableColMeta m : cols){
+			for(int i=0;i<cols.length;i++){
+				ActionTableColMeta m=cols[i];
+				String fn=getFieldName(m);
+				if(t==0&&i>=tableMeta.rowspanIndex()&&i<tableMeta.rowspanIndex()+tableMeta.rowspanNum()) {
+					spanFieldList.add(fn);
+				}
 				Object value=ClassUtil.getFieldValue(model, m.field());
 				Object v=null;
 				if(!StringUtil.isSpace(m.dateFormat())){
@@ -277,18 +315,82 @@ public class ActionTableUtil {
 				if(m.colStyles().length>0){
 					for(TableColStyle cs : m.colStyles()){
 						String vv=(String) ObjectUtil.convert(String.class,value);
-						if(("|"+cs.value()+"|").indexOf("|"+vv+"|")>=0||cs.other()){
-							v=new StringBuffer("<span style=\"").append(cs.style()).append("\">").append(v).append("</span>");
+						String[] cv=cs.value().split("|");
+						for(String c : cv) {
+							if(vv.indexOf(c)>=0) {
+								v=new StringBuffer("<span style=\"").append(cs.style()).append("\">").append(v).append("</span>");
+								break;
+							}
 						}
 					}
 				}
-				d.push(getFieldName(m),v);
+				d.push(fn,v);
+				for(ParamMeta b : m.link().params()) {
+					if(!StringUtil.isSpace(b.field())&&null==d.get(b.field().replaceAll("\\.", "_"))){
+						d.push(b.field().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, b.field()));
+					}
+				}
 				for(ButtonMeta btn : m.buttons()){
-//					if(!StringUtil.isSpace(btn.disabledField())){
-//						d.push(btn.disabledField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, btn.disabledField()));
-//					}
 					if(!StringUtil.isSpace(btn.hiddenField())&&null==d.get(btn.hiddenField().replaceAll("\\.", "_"))){
 						d.push(btn.hiddenField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, btn.hiddenField()));
+					}
+					if(!StringUtil.isSpace(btn.showField())&&null==d.get(btn.showField().replaceAll("\\.", "_"))){
+						d.push(btn.showField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, btn.showField()));
+					}
+					for(ParamMeta b : btn.params()){
+						if(!StringUtil.isSpace(b.field())&&null==d.get(b.field().replaceAll("\\.", "_"))){
+							d.push(b.field().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, b.field()));
+						}
+					}
+				}
+				for(DropButtonMeta dbm : m.dropButtons()) {
+					if(!StringUtil.isSpace(dbm.hiddenField())&&null==d.get(dbm.hiddenField().replaceAll("\\.", "_"))){
+						d.push(dbm.hiddenField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, dbm.hiddenField()));
+					}
+					if(!StringUtil.isSpace(dbm.showField())&&null==d.get(dbm.showField().replaceAll("\\.", "_"))){
+						d.push(dbm.showField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, dbm.showField()));
+					}
+					for(ButtonMeta btn : dbm.buttons()){
+						if(!StringUtil.isSpace(btn.hiddenField())&&null==d.get(btn.hiddenField().replaceAll("\\.", "_"))){
+							d.push(btn.hiddenField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, btn.hiddenField()));
+						}
+						if(!StringUtil.isSpace(btn.showField())&&null==d.get(btn.showField().replaceAll("\\.", "_"))){
+							d.push(btn.showField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, btn.showField()));
+						}
+						for(ParamMeta b : btn.params()){
+							if(!StringUtil.isSpace(b.field())&&null==d.get(b.field().replaceAll("\\.", "_"))){
+								d.push(b.field().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, b.field()));
+							}
+						}
+					}
+				}
+			}
+			for(ButtonMeta btn : buttons){
+				if(!StringUtil.isSpace(btn.hiddenField())&&null==d.get(btn.hiddenField().replaceAll("\\.", "_"))){
+					d.push(btn.hiddenField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, btn.hiddenField()));
+				}
+				if(!StringUtil.isSpace(btn.showField())&&null==d.get(btn.showField().replaceAll("\\.", "_"))){
+					d.push(btn.showField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, btn.showField()));
+				}
+				for(ParamMeta b : btn.params()){
+					if(!StringUtil.isSpace(b.field())&&null==d.get(b.field().replaceAll("\\.", "_"))){
+						d.push(b.field().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, b.field()));
+					}
+				}
+			}
+			for(DropButtonMeta dbm : dropButtons) {
+				if(!StringUtil.isSpace(dbm.hiddenField())&&null==d.get(dbm.hiddenField().replaceAll("\\.", "_"))){
+					d.push(dbm.hiddenField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, dbm.hiddenField()));
+				}
+				if(!StringUtil.isSpace(dbm.showField())&&null==d.get(dbm.showField().replaceAll("\\.", "_"))){
+					d.push(dbm.showField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, dbm.showField()));
+				}
+				for(ButtonMeta btn : dbm.buttons()){
+					if(!StringUtil.isSpace(btn.hiddenField())&&null==d.get(btn.hiddenField().replaceAll("\\.", "_"))){
+						d.push(btn.hiddenField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, btn.hiddenField()));
+					}
+					if(!StringUtil.isSpace(btn.showField())&&null==d.get(btn.showField().replaceAll("\\.", "_"))){
+						d.push(btn.showField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, btn.showField()));
 					}
 					for(ParamMeta b : btn.params()){
 						if(!StringUtil.isSpace(b.field())&&null==d.get(b.field().replaceAll("\\.", "_"))){
@@ -297,22 +399,47 @@ public class ActionTableUtil {
 					}
 				}
 			}
-			for(ButtonMeta btn : buttons){
-//				if(!StringUtil.isSpace(btn.disabledField())){
-//					d.push(btn.disabledField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, btn.disabledField()));
-//				}
-				if(!StringUtil.isSpace(btn.hiddenField())&&null==d.get(btn.hiddenField().replaceAll("\\.", "_"))){
-					d.push(btn.hiddenField().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, btn.hiddenField()));
-				}
-				for(ParamMeta b : btn.params()){
-					if(!StringUtil.isSpace(b.field())&&null==d.get(b.field().replaceAll("\\.", "_"))){
-						d.push(b.field().replaceAll("\\.", "_"), ClassUtil.getFieldValue(model, b.field()));
-					}
-				}
-			}
 			data.add(d);
 		}
+		fillSpan(spanFieldList,data);
 		return data;
+	}
+	public static void fillSpan(List<String> spanFieldList,List<JSONMessage> data) throws MException {
+		if(spanFieldList.size()==0) return;
+		List<Boolean> lastIsSpanList=null;
+		List<Boolean> isSpanList=null;
+		String lastValue=null;
+		int lastIndex=-1;
+		int num=0;
+		for(String f : spanFieldList) {
+			isSpanList=new ArrayList<Boolean>();
+			int len=data.size();
+			for(int i=0;i<len;i++) {
+				JSONMessage d=data.get(i);
+				if(null!=lastValue&&lastValue.equals(ObjectUtil.toString(d.get(f)))
+						&&(null==lastIsSpanList||lastIsSpanList.get(i))){
+					d.push("_rowspan_num."+f, 0);
+					isSpanList.add(true);
+					num++;
+				}else {
+					if(null!=lastValue) {
+						data.get(lastIndex).push("_rowspan_num."+f, num);
+						isSpanList.add(false);
+					}else {
+						isSpanList.add(true);
+					}
+					lastValue=ObjectUtil.toString(d.get(f));
+					lastIndex=i;
+					num=1;
+				}
+			}
+			if(null!=lastValue) {
+				data.get(lastIndex).push("_rowspan_num."+f, num);
+			}
+			lastValue=null;
+			lastIndex=-1;
+			lastIsSpanList=isSpanList;
+		}
 	}
 	public static JSONMessage getCountData(ActionTableMeta tableMeta,QueryCondition condition) throws Exception{
 		ModelQueryList query=getModelQueryList(tableMeta,null,condition,null);

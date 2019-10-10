@@ -24,6 +24,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<script type="text/javascript" src="<%=request.getContextPath() %>/custom/admin.js"></script>
 
 		<script type="text/javascript">//style="display: block;position: absolute;width: 100%;"
+		Vue.use(iview, {
+			transfer: true,
+			capture: false
+		});
 		Vue.component('admin-layout',{
 			template:`<layout>
 				<slot name="head"></slot>
@@ -46,7 +50,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					if(b){
 						this.width='200px';
 					}else{
-						this.width='60px';
+						this.width='75px';
 					}
 				}.bind(this));
 			},
@@ -58,16 +62,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 						<c:if test="${map.systemInfo.titleType!='N'}"><img src="${map.systemInfo.titleIcon.path }" style="margin-left:-20px;height:60px;"/></c:if>
 						<c:if test="${map.systemInfo.titleType!='Y'}"><span>${map.systemInfo.backgroundTitle }</span></c:if>
 					</div>
-					<menu-item v-for="(module,key) in modules" :name="key" @click.native="doModule(key)" :class="active==key?'ivu-menu-item-active':''">
+					<menu-item v-for="(module,key) in modules" :key="key" :name="key" @click.native="doModule(key)" :class="active==key?'ivu-menu-item-active':''">
 						<i class="iconfont" style="font-size:19px;" v-html="module.icon"></i><span style="font-size:15px;" v-html="module.name"></span>
 					</menu-item>
 					<slot></slot>
 				</i-menu>
 			</i-header>`,
-			props:{
-				active:{type:String},
-				modules:{type:Object},
-			},
+			props:['active','modules'],
 			methods:{
 				doModule:function(key){
 					this.active=key;
@@ -76,15 +77,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			}
 		});
 		Vue.component('admin-menu',{
-			template:`<div :style="{height:'100%',width:menuExpansion?'200px':'60px'}">
+			template:`<div :style="{height:'100%',width:menuExpansion?'200px':'75px'}">
 				<div style="height:100%;" v-if="menuExpansion">
-					<transition name="slide-fade-down" v-for="(module,key) in modules">
+					<transition name="slide-fade-down" v-for="(module,key) in modules" :key="key">
 						<i-menu style="min-height:100%;background:rgba(255,255,255,0.7)" :ref="'menu'+key" v-show="key==activeModule" :accordion="true" :active-name="activeMenu2" theme="light" width="auto" :open-names="[activeMenu1]">
-							<submenu v-for="(menu1,key1) in module.menus" :name="key1">
+							<submenu v-for="(menu1,key1) in module.menus" :key="key1" :name="key1">
 								<template slot="title">
 								<i class="iconfont" v-html="menu1.icon"></i><span v-html="menu1.name"></span>
 								</template>
-								<menu-item v-for="(menu2,key2) in menu1.menus" :name="key2" @click.native="doMenu(key2)" :class="activeMenu2==key2?'ivu-menu-item-active':''">
+								<menu-item v-for="(menu2,key2) in menu1.menus" :key="key2" :name="key2" @click.native="doMenu(key2)" :class="activeMenu2==key2?'ivu-menu-item-active':''">
 									<icon type="ios-arrow-forward" style="font-size:12px;"></icon>
 									<span v-html="menu2"></span>
 								</menu-item>
@@ -93,16 +94,16 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					</transition>
 				</div>
 				<div style="height:100%;border-right:1px solid rgb(221, 221, 221);background:rgba(240,245,255,0.6);" v-if="!menuExpansion">
-					<transition name="slide-fade-down" v-for="(module,key) in modules">
+					<transition name="slide-fade-down" v-for="(module,key) in modules" :key="key">
 						<div v-show="key==activeModule" style="padding:15px 0 0;">
-							<dropdown v-for="(menu1,key1) in module.menus" transfer placement="right-start" trigger="hover">
-								<span :style="{width:'60px',textAlign:'center',display:'block',marginBottom:'8px',color:activeMenu1==key1?'#2d8cf0':''}">
+							<dropdown v-for="(menu1,key1) in module.menus" :key="key1" transfer placement="right-start" trigger="hover">
+								<span :style="{width:'75px',textAlign:'center',display:'block',marginBottom:'8px',color:activeMenu1==key1?'#2d8cf0':''}">
 									<i class="iconfont" style="font-size:28px;" v-html="menu1.icon"></i>
 									<div v-html="menu1.name"></div>
 								</span>
 								<dropdown-menu slot="list">
 									<a v-html="menu1.name" style="fontSize:17px;lineHeight:35px;padding:0 35px;"></a>
-									<dropdown-item v-for="(menu2,key2) in menu1.menus" :name="key2" @click.native="doMenu(key2)" :selected="key2==activeMenu2">
+									<dropdown-item v-for="(menu2,key2) in menu1.menus" :key="key2" :name="key2" @click.native="doMenu(key2)" :selected="key2==activeMenu2">
 										<icon type="ios-arrow-forward" style="font-size:12px;"></icon>
 										<span v-html="menu2"></span>
 									</dropdown-item>
@@ -112,9 +113,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					</transition>
 				</div>
 			</div>`,
-			props:{
-				modules:{type:Object},
-			},
+			props:['modules'],
 			data:function(){
 				return {activeModule:'',activeMenu1:'',activeMenu2:'',menuExpansion:true};
 			},
@@ -153,15 +152,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			}
 		});
 		Vue.component('admin-nav-tags',{
-			template:`<div :style="{position:'fixed',zIndex:'998',top:'60px',left:menuExpansion?'200px':'60px',right:'1px',padding:'8px 8px',backgroundColor:'rgba(238,238,238,0.85)',overflow:'hidden',height:'46px',borderBottom:'solid 1px #ddd'}">
+			template:`<div :style="{position:'fixed',zIndex:'998',top:'60px',left:menuExpansion?'200px':'75px',right:'1px',padding:'8px 8px',backgroundColor:'rgba(238,238,238,0.85)',overflow:'hidden',height:'46px',borderBottom:'solid 1px #ddd'}">
 				<slot name="first"></slot>
 				<dropdown transfer style="float:right;">
 					<i-button style="padding:0 10px;"><i class="iconfont" style="font-size:20px;">&#xe71b;</i></i-button>
 					<dropdown-menu slot="list">
-						<dropdown-item v-for="tag in tags" :name="tag" @click.native="doClick(tag,false)" :selected="active==tag"><span v-html="tagName[tag]"></span></dropdown-item>
+						<dropdown-item v-for="tag in tags" :key="tag" :name="tag" @click.native="doClick(tag,false)" :selected="active==tag"><span v-html="tagName[tag]"></span></dropdown-item>
 					</dropdown-menu>
 				</dropdown>
-				<tag v-for="tag in tags" type="dot" closable :color="active==tag?'primary':''" @click.native="doClick(tag,true)" @on-close="doClose(tag)" style="margin:0 8px 8px 0;">
+				<tag v-for="tag in tags" :key="tag" type="dot" closable :color="active==tag?'primary':''" @click.native="doClick(tag,true)" @on-close="doClose(tag)" style="margin:0 8px 8px 0;">
 					<span v-html="tagName[tag]"></span>
 				</tag>
 			</div>`,

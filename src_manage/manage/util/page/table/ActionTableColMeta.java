@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 
 import manage.util.page.button.ButtonMeta;
 import manage.util.page.button.ButtonMeta.ButtonEvent;
+import manage.util.page.button.DropButtonMeta;
 
 @Retention(RetentionPolicy.RUNTIME) // 注解会在class字节码文件中存在，在运行时可以通过反射获取到  
 @Target({ElementType.METHOD})//定义注解的作用目标**作用范围字段、枚举的常量/方法  
@@ -24,11 +25,11 @@ public @interface ActionTableColMeta {
 			return this.sort;
 		}
 	}
-	//可选值有：normal（常规列，无需设定）、checkbox（复选框列）、space（空列）、numbers（序号列）  
+	//可选值有：normal（常规列，无需设定）、html(html内容)、checkbox（复选框列）、index（序号列）  
 	public enum TableColType {
 		NORMAL(""),HTML("html"),CHECKBOX("selection"),INDEX("index"),
-		//status(修改状态的列),color(颜色列)
-		STATUS("status"),COLOR("color");
+		//status(修改状态的列),color(颜色列),image(图片列)
+		STATUS("status"),COLOR("color"),IMAGE("image");
 		private String type;
 		private TableColType(String type){
 			this.type=type;
@@ -132,6 +133,11 @@ public @interface ActionTableColMeta {
 	 * @return
 	 */
 	ButtonMeta[] buttons() default {};
+	/**
+	 * 下拉按钮组
+	 * @return
+	 */
+	DropButtonMeta[] dropButtons() default {};
 	/**
 	 * 列链接事件 和按钮相同
 	 * @return

@@ -1,0 +1,26 @@
+<page>
+	<h3>查看图片</h3>
+	<card :padding="0">
+		<div style="text-align:center;">
+			<img :src="url" style="max-width:100%;" />
+		</div>
+	</card>
+	<div style="padding-top:10px;text-align:right;">
+		<i-button @click="back">关闭</i-button>
+	</div>
+</page>
+<script>
+(function(){
+	return { //vue对象属性
+		data(){
+			return {
+				//url:''
+			};
+		},
+		mounted:function(){
+		},
+		methods:{
+		}
+	};
+})();
+</script>

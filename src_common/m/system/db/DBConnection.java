@@ -23,6 +23,14 @@ public class DBConnection {
 		}
 		return n;
 	}
+	public static int getMaxLinkNum() {
+		if(null==conns) return -1;
+		int n=0;
+		for(DBConnection db : conns){
+			if(null!=db) n++;
+		}
+		return n;
+	}
 	static DBConnection[] conns=null;
 	static Map<String,Integer> connlist=new HashMap<String,Integer>();
 	protected static Connection get() {

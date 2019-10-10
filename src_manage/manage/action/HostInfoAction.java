@@ -15,6 +15,7 @@ public class HostInfoAction extends ManageAction {
 	}
 	
 	
+	
 	@Override
 	public Class<? extends ManageAction> getActionClass() {
 		return this.getClass();

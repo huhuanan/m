@@ -5,36 +5,37 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
-import javax.servlet.http.HttpSession;
-
+import m.system.cache.CacheUtil;
 import m.system.exception.MException;
 import m.system.util.StringUtil;
 
 public class CaptchaUtil {
-	public static void setMastVerify(HttpSession session) {
-		session.setAttribute("captcha_verify", true);
+	public static void setMastVerify(String cacheKey) {
+		CacheUtil.push(cacheKey+"_verify", true);
 	}
-	public static void clearMastVerify(HttpSession session) {
-		session.removeAttribute("captcha_verify");
+	public static void clearMastVerify(String cacheKey) {
+		CacheUtil.clear(cacheKey+"_verify");
 	}
-	public static boolean isMastVerify(HttpSession session) {
-		if(null!=session.getAttribute("captcha_verify")) {
-			return (Boolean) session.getAttribute("captcha_verify");
+	public static void clearCode(String cacheKey) {
+		CacheUtil.clear(cacheKey+"_code");
+	}
+	public static boolean isMastVerify(String cacheKey) {
+		if(null!=CacheUtil.get(cacheKey+"_verify")) {
+			return (Boolean) CacheUtil.get(cacheKey+"_verify");
 		}else {
 			return false;
 		}
 	}
-	public static void verifyCaptcha(HttpSession session,String code) throws MException {
-		if(null!=session.getAttribute("captcha_verify")) {
+	public static void verifyCaptcha(String cacheKey,String code) throws MException {
+		Object captcha=CacheUtil.get(cacheKey+"_code");
+		if(null!=CacheUtil.get(cacheKey+"_verify")) {
 			if(StringUtil.isSpace(code)) {
 				throw new MException(CaptchaUtil.class, "请输入验证码");
-			}else if(null==session.getAttribute("captcha_code")){
+			}else if(null==captcha){
 				throw new MException(CaptchaUtil.class, "验证码已失效");
-			}else if(!code.toLowerCase().equals(session.getAttribute("captcha_code").toString())) {
+			}else if(!code.toLowerCase().equals(captcha.toString())) {
 				throw new MException(CaptchaUtil.class, "验证码错误");
 			}
 		}
@@ -45,7 +46,7 @@ public class CaptchaUtil {
             '6', '7', '8', '9', '0', '1',
             '2', '3', '4', '5', '6', '7',
             '8', '9'};
-    public static BufferedImage getImageCode(HttpSession session,OutputStream os) {
+    public static BufferedImage getImageCode(String cacheKey,OutputStream os) {
     	int width=60,height=22;
         if (width <= 0) width = 60;
         if (height <= 0) height = 22;
@@ -82,7 +83,7 @@ public class CaptchaUtil {
         }
         // 释放图形上下文
         g.dispose();
-        session.setAttribute("captcha_code", code.toLowerCase());
+        CacheUtil.push(cacheKey+"_code",code.toLowerCase());
         return image;
     }
     //给定范围获得随机颜色

@@ -10,7 +10,6 @@ import java.util.Random;
 
 import m.common.model.HostInfo;
 import m.system.RuntimeData;
-import m.system.SystemSessionTask;
 import m.system.db.DBConnection;
 import m.system.util.NumberUtil;
 import m.system.util.StringUtil;
@@ -64,17 +63,15 @@ public class HostInfoService extends Service {
 			int totalMemory = NumberUtil.toInt(Runtime.getRuntime().totalMemory() / mb *100);
 			int freeMemory = NumberUtil.toInt(Runtime.getRuntime().freeMemory() / mb *100);
 			int maxMemory = NumberUtil.toInt(Runtime.getRuntime().maxMemory() / mb *100);
-			int sessionNum=SystemSessionTask.getSessionNum();
-			int loginNum=SystemSessionTask.getLoginNum();
 			int dbUseLinkNum = DBConnection.getUseLinkNum();
+			int dbMaxLinkNum = DBConnection.getMaxLinkNum();
 			HostInfo hi=hostMap.get(currentHost.getIp());
 			if(null!=hi){
 				hi.setTotalMemory(totalMemory/100.0);
 				hi.setFreeMemory(freeMemory/100.0);
 				hi.setMaxMemory(maxMemory/100.0);
-				hi.setSessionNum(sessionNum);
-				hi.setLoginNum(loginNum);
 				hi.setDbUseLinkNum(dbUseLinkNum);
+				hi.setDbMaxLinkNum(dbMaxLinkNum);
 			}
 		}
 	}
@@ -95,11 +92,16 @@ public class HostInfoService extends Service {
 		host.setOid(String.valueOf(currentOid));
 		host.setIp(ip);
 		host.setTotal(0);
-		host.setMain(1);
-		host.setSelf(1);
 		setHostInfo(ip, host);
 		setCurrentHost(host);
 		System.out.println("主机数:"+hostMap.size());
+	}
+	public static boolean isMainHost() {
+		if(currentHost.getIp().indexOf(RuntimeData.getServerIp())>=0) {
+			return true;
+		}else {
+			return false;
+		}
 	}
 	/**
 	 * 添加主机信息 服务端调用
@@ -108,13 +110,6 @@ public class HostInfoService extends Service {
 	 */
 	public static void setHostInfo(String ip,HostInfo host) {
 		host.setOid(String.valueOf(getHostOid(ip)));
-		if(ip.indexOf(RuntimeData.getServerIp())>=0) {
-			host.setMain(1);
-			host.setSelf(1);
-		}else {
-			host.setMain(0);
-			host.setSelf(0);
-		}
 		hostMap.put(ip, host);
 	}
 	/**
@@ -131,8 +126,8 @@ public class HostInfoService extends Service {
 		List<HostInfo> list=new ArrayList<HostInfo>();
 		long time=new Date().getTime();
 		for(HostInfo hi : hostMap.values()){
-			if(hi.getSelf()==1) continue;
-			if(hi.getLastDate().getTime()<time-20*1000){
+			if(isMainHost()) continue;
+			if(hi.getLastDate().getTime()<time-31*1000){
 				list.add(hi);
 			}
 		}
@@ -153,10 +148,8 @@ public class HostInfoService extends Service {
 	public static void setHostMap(String ip,Map<String, HostInfo> hostMap) {
 		for(HostInfo host : hostMap.values()) {
 			if(host.getIp().equals(ip)) {
-				host.setSelf(1);
 				setCurrentHost(host);
 			}
-			if(host.getMain()==1) host.setSelf(0);
 		}
 		HostInfoService.hostMap = hostMap;
 		resetCurrentHostOtherInfo();

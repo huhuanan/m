@@ -13,6 +13,8 @@ public @interface SelectConditionMeta {
 	public enum SelectConditionType{
 		IS_NULL,//is null
 		IS_NOT_NULL,//is not null
+		IS_EMPTY,
+		IS_NOT_EMPTY,
 		LIKE,//like
 		EQ,//eq
 		GT,//>

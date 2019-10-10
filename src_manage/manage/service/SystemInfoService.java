@@ -6,7 +6,6 @@ import m.common.service.Service;
 import m.system.RuntimeData;
 import m.system.db.DBManager;
 import m.system.db.DataRow;
-import m.system.util.StringUtil;
 import manage.model.SystemInfo;
 import manage.util.SmsUtil;
 

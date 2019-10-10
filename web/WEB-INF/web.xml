@@ -8,12 +8,8 @@
 		<listener-class>m.system.listener.InitListener</listener-class>
 	</listener>
 	<!--end 系统初始化监听 -->
-	<listener>
-		<display-name>SessionListener</display-name>
-		<listener-class>m.system.listener.SessionListener</listener-class>
-	</listener>
 	<session-config>
-		<session-timeout>10</session-timeout>
+		<session-timeout>3</session-timeout>
 	</session-config>
 	<!-- url 过滤器  -->
 	<!-- 执行过滤器 -->

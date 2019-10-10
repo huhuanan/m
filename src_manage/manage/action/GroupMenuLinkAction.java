@@ -8,7 +8,6 @@ import m.common.action.ActionResult;
 import m.common.model.Model;
 import m.common.model.util.ModelQueryList;
 import m.system.RuntimeData;
-import m.system.exception.MException;
 import m.system.util.JSONMessage;
 import m.system.util.StringUtil;
 import manage.dao.GroupMenuLinkDao;

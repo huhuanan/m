@@ -1,16 +1,11 @@
 package m.common.netty;
 
 import m.system.netty.NettyClient;
+import m.system.netty.NettyMessage;
 import m.system.netty.NettyServer;
-import m.system.util.StringUtil;
 
 public class HostNettyUtil {
 	private static boolean init=false;
-	protected static void setDone() {
-		init=true;
-	}
-	protected static boolean isClient=true;
-	protected static boolean isServer=true;
 	public static void done() {
 		if(!init) {
 			try {
@@ -19,15 +14,21 @@ public class HostNettyUtil {
 			done();
 		}
 	}
+	private static boolean isClient=true;
+	private static boolean isServer=true;
+	public static void closeAll() {
+		closeClient(false);
+		closeServer(false);
+	}
 	
-	private static NettyServer server;
-	private static NettyClient client;
+	private static NettyServer<NettyMessage> server;
+	private static NettyClient<NettyMessage> client;
 	/**
 	 * 开启服务端
 	 * @param port
 	 */
 	public static void openServer(int port) {
-		server=new NettyServer(new HostNettyServerEvent(),port);
+		server=new NettyServer<NettyMessage>(new HostNettyServerEvent(),port);
 		server.setTimerTask(new HostNettyServerTimer(), 10000);
 		new Thread() {
 			public void run() {
@@ -42,7 +43,12 @@ public class HostNettyUtil {
 	/**
 	 * 关闭服务端
 	 */
-	public static void closeServer() {
+	public static void closeServer(boolean isServer) {
+		if((!isServer)&&null!=server) {
+			init=true;
+			System.out.println("关闭 服务端");
+			HostNettyUtil.isServer=isServer;
+		}
 		if(null!=server) {
 			server.close();
 			server=null;
@@ -52,7 +58,7 @@ public class HostNettyUtil {
 	 * 获取服务
 	 * @return
 	 */
-	public static NettyServer getServer() {
+	public static NettyServer<NettyMessage> getServer() {
 		return server;
 	}
 	private static String clientIp;
@@ -65,7 +71,7 @@ public class HostNettyUtil {
 	public static void openClient(String ip,int port) {
 		clientIp=ip;
 		clientPort=port;
-		client=new NettyClient(new HostNettyClientEvent(),ip,port);
+		client=new NettyClient<NettyMessage>(new HostNettyClientEvent(),ip,port);
 		client.setTimerTask(new HostNettyClientTimer(), 10000);
 		new Thread() {
 			public void run() {
@@ -81,7 +87,12 @@ public class HostNettyUtil {
 	/**
 	 * 关闭客户端
 	 */
-	public static void closeClient() {
+	public static void closeClient(boolean isClient) {
+		if((!isClient)&&null!=client) {
+			init=true;
+			System.out.println("关闭 客户端");
+			HostNettyUtil.isClient=isClient;
+		}
 		if(null!=client) {
 			client.close();
 			client=null;
@@ -91,8 +102,8 @@ public class HostNettyUtil {
 	 * 重启客户端
 	 */
 	public static void reopenClient() {
-		closeClient();
-		if(!StringUtil.isSpace(clientIp)) {
+		closeClient(isClient);
+		if(isClient) {
 			try {
 				Thread.sleep(5000); //延迟五秒启动
 			} catch (InterruptedException e) { }
@@ -104,7 +115,7 @@ public class HostNettyUtil {
 	 * 获取客户端
 	 * @return
 	 */
-	public static NettyClient getClient() {
+	public static NettyClient<NettyMessage> getClient() {
 		return client;
 	}
 	/**

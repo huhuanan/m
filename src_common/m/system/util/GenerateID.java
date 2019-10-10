@@ -4,8 +4,6 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import m.common.service.HostInfoService;
-import m.system.RuntimeData;
-import m.system.exception.MException;
 /**
  * 调用方法,  获得20位长度的主键
  *  GenerateID.generatePrimaryKey()
@@ -29,16 +27,8 @@ public class GenerateID {
 			no=0;
 		}
 	}
-	private static HostInfoService service;
 	private static char getUnionKey(){
-		if(null==service){
-			try {
-				service=RuntimeData.getService(HostInfoService.class);
-			} catch (MException e) {
-				return '0';
-			}
-		}
-		return chars[service.getCurrentOid()];
+		return chars[HostInfoService.getCurrentOid()];
 	}
 	/**
 	 * 获得主键 数据库唯一键

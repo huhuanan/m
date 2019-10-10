@@ -17,13 +17,8 @@ public @interface TableColStyle {
 	 */
 	String style();
 	/**
-	 * value 多个用|分开
+	 * value 多个用|分开 包含其中一个则应用样式
 	 * @return
 	 */
 	String value() default "";
-	/**
-	 * 其他value
-	 * @return
-	 */
-	boolean other() default false;
 }

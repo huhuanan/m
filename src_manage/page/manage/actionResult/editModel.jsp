@@ -6,7 +6,7 @@
 <%@ taglib uri="/WEB-INF/m_manage.tld" prefix="mm" %>
 <%@ taglib uri="/WEB-INF/dictionary.tld" prefix="dict" %>
 <page>
-	<h2 style="padding:0 5px 10px;"><c:if test="${map.openMode=='PAGE' }"><a @click="back(false)" ><i class="iconfont" style="font-size:23px;font-weight:100;">&#xe718;</i>&nbsp;&nbsp;</a></c:if>${map.formTitle }</h2>
+	<h3 style="padding:0 5px 10px;"><c:if test="${map.openMode=='PAGE' }"><a @click="back(false)" ><i class="iconfont" style="font-size:23px;font-weight:100;">&#xe718;</i>&nbsp;&nbsp;</a></c:if>${map.formTitle }</h3>
 	<i-form>
 	<card :style="{marginBottom:'15px',paddingBottom:'0px'}">
 	<c:set var="istab" value="${false}"></c:set>
@@ -31,6 +31,10 @@
 				<i-input v-model="fields['${field.field }']" type="textarea" :rows="${field.rows }" placeholder="${field.hint }" @on-blur="doClearField('${field.field }')" ${field.disabled?'disabled':'' }>
 					<c:if test="${!empty field.suffix}"><span slot="append">${field.suffix}</span></c:if>
 				</i-input>
+			</c:if>
+			<c:if test="${field.type=='TEXTAUTO' }">
+				<auto-complete v-model="fields['${field.field }']" :data="selectLabels['${field.field }']" placeholder="${field.hint }" @on-blur="doClearField('${field.field }')" ${field.disabled?'disabled':'' }>
+				</auto-complete>
 			</c:if>
 			<c:if test="${field.type=='PASSWORD' }">
 				<i-input v-model="fields['${field.field }']" type="password" placeholder="${field.hint }" @on-blur="doClearField('${field.field }')" ${field.disabled?'disabled':'' }>
@@ -129,7 +133,7 @@
 	</c:forEach>
 	<c:if test="${istab}"></tabs></i-col></row></c:if>
 	</card>
-	<form-item label=" " style="margin-bottom:0px;width:100%;${map.openMode=='MODAL'?'text-align:right;':'' }" :label-width="100">
+	<form-item label=" " style="width:100%;${map.openMode=='MODAL'?'text-align:right;':'' }${map.openMode=='PAGE'?'margin-bottom:15px;':'margin-bottom:0px;' }" :label-width="116">
 		<c:forEach var="btn" items="${map.formButtons}">
 			<i-button type="${btn.style}" @click="submitHandler"><i class="iconfont">${btn.icon }</i>&nbsp;<span class="n-btn_title">${btn.title}</span>&nbsp;</i-button>
 		</c:forEach>
@@ -182,6 +186,7 @@
 				others:{},
 				selectMethod:{},
 				selectDatas:{},
+				selectLabels:{},
 				clearField:{},
 				requiredField:{},
 				fileName:{
@@ -200,9 +205,9 @@
 				<c:forEach var="field" items="${row.fields}">
 				this.requiredField['${field.field}']=${field.required};
 				this.clearField['${field.field}']='${field.clearField}';
-				<c:if test="${field.type=='SELECT'||field.type=='CHECKBOX'||field.type=='RADIO'||field.type=='STEPS'}">
-					this.$set(this.selectDatas,"${field.field}",[]);
-					<c:forEach var="op" items="${field.selectData}">this.selectDatas["${field.field}"].push({value:"${op[0] }",label:"${op[1] }"});</c:forEach>
+				<c:if test="${field.type=='SELECT'||field.type=='CHECKBOX'||field.type=='RADIO'||field.type=='STEPS'||field.type=='TEXTAUTO'}">
+					this.$set(this.selectDatas,"${field.field}",[]); this.$set(this.selectLabels,"${field.field}",[]);
+					<c:forEach var="op" items="${field.selectData}">this.selectDatas["${field.field}"].push({value:"${op[0] }",label:"${op[1] }"});this.selectLabels["${field.field}"].push("${op[1] }");</c:forEach>
 					<c:if test="${!empty field.selectParam}">this.selectMethod["${field.field}"]=${field.selectParam};</c:if>
 					this.initFields['${field.field}']=this.fields['${field.field}'];
 				</c:if>

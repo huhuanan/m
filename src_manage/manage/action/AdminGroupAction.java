@@ -13,15 +13,14 @@ import manage.util.page.button.ButtonMeta;
 import manage.util.page.button.ButtonMeta.ButtonEvent;
 import manage.util.page.button.ButtonMeta.ButtonStyle;
 import manage.util.page.button.ButtonMeta.SuccessMethod;
+import manage.util.page.button.DropButtonMeta;
 import manage.util.page.button.ParamMeta;
 import manage.util.page.form.ActionFormMeta;
 import manage.util.page.form.FormButtonMeta;
 import manage.util.page.form.FormButtonMeta.FormSuccessMethod;
 import manage.util.page.form.FormFieldMeta;
 import manage.util.page.form.FormFieldMeta.FormFieldType;
-import manage.util.page.form.FormOtherMeta;
 import manage.util.page.form.FormRowMeta;
-import manage.util.page.query.LinkFieldMeta;
 import manage.util.page.query.QueryMeta;
 import manage.util.page.query.QueryMeta.QueryType;
 import manage.util.page.table.ActionTableColMeta;
@@ -106,7 +105,7 @@ public class AdminGroupAction extends StatusAction {
 			@ActionTableColMeta(field = "description", title = "描述", width=200),
 			@ActionTableColMeta(field = "sort", title = "排序", width=100,align="left"),
 			@ActionTableColMeta(field = "status", title = "状态",type=TableColType.STATUS,power="manage_system_power",dictionaryType="status",align="center"),
-			@ActionTableColMeta(field = "oid",title="操作",width=180,align="center",buttons={
+			@ActionTableColMeta(field = "oid",title="操作",width=150,align="center",buttons={
 				@ButtonMeta(title="修改", event = ButtonEvent.MODAL,modalWidth=700, url = "action/manageAdminGroup/toEditGroup",
 					params={@ParamMeta(name = "model.oid", field="oid")},success=SuccessMethod.REFRESH,style=ButtonStyle.NORMAL,
 					power="manage_system_power"
@@ -115,14 +114,25 @@ public class AdminGroupAction extends StatusAction {
 //					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,
 //					power="manage_system_power"
 //				),
-				@ButtonMeta(title="菜单", event = ButtonEvent.MODAL,modalWidth=800,  url = "page/manage/groupMenuLink/setGroupMenuPage.html", 
-					params={@ParamMeta(name = "adminGroupOid", field="oid")}, style=ButtonStyle.NONE,
-					power="manage_system_power"
-				),
-				@ButtonMeta(title="权限", event = ButtonEvent.MODAL,modalWidth=350,  url = "action/manageAdminGroupPower/setAdminGroupPowerPage", 
-					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,success=SuccessMethod.MUST_REFRESH,
-					power="manage_system_power"
-				),
+//				@ButtonMeta(title="菜单", event = ButtonEvent.MODAL,modalWidth=800,  url = "page/manage/groupMenuLink/setGroupMenuPage.html", 
+//					params={@ParamMeta(name = "adminGroupOid", field="oid")}, style=ButtonStyle.NONE,
+//					power="manage_system_power"
+//				),
+//				@ButtonMeta(title="权限", event = ButtonEvent.MODAL,modalWidth=350,  url = "action/manageAdminGroupPower/setAdminGroupPowerPage", 
+//					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,success=SuccessMethod.MUST_REFRESH,
+//					power="manage_system_power"
+//				),
+			},dropButtons= {
+				@DropButtonMeta(title = "权限",buttons = { 
+					@ButtonMeta(title="菜单权限", event = ButtonEvent.MODAL,modalWidth=800,  url = "page/manage/groupMenuLink/setGroupMenuPage.html", 
+						params={@ParamMeta(name = "adminGroupOid", field="oid")}, style=ButtonStyle.NONE,
+						power="manage_system_power"
+					),
+					@ButtonMeta(title="操作权限", event = ButtonEvent.MODAL,modalWidth=350,  url = "action/manageAdminGroupPower/setAdminGroupPowerPage", 
+						params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,success=SuccessMethod.MUST_REFRESH,
+						power="manage_system_power"
+					),
+				})
 			})
 		},
 		querys = {
@@ -182,18 +192,29 @@ public class AdminGroupAction extends StatusAction {
 //					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,
 //					power="manage_system_power"
 //				),
-				@ButtonMeta(title="菜单", event = ButtonEvent.MODAL,modalWidth=800,  url = "page/manage/groupMenuLink/setGroupMenuPage.html", 
-					params={@ParamMeta(name = "adminGroupOid", field="oid")}, style=ButtonStyle.NONE,
-					power="manage_system_power"
-				),
-				@ButtonMeta(title="权限", event = ButtonEvent.MODAL,modalWidth=350,  url = "action/manageAdminGroupPower/setAdminGroupPowerPage", 
-					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,success=SuccessMethod.MUST_REFRESH,
-					power="manage_system_power"
-				),
+//				@ButtonMeta(title="菜单", event = ButtonEvent.MODAL,modalWidth=800,  url = "page/manage/groupMenuLink/setGroupMenuPage.html", 
+//					params={@ParamMeta(name = "adminGroupOid", field="oid")}, style=ButtonStyle.NONE,
+//					power="manage_system_power"
+//				),
+//				@ButtonMeta(title="权限", event = ButtonEvent.MODAL,modalWidth=350,  url = "action/manageAdminGroupPower/setAdminGroupPowerPage", 
+//					params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,success=SuccessMethod.MUST_REFRESH,
+//					power="manage_system_power"
+//				),
 				@ButtonMeta(title="关联用户", event = ButtonEvent.MODAL,modalWidth=350,  url = "page/manage/adminGroupLink/setAdminGroupLinkPage.html", 
 					params={@ParamMeta(name = "adminGroupOid", field="oid")}, style=ButtonStyle.NONE,
 					power="manage_system_power"
 				),
+			},dropButtons= {
+				@DropButtonMeta(title = "权限",buttons = { 
+					@ButtonMeta(title="菜单权限", event = ButtonEvent.MODAL,modalWidth=800,  url = "page/manage/groupMenuLink/setGroupMenuPage.html", 
+						params={@ParamMeta(name = "adminGroupOid", field="oid")}, style=ButtonStyle.NONE,
+						power="manage_system_power"
+					),
+					@ButtonMeta(title="操作权限", event = ButtonEvent.MODAL,modalWidth=350,  url = "action/manageAdminGroupPower/setAdminGroupPowerPage", 
+						params={@ParamMeta(name = "model.adminGroup.oid", field="oid")}, style=ButtonStyle.NONE,success=SuccessMethod.MUST_REFRESH,
+						power="manage_system_power"
+					),
+				})
 			})
 		},
 		querys = {

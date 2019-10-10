@@ -7,6 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import manage.util.page.button.ButtonMeta;
+import manage.util.page.button.DropButtonMeta;
 import manage.util.page.query.QueryMeta;
 
 @Retention(RetentionPolicy.RUNTIME) // 注解会在class字节码文件中存在，在运行时可以通过反射获取到  
@@ -39,6 +40,21 @@ public @interface ActionTableMeta {
 	 */
 	String searchHint() default "";
 	/**
+	 * 合并行开始列索引
+	 * @return
+	 */
+	int rowspanIndex() default -1;
+	/**
+	 * 合并行总列数
+	 * @return
+	 */
+	int rowspanNum() default 0;
+	/**
+	 * 排序[]
+	 * @return
+	 */
+	String[] orders() default {};
+	/**
 	 * 列描述
 	 * @return
 	 */
@@ -48,6 +64,11 @@ public @interface ActionTableMeta {
 	 * @return
 	 */
 	ButtonMeta[] buttons() default {};
+	/**
+	 * 下拉按钮组
+	 * @return
+	 */
+	DropButtonMeta[] dropButtons() default {};
 	/**
 	 * 查询条件
 	 * @return
