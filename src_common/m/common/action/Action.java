@@ -22,6 +22,7 @@ import m.system.util.StringUtil;
 
 public abstract class Action {
 	public final static String SESSION_NAME="session_name";
+	public abstract String getSessionLogin();
 	/**
 	 * 获取当前操作员
 	 * @return
@@ -92,7 +93,7 @@ public abstract class Action {
 	 * @param model
 	 */
 	public <T extends SessionModel> void setSessionModel(T model) {
-		String sn=getSessionCookie()+"_login";
+		String sn=getSessionCookie()+getSessionLogin();
 		if(null!=sn) {
 			CacheUtil.push(sn, model);
 		}
@@ -103,7 +104,7 @@ public abstract class Action {
 	 * @return
 	 */
 	public <T extends SessionModel> T getSessionModel(Class<T> clazz) {
-		String sn=getSessionCookie()+"_login";
+		String sn=getSessionCookie()+getSessionLogin();
 		if(null!=sn) {
 			Object obj=CacheUtil.get(sn);
 			if(null!=obj) {
@@ -116,7 +117,7 @@ public abstract class Action {
 	 * 清除 session model
 	 */
 	public void removeSessionModel() {
-		String sn=getSessionCookie()+"_login";
+		String sn=getSessionCookie()+getSessionLogin();
 		if(null!=sn) {
 			CacheUtil.clear(sn);
 		}
@@ -126,6 +127,12 @@ public abstract class Action {
 	 * @return
 	 */
 	public String getSessionCookie() {
+		if(!StringUtil.isSpace(authorization)) {
+			String[] arr=authorization.split(" ");
+			if(arr.length>1&&!StringUtil.isSpace(arr[1])) {
+				return arr[1];
+			}
+		}
 		Cookie[] cs=request.getCookies();
 		if(null!=cs){
 			for(int i=0;i<cs.length;i++){

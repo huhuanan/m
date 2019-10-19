@@ -21,11 +21,12 @@
 			<div id="action${key}">
 				<template v-for="item in selectAction.methods">
 					<divider orientation="left" style="margin-bottom:10px;color:#2d8cf0;">{{item.title}} - {{item.description}}</divider>
-					<table style="width:100%;margin-bottom:6px;" cellspacing="0" cellpadding="0" border="0">
+					<card :padding="0">
+					<table style="width:100%;margin:6px 0;" cellspacing="0" cellpadding="0" border="0">
 						<tr>
-							<td style=""> {{item.path}}</td>
+							<td style="padding-left:10px;"> {{item.path}}</td>
 							<td style="width:100px;text-align:center;">权限: {{item.permission}}</td>
-							<td style="width:100px;text-align:right;"><i-button type="primary" size="small" @click.native="showTestModal(item.title,item.path)">测试</i-button></td>
+							<td style="width:100px;text-align:center;"><i-button type="primary" size="small" @click.native="showTestModal(item.title,item.path)">测试</i-button></td>
 						</tr>
 					</table>
 					<div class="ivu-table-wrapper ivu-table-small">
@@ -47,16 +48,13 @@
 							<tr v-if="item.params.length==0">
 								<td colspan="5" style="text-align:center;">无参数</td>
 							</tr>
-							<tr>
-								<td colspan="6">
-									<div style="padding:10px;font-size:14px;">
-										<span style="color:#f00">返回示例:&nbsp;</span>
-										<span v-html="item.result"></span>
-									</div>
-								</td>
-							</tr>
 						</table>
 					</div>
+						<div style="padding:10px;font-size:14px;">
+							<span style="color:#f00">返回示例:&nbsp;</span>
+							<span v-html="item.result"></span>
+						</div>
+					</card>
 				</template>
 			</div>
 			<div id="model${key}">
@@ -127,23 +125,26 @@
 	</modal>
 	<modal v-model="testModal" :footer-hide="true" width="80%" :mask-closable="false">
 		<h3>{{testMethod.title}} - {{testMethod.description}}</h3>
+		<card :padding="0">
+		<table style="width:100%;margin:6px 0;" cellspacing="0" cellpadding="0" border="0">
+			<tr>
+				<td style="padding-left:10px;"><h3>{{testMethod.path}}</h3></td>
+				<td style="text-align:right;"><span v-if="testMethod.permission">权限: </span></td>
+				<td style="text-align:center;width:310px;">
+					<span v-if="!testMethod.permission">权限: {{testMethod.permission}}</span>
+					<i-input v-if="testMethod.permission" v-model="authorization" style="width:300px;"/>
+				</td>
+			</tr>
+		</table>
 		<div class="ivu-table-wrapper ivu-table-small">
 			<table class="ivu-table ivu-table-default" style="width:100%" cellspacing="0" cellpadding="0" border="0">
-				<tr>
-					<td colspan="4" style="padding-left:10px;"><h3>{{testMethod.path}}</h3></td>
-					<td style="text-align:right;"><span v-if="testMethod.permission">权限: </span></td>
-					<td style="text-align:center;width:310px;">
-						<span v-if="!testMethod.permission">权限: {{testMethod.permission}}</span>
-						<i-input v-if="testMethod.permission" v-model="authorization" style="width:300px;"/>
-					</td>
-				</tr>
 				<tr>
 					<th style="text-align:center;">参数名称</th>
 					<th style="text-align:center;">参数描述</th>
 					<th style="text-align:center;">类型</th>
 					<th style="text-align:center;">长度</th>
 					<th style="text-align:center;">必填</th>
-					<th style="text-align:right;padding-right:5px;">
+					<th style="text-align:right;padding:5px;">
 						<i-button size="small" @click.native="testModal=false">关闭</i-button>
 						<i-button type="primary" size="small" @click.native="execTest(false)">普通请求</i-button>
 						<i-button type="primary" size="small" @click.native="execTest(true)">Body请求</i-button>
@@ -164,16 +165,13 @@
 				<tr v-if="testMethod&&testMethod.params&&testMethod.params.length==0">
 					<td colspan="6" style="text-align:center;">无参数</td>
 				</tr>
-				<tr>
-					<td colspan="6">
-						<div style="padding:10px;">
-							<div>返回:</div>
-							<json-val :json-val="json" :current-depth="0" :max-depth="2" :last="true"></json-val>
-						</div>
-					</td>
-				</tr>
 			</table>
 		</div>
+		<div style="padding:10px;">
+			<div>返回:</div>
+			<json-val :json-val="json" :current-depth="0" :max-depth="2" :last="true"></json-val>
+		</div>
+		</card>
 	</modal>
 	<modal v-model="scriptModal" :footer-hide="true" width="80%" :mask-closable="false">
 		<h3>{{selectModel.name}} {{selectModel.description}}</h3>

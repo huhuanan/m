@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.alipay.api.internal.util.StringUtils;
+
 import m.common.model.FieldMeta;
 import m.common.model.LinkTableMeta;
 import m.common.model.Model;
@@ -82,7 +84,18 @@ public class ModelCheckUtil {
 	 * @throws SQLException
 	 */
 	public static void checkUniqueCombine(Model model,String[] fields) throws MException, SQLException{
-		checkNotNull(model,fields);
+		checkUniqueCombine(model,fields,null);
+	}
+	/**
+	 * 检查模型类唯一组合,先检测这些字段不能为空
+	 * @param model
+	 * @param fields
+	 * @param errorMessage 错误消息
+	 * @throws MException
+	 * @throws SQLException
+	 */
+	public static void checkUniqueCombine(Model model,String[] fields,String errorMessage) throws MException, SQLException{
+		//checkNotNull(model,fields);
 		TableMeta table=ModelConfig.getTableMeta(model.getClass());
 		Map<String,FieldMeta> fieldMap=ModelConfig.getFieldMetaMap(model.getClass());
 		Map<String,LinkTableMeta> linkTableMap=ModelConfig.getLinkTableMetaMap(model.getClass());
@@ -113,9 +126,13 @@ public class ModelCheckUtil {
 		}
 		DataRow dr=DBManager.queryFirstRow(sql.toString(),params.toArray(new Object[]{}));
 		if(null!=dr){
-			throw new MException(ModelCheckUtil.class,new StringBuffer("(")
-			.append(ArrayUtil.connection(fn.toArray(new String[]{}), "+"))
-			.append(")已存在!").toString());
+			if(StringUtil.isSpace(errorMessage)) {
+				throw new MException(ModelCheckUtil.class,new StringBuffer("(")
+				.append(ArrayUtil.connection(fn.toArray(new String[]{}), "+"))
+				.append(")已存在!").toString());
+			}else {
+				throw new MException(ModelCheckUtil.class, errorMessage);
+			}
 		}
 	}
 }

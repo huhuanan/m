@@ -71,6 +71,10 @@ public abstract class ManageAction extends Action {
 	public static MException noLoginException=new MException(ManageAction.class, "NoLogin:未登录");
 	public static MException noPowerException=new MException(ManageAction.class, "NoPower:权限不足");
 	
+	@Override
+	public String getSessionLogin() {
+		return "_admin_login";
+	}
 	/**
 	 * 重置登录信息 
 	 */
@@ -253,6 +257,9 @@ public abstract class ManageAction extends Action {
 		map.put("formRows", FormMetaUtil.toRows(meta.rows(),powerMap));
 		map.put("formButtons", FormMetaUtil.toButtons(meta.buttons(),powerMap));
 		map.put("others", FormMetaUtil.toOthers(meta.others()));
+		Object[] vui=FormMetaUtil.toViewUI(meta.viewui());
+		map.put("vulist", vui[0]);
+		map.put("vplist", vui[1]);
 		map.put("action", action);
 		map.put("openKey", openKey);
 		map.put("openMode", openMode);

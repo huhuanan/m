@@ -20,4 +20,9 @@ public @interface SelectDataMeta {
 	 * @return
 	 */
 	String value();
+	/**
+	 * 级联选择的父value
+	 * @return
+	 */
+	String parentValue() default "";
 }

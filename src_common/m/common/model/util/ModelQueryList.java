@@ -45,7 +45,8 @@ public class ModelQueryList {
 		this.table=clazz;
 		List<String> fieldList=new ArrayList<String>();
 		for(String f : fieldNames){
-			fieldList.addAll(coverToFieldList(clazz, "", f));
+			if(!StringUtil.isSpace(f))
+				fieldList.addAll(coverToFieldList(clazz, "", f));
 		}
 		this.fieldNames=fieldList.toArray(new String[]{});
 		this.page=page;
@@ -155,7 +156,13 @@ public class ModelQueryList {
 			FieldMeta fieldMeta=ModelConfig.getFieldMetaMap(clazz).get(fieldName);
 			if(null!=fieldMeta){
 				if(hasColName){
-					return new StringBuffer(a).append(".").append(fieldMeta.name()).append(" ").append(a).append("_").append(fieldName).toString();
+					String str=clazz.getSimpleName()+"."+fieldName;
+					if(RuntimeData.getSecretField().indexOf(str)>=0) {
+						System.out.println(str);
+						return new StringBuffer("null ").append(a).append("_").append(fieldName).toString();
+					}else {
+						return new StringBuffer(a).append(".").append(fieldMeta.name()).append(" ").append(a).append("_").append(fieldName).toString();
+					}
 				}else{
 					return new StringBuffer(a).append(".").append(fieldMeta.name()).toString();
 				}

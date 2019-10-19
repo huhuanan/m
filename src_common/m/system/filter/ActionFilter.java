@@ -290,7 +290,7 @@ public class ActionFilter implements Filter {
 				}
 			}
 		}
-		Cookie cookie=new Cookie(Action.SESSION_NAME,GenerateID.tempKey());
+		Cookie cookie=new Cookie(Action.SESSION_NAME,GenerateID.generatePrimaryKey());
 		cookie.setMaxAge(-1);
 		cookie.setPath("/");
 		response.addCookie(cookie);

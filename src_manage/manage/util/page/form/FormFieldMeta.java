@@ -16,11 +16,13 @@ import manage.util.page.query.SelectDataMeta;
 public @interface FormFieldMeta {
 	public enum FormFieldType {
 		HIDDEN,//隐藏域
+		ALERT,//提示框
 		TEXT,//普通输入框
 		TEXTAUTO,//自动填充输入框
 		PASSWORD,//密码框
 		TEXTAREA,//文本域
 		SELECT,//选择框
+		SELECT_NODE,//Cascader  级联选择
 		CHECKBOX,//多选框
 		RADIO,//单选框
 		STEPS,//步骤, 不可修改
@@ -42,7 +44,7 @@ public @interface FormFieldMeta {
 	 */
 	String title() default "";
 	/**
-	 * 提示消息
+	 * 提示消息 支持变量 #{变量名}
 	 * @return
 	 */
 	String message() default "";
@@ -56,6 +58,16 @@ public @interface FormFieldMeta {
 	 * @return
 	 */
 	int titleWidth() default 100;
+	/**
+	 * 提示
+	 * @return
+	 */
+	FormAlertMeta alert() default @FormAlertMeta(title="");
+	/**
+	 * html标签段
+	 * @return
+	 */
+	FormViewUIMeta[] viewui() default {};
 	/**
 	 * 字段名
 	 * @return
@@ -81,6 +93,17 @@ public @interface FormFieldMeta {
 	 * @return
 	 */
 	int span() default 24;
+	/**
+	 * 非ALERT字段包含alert时, alertSpan才应用到alert上
+	 *  0代表和span属性相同
+	 * @return
+	 */
+	int alertSpan() default 0;
+	/**
+	 * viewui的占位 0代表和span属性相同
+	 * @return
+	 */
+	int viewuiSpan() default 0;
 	/** IMAGE
 	 * 高度 默认32
 	 * @return
@@ -151,6 +174,26 @@ public @interface FormFieldMeta {
 	 * @return
 	 */
 	String nullHidden() default "";
+	/**
+	 * 判断隐藏的字段
+	 * @return
+	 */
+	String hiddenField() default "";
+	/**
+	 * 判断隐藏的值,多个用逗号分开
+	 * @return
+	 */
+	String hiddenValues() default "";
+	/** 
+	 * 判断显示的字段
+	 * @return
+	 */
+	String showField() default "";
+	/** 
+	 * 判断显示的值,多个用逗号分开
+	 * @return
+	 */
+	String showValues() default "";
 	/** 只有 IMAGE
 	 * 缩略图宽高比例
 	 * @return

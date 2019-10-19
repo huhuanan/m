@@ -12,6 +12,7 @@ import m.common.model.util.ModelQueryList;
 import m.common.model.util.QueryCondition;
 import m.common.model.util.QueryOrder;
 import m.system.RuntimeData;
+import m.system.exception.MException;
 import m.system.util.ClassUtil;
 import m.system.util.JSONMessage;
 import m.system.util.StringUtil;
@@ -40,6 +41,8 @@ public class PageUtilAction extends ManageAction {
 	private String valueField;
 	private String valueFieldValue;
 	private String sortField;
+	private String parentField;
+	private String parentValue;
 	private String dictType;
 	private String session;
 	
@@ -84,7 +87,11 @@ public class PageUtilAction extends ManageAction {
 					}
 				}
 				if(!StringUtil.isSpace(linkField)){
-					clist.add(QueryCondition.eq(linkField, valueFieldValue));
+					String[] farr=linkField.split("\\|");
+					String[] varr=valueFieldValue.split("\\|");
+					for(int i=0;i<farr.length;i++) {
+						clist.add(QueryCondition.eq(farr[i], varr[i]));
+					}
 				}
 				if(!StringUtil.isSpace(session)){
 					clist.add(QueryCondition.eq(session, admin.getOid()));
@@ -95,17 +102,32 @@ public class PageUtilAction extends ManageAction {
 				}
 				List<Model> list = ModelQueryList.getModelList(
 					(Class<Model>)ClassUtil.getClass(modelClass), 
-					new String[] {this.title,this.value}, 
+					new String[] {this.title,this.value,this.parentField}, 
 					null, 
 					QueryCondition.and(clist.toArray(new QueryCondition[]{})),
 					emap,
 					QueryOrder.asc(StringUtil.isSpace(sortField)?"oid":sortField)
 				);
-				for(Model m : list){
-					JSONMessage dm=new JSONMessage();
-					dm.push("value", ClassUtil.getFieldValue(m, value));
-					dm.push("label", ClassUtil.getFieldValue(m, title));
-					data.add(dm);
+				if(StringUtil.isSpace(this.parentField)) {
+					for(Model m : list){
+						JSONMessage dm=new JSONMessage();
+						dm.push("value", ClassUtil.getFieldValue(m, value));
+						dm.push("label", ClassUtil.getFieldValue(m, title));
+						data.add(dm);
+					}
+				}else {
+					for(Model m : list){
+						Object pv=ClassUtil.getFieldValue(m, parentField);
+						if(StringUtil.isSpace(parentValue)&&(null==pv||StringUtil.isSpace(pv.toString()))
+								||(!StringUtil.isSpace(parentValue))&&null!=pv&&StringUtil.noSpace(pv.toString()).equals(parentValue)) {
+							JSONMessage dm=new JSONMessage();
+							dm.push("value", ClassUtil.getFieldValue(m, value));
+							dm.push("label", ClassUtil.getFieldValue(m, title));
+							List<JSONMessage> arr=getChildren(dm.get("value").toString(), list);
+							if(arr.size()>0) dm.push("children", arr);
+							data.add(dm);
+						}
+					}
 				}
 			}else{
 				List<DictionaryData> dictList=DictionaryUtil.get(dictType);
@@ -123,6 +145,21 @@ public class PageUtilAction extends ManageAction {
 		}
 		msg.push("data",data);
 		return msg;
+	}
+	private List<JSONMessage> getChildren(String parentValue,List<Model> list) throws MException {
+		List<JSONMessage> ls=new ArrayList<JSONMessage>();
+		for(Model m : list){
+			Object pv=ClassUtil.getFieldValue(m, parentField);
+			if(null!=pv&&pv.toString().equals(parentValue)) {
+				JSONMessage dm=new JSONMessage();
+				dm.push("value", ClassUtil.getFieldValue(m, value));
+				dm.push("label", ClassUtil.getFieldValue(m, title));
+				List<JSONMessage> arr=getChildren(dm.get("value").toString(), list);
+				if(arr.size()>0) dm.push("children", arr);
+				ls.add(dm);
+			}
+		}
+		return ls;
 	}
 
 
@@ -172,6 +209,18 @@ public class PageUtilAction extends ManageAction {
 	}
 
 
+	public String getParentField() {
+		return parentField;
+	}
+	public void setParentField(String parentField) {
+		this.parentField = parentField;
+	}
+	public String getParentValue() {
+		return parentValue;
+	}
+	public void setParentValue(String parentValue) {
+		this.parentValue = parentValue;
+	}
 	public void setTitle(String title) {
 		this.title = title;
 	}

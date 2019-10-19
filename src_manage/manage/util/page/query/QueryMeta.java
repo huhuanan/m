@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Documented//说明该注解将被包含在javadoc中 
 public @interface QueryMeta {
 	public enum QueryType {
-		HIDDEN,TEXT,SELECT,INT_RANGE,DOUBLE_RANGE,DATE_RANGE
+		HIDDEN,TEXT,SELECT,SELECT_NODE,INT_RANGE,DOUBLE_RANGE,DATE_RANGE
 	}
 	/**
 	 * 对应字段名

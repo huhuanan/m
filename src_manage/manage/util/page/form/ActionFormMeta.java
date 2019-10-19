@@ -30,4 +30,9 @@ public @interface ActionFormMeta {
 	 * @return
 	 */
 	FormOtherMeta[] others() default {};
+	/**
+	 * html标签段
+	 * @return
+	 */
+	FormViewUIMeta[] viewui() default {};
 }

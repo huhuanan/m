@@ -72,6 +72,11 @@ public class RequestTestAction extends Action {
 	public void setParams(Map<String, String> params) {
 		this.params = params;
 	}
+
+	@Override
+	public String getSessionLogin() {
+		return "_login";
+	}
 	
 	
 }

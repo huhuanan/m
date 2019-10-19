@@ -70,7 +70,4 @@ public class DataRow {
 	public Object get(String name){
 		return map.get(name);
 	}
-	public int size(){
-		return map.size();
-	}
 }

@@ -39,9 +39,9 @@ public class QueryMetaUtil {
 			query.put("value", qm.value());
 			query.put("width", qm.width());
 			query.put("clearField", qm.clearField());
-			if(qm.type()==QueryType.SELECT){
+			if(qm.type()==QueryType.SELECT||qm.type()==QueryType.SELECT_NODE){
 				if(!StringUtil.isSpace(qm.querySelect().modelClass())||!StringUtil.isSpace(qm.dictType())){
-					query.put("selectParam",toSelectParam(qm.querySelect(),qm.dictType(),qm.linkField()));
+					query.put("selectParam",toSelectParam(qm.type().name(),qm.querySelect(),qm.dictType(),qm.linkField()));
 				}else{
 					query.put("selectData", getSelectData(qm.querySelectDatas()));
 				}
@@ -78,7 +78,7 @@ public class QueryMetaUtil {
 	public static List<String[]> getSelectData(SelectDataMeta[] da) throws ClassNotFoundException, SQLException, MException{
 		List<String[]> data=new ArrayList<String[]>();
 		for(SelectDataMeta d : da){
-			data.add(new String[]{d.value(),d.title()});
+			data.add(new String[]{d.value(),d.title(),d.parentValue()});
 		}
 		return data;
 	}
@@ -89,7 +89,7 @@ public class QueryMetaUtil {
 	 * @param linkFieldMeta
 	 * @return
 	 */
-	public static JSONMessage toSelectParam(QuerySelectMeta querySelectMeta,String dictType, LinkFieldMeta linkFieldMeta){
+	public static JSONMessage toSelectParam(String type,QuerySelectMeta querySelectMeta,String dictType, LinkFieldMeta linkFieldMeta){
 		JSONMessage json=new JSONMessage();
 		json.push("modelClass", querySelectMeta.modelClass());
 		json.push("title", querySelectMeta.title());
@@ -100,6 +100,10 @@ public class QueryMetaUtil {
 		if(!StringUtil.isSpace(linkFieldMeta.field())){
 			json.push("linkField", linkFieldMeta.field());
 			json.push("valueField", linkFieldMeta.valueField());
+		}
+		if(type==QueryType.SELECT_NODE.name()) {
+			json.push("parentField", querySelectMeta.parentField());
+			json.push("parentValue", querySelectMeta.parentValue());
 		}
 		json.push("dictType", dictType);
 		json.push("session", querySelectMeta.session().field());
@@ -165,7 +169,7 @@ public class QueryMetaUtil {
 				}else{
 					list.add(QueryCondition.eq(qm.field(), param));
 				}
-			}else if(qm.type()==QueryType.SELECT){
+			}else if(qm.type()==QueryType.SELECT||qm.type()==QueryType.SELECT_NODE){
 				if(qm.muchValue()){
 					String[] vs=param.split(",");
 					List<QueryCondition> subList=new ArrayList<QueryCondition>();

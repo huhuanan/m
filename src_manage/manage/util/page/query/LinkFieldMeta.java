@@ -11,12 +11,12 @@ import java.lang.annotation.Target;
 @Documented//说明该注解将被包含在javadoc中 
 public @interface LinkFieldMeta {
 	/**
-	 * 字段名
+	 * 字段名  多个用|分割  和valueField一一对应
 	 * @return
 	 */
 	String field() default "";
 	/**
-	 * form的字段
+	 * form的字段  多个用|分割  和field一一对应
 	 * @return
 	 */
 	String valueField() default "";

@@ -134,14 +134,14 @@ public class DocumentUtil {
 				param.setDescription(new StringBuffer(meta.description()).append(" 主键").toString());
 				param.setType(FieldType.STRING);
 				param.setLength(20);
-				param.setNotnull(notnull);
+				param.setNotnull(!notnull);
 				return param;
 			}else if(null!=fm){
 				param.setName(new StringBuffer(define).append(".").append(field).toString());
 				param.setDescription(fm.description());
 				param.setType(fm.type());
 				param.setLength(fm.length());
-				param.setNotnull(notnull);
+				param.setNotnull(!notnull);
 				return param;
 			}else{
 				throw new MException(DocumentUtil.class,actionClazz.getName()+"注解DocumentModelMeta有误!"+define+"."+field);

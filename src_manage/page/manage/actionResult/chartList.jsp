@@ -11,14 +11,14 @@
 		</c:if>
 		<c:if test="${!map.hiddenQueryList }">
 			<i-button type="" @click="searchPanel=true;"><i class="iconfont">&#xe6ac;</i>&nbsp;筛选&nbsp;</i-button>
-			<modal width="480" v-model="searchPanel" >
-				<div slot="header" style="font-size:14px;line-height:20px;">筛选条件</div>
-				<i-form :model="param" :label-width="130" inline>
+			<modal width="500" :footer-hide="true" v-model="searchPanel" >
+				<h3>筛选条件</h3>
+				<card>
+				<i-form :model="param" :label-width="130" inline style="margin-top:10px;">
 				<c:if test="${!empty map.searchHint }">
 					<form-item label="搜索:" style="margin-bottom:10px;">
 						<i-input v-model="param['searchText']" placeholder="${map.searchHint }" style="width:260px;"></i-input>
 					</form-item>
-					<divider :style="{margin:'3px 0 11px 0'}"></divider>
 				</c:if>
 				<c:forEach var="item" items="${map.tableQueryList }">
 				<c:if test="${item.type=='HIDDEN' }">
@@ -34,6 +34,9 @@
 					<i-select ref="${item.field }" v-model="param['params[${item.field }]']" style="width:260px;" @on-change="doClearField('${item.field }');" :filterable="true" :transfer="true" :clearable="true">
 						<i-option v-for="item in selectDatas['${item.field }']" :value="item.value" :key="item.value">{{ item.label }}</i-option>
 					</i-select>
+					</c:if>
+					<c:if test="${item.type=='SELECT_NODE' }">
+					<cascader :data="selectDatas['${item.field }']" trigger="hover" :filterable="true" style="width:260px;" v-model="cascaders['${item.field }']" @on-change="doClearField('${item.field }',arguments);" placeholder="${item.hint }" ></cascader>
 					</c:if>
 					<c:if test="${item.type=='INT_RANGE' }">
 					<input-number v-model="param['params[${item.field }down]']" :style="{width:'123px'}" @on-blur="doClearField('${item.field }')" placeholder="下限"></input-number> ~ 
@@ -52,7 +55,8 @@
 				</c:if>
 				</c:forEach>
 				</i-form>
-				<div slot="footer" style="text-align:center;">
+				</card>
+				<div style="text-align:right;margin-top:10px;">
 					<i-button type="primary" @click="queryChart" ><i class="iconfont">&#xe6ac;</i>&nbsp;查询&nbsp;</i-button>
 				</div>
 			</modal>
@@ -101,6 +105,7 @@
 				},
 				modalWidth:0,
 				param:[],
+				cascaders:{},
 				tableHeight:${map.tableHeight},
 				dataUrl:'${map.dataUrl}',
 				datas:[],
@@ -129,10 +134,10 @@
 			</c:if>
 			<c:forEach var="item" items="${map.tableQueryList }">
 				clearField['${item.field}']='${item.clearField}';
-				<c:if test="${item.type=='HIDDEN'||item.type=='TEXT'||item.type=='SELECT'}">
+				<c:if test="${item.type=='HIDDEN'||item.type=='TEXT'||item.type=='SELECT'||item.type=='SELECT_NODE'}">
 					param['params[${item.field }]']="${map.params[item.field]}";
 				</c:if>
-				<c:if test="${item.type=='SELECT'}">
+				<c:if test="${item.type=='SELECT'||item.type=='SELECT_NODE'}">
 					selectDatas["${item.field}"]=[];
 					<c:forEach var="op" items="${item.selectData}">selectDatas["${item.field}"].push({value:"${op[0] }",label:"${op[1] }"});</c:forEach>
 					<c:if test="${!empty item.selectParam}">selectMethod["${item.field}"]=${item.selectParam};</c:if>
@@ -145,6 +150,9 @@
 			this.param=param;
 			this.selectMethod=selectMethod;
 			this.selectDatas=selectDatas;
+			<c:forEach var="item" items="${map.tableQueryList }">
+				<c:if test="${item.type=='SELECT_NODE'}"> this.setCascaderValue("${item.field }"); </c:if>
+			</c:forEach>
 			this.clearField=clearField;
 			this.initSelectMethod();
 			this.queryChart();

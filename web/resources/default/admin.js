@@ -587,7 +587,14 @@ Vue.component('json-item', {
 						}
 					}
 					method.field=f;
-					method.valueFieldValue=this.fields[method.valueField];
+					method.valueFieldValue="";
+					if(method.valueField){
+						var vfarr=method.valueField.split("|");
+						for(var i=0;i<vfarr.length;i++){
+							if(i!=0) method.valueFieldValue+="|";
+							method.valueFieldValue+=this.fields[vfarr[i]];
+						}
+					}
 					if(!method.linkField||method.linkField&&method.valueFieldValue){
 						$.execJSON("action/managePageUtil/getSelectData",method,(function(json){
 							var field=json.field;
@@ -599,7 +606,7 @@ Vue.component('json-item', {
 									this.$set(this.selectLabels[field],this.selectLabels[field].length,json.data[i].label);
 								}
 							}
-							console.log(this.selectDatas[field]);
+							this.setCascaderValue(field);
 							if(this.$refs[field]){
 								this.$refs[field].clearSingleSelect();
 							}
@@ -609,7 +616,38 @@ Vue.component('json-item', {
 					}
 				}
 			},
-			doClearField:function(f){
+			setCascaderValue:function(f){
+				var v=this.fields[f];
+				var fn=function(ls){
+					for(var i=0;i<ls.length;i++){
+						var arr=ls[i];
+						if(arr.children){
+							var rs=fn(arr.children);
+							if(rs){
+								rs.unshift(arr.value);
+								return rs;
+							}
+						}else if(arr.value==v){
+							return [v];
+						}
+					}
+				};
+				var vs=fn(this.selectDatas[f]);
+				if(vs){
+					this.cascaders[f]=vs;
+					console.log(this.cascaders[f]);
+				}
+			},
+			doClearField:function(f,other){
+				if(other){//级联选择传参
+					var arr=other[0];
+					this.cascaders[f]=arr;
+					if(arr.length>0){
+						this.fields[f]=arr[arr.length-1];
+					}else{
+						this.fields[f]="";
+					}
+				}
 				var cf=this.clearField[f];
 				if(cf){
 					if(this.fields[cf] instanceof Array){
@@ -695,9 +733,16 @@ Vue.component('json-item', {
 					var b=true;
 					var d={};
 					if(param.field){
-						var v=this.fields[param.valueField];
-						if(v){
-							d[param.field]=v;
+						if(param.valueField){
+							var vfarr=param.valueField.split("|");
+							for(var i=0;i<vfarr.length;i++){
+								var v=this.fields[vfarr[i]];
+								if(v){
+									d[vfarr[i]]=v;
+								}else{
+									b=false;
+								}
+							}
 						}else{
 							b=false;
 						}
@@ -727,6 +772,46 @@ Vue.component('json-item', {
 						if(arr[i].value==this.fields[field]) return i;
 					}
 				}
+			},
+			convertMessage:function(msg){
+				if(!msg) return "";
+				var arr=msg.match(/\#\{.+?\}/gi);
+				if(null!=arr&&arr.length>0){
+					for(var i=0,len=arr.length;i<len;i++){
+						var str=arr[i];
+						var key=str.substring(2,str.length-1);
+						var ls=this.selectDatas[key];
+						var vc=this.cascaders[key];
+						var value=this.fields[key];
+						var lab="";
+						if(vc){
+							var idx=0;
+							for(var n=0;n<vc.length;n++){
+								var vls=ls;
+								if(n>0) vls=ls[idx].children;
+								for(var m=0;m<vls.length;m++){
+									if(vls[m].value==vc[n]){
+										idx=m;
+										lab+=(n>0?" / ":"")+vls[m].label;
+										continue;
+									}
+								}
+							}
+						}else if(ls){
+							for(var n=0;n<ls.length;n++){
+								if(ls[n].value==value){
+									lab=ls[n].label;
+									continue;
+								}
+							}
+						}
+						if(!lab){
+							lab=value;
+						}
+						msg=msg.replace(str,lab);
+					}
+				}
+				return msg;
 			}
 		},
 		vueTableListMethods:{
@@ -791,7 +876,14 @@ Vue.component('json-item', {
 						}
 					}
 					method.field=f;
-					method.valueFieldValue=this.param['params['+method.valueField+']'];
+					method.valueFieldValue="";
+					if(method.valueField){
+						var vfarr=method.valueField.split("|");
+						for(var i=0;i<vfarr.length;i++){
+							if(i!=0) method.valueFieldValue+="|";
+							method.valueFieldValue+=this.param['params['+vfarr[i]+']'];
+						}
+					}
 					if(!method.linkField||method.linkField&&method.valueFieldValue){
 						$.execJSON("action/managePageUtil/getSelectData",method,function(json){
 							var field=json.field;
@@ -799,12 +891,42 @@ Vue.component('json-item', {
 							if(self.$refs[field]){
 								self.$refs[field].clearSingleSelect();
 							}
+							self.setCascaderValue(field);
 							self.doClearField(field);
 						});
 					}
 				}
 			},
-			doClearField:function(f){
+			setCascaderValue:function(f){
+				var v=this.param['params['+f+']'];
+				var fn=function(ls){
+					for(var i=0;i<ls.length;i++){
+						var arr=ls[i];
+						if(arr.children){
+							var rs=fn(arr.children);
+							if(rs){
+								rs.unshift(arr.value);
+								return rs;
+							}
+						}else if(arr.value==v){
+							return [v];
+						}
+					}
+				};
+				var vs=fn(this.selectDatas[f]);
+				if(vs){
+					this.cascaders[f]=vs;
+				}
+			},
+			doClearField:function(f,other){
+				if(other){//级联选择传参
+					var arr=other[0];
+					if(arr.length>0){
+						this.param['params['+f+']']=arr[arr.length-1];
+					}else{
+						this.param['params['+f+']']="";
+					}
+				}
 				var cf=this.clearField[f];
 				if(cf){
 					if(undefined!=this.param['params['+cf+']']){

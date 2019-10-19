@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import m.system.exception.MException;
 import m.system.util.JSONMessage;
+import m.system.util.ObjectUtil;
 import m.system.util.StringUtil;
 import manage.util.page.button.ParamMeta;
 import manage.util.page.form.FormButtonMeta;
@@ -17,6 +20,7 @@ import manage.util.page.form.FormFieldMeta;
 import manage.util.page.form.FormFieldMeta.FormFieldType;
 import manage.util.page.form.FormOtherMeta;
 import manage.util.page.form.FormRowMeta;
+import manage.util.page.form.FormViewUIMeta;
 
 public class FormMetaUtil {
 
@@ -39,11 +43,22 @@ public class FormMetaUtil {
 			map.put("tabTitle", row.tabTitle());
 			map.put("minWidth", row.minWidth());
 			map.put("marginRight", row.marginRight());
+			if(!StringUtil.isSpace(row.alert().title())) {
+				Map<String,Object> alert=new HashMap<String, Object>();
+				alert.put("type", row.alert().type().toString());
+				alert.put("icon", row.alert().icon());
+				alert.put("title", StringUtil.isSpace(row.alert().title())?"":ObjectUtil.toString(row.alert().title()));
+				alert.put("desc", StringUtil.isSpace(row.alert().desc())?"":ObjectUtil.toString(row.alert().desc()));
+				map.put("alert", alert);
+			}
+			Object[] vui=toViewUI(row.viewui());
+			map.put("vulist", vui[0]);
+			map.put("vplist", vui[1]);
 			List<Map<String,Object>> fm=new ArrayList<Map<String,Object>>();
 			for(FormFieldMeta field : row.fields()){
 				Map<String,Object> m=new HashMap<String, Object>();
 				m.put("title", field.title());
-				m.put("message", field.message());
+				m.put("message", StringUtil.isSpace(field.message())?"":ObjectUtil.toString(field.message()));
 				m.put("titleWidth", field.titleWidth());
 				if(field.hideTitle()){
 					m.put("title", field.required()?" ":"");
@@ -54,6 +69,26 @@ public class FormMetaUtil {
 				m.put("field", field.field());
 				m.put("disabled", field.disabled());
 				m.put("span", field.span());
+				m.put("alertSpan", field.alertSpan()==0?field.span():field.alertSpan());
+				if(!StringUtil.isSpace(field.alert().title())) {
+					Map<String,Object> alert=new HashMap<String, Object>();
+					alert.put("type", field.alert().type().toString());
+					alert.put("icon", field.alert().icon());
+					alert.put("title", StringUtil.isSpace(field.alert().title())?"":ObjectUtil.toString(field.alert().title()));
+					alert.put("desc", StringUtil.isSpace(field.alert().desc())?"":ObjectUtil.toString(field.alert().desc()));
+					m.put("alert", alert);
+				}
+				vui=toViewUI(field.viewui());
+				m.put("vulist", vui[0]);
+				m.put("vplist", vui[1]);
+				if(((List<String>)vui[0]).size()>0) {
+					m.put("viewuiSpan", field.viewuiSpan()==0?field.span():field.viewuiSpan());
+				}
+				if(field.type()==FormFieldType.ALERT) {
+					m.put("title", "");
+					m.put("titleWidth", 0);
+					m.put("required", false);
+				}
 				if(field.type()==FormFieldType.IMAGE||field.height()>=0){
 					m.put("height", field.height());
 				}
@@ -67,6 +102,10 @@ public class FormMetaUtil {
 				m.put("hint", field.hint());
 				m.put("suffix", field.suffix());
 				m.put("nullHidden", field.nullHidden());
+				m.put("hiddenField", field.hiddenField());
+				m.put("hiddenValues", field.hiddenValues());
+				m.put("showField", field.showField());
+				m.put("showValues", field.showValues());
 				m.put("clearField", field.clearField());
 				m.put("thumWidth", field.thumWidth());
 				m.put("thumRatio", field.thumRatio());
@@ -88,10 +127,10 @@ public class FormMetaUtil {
 					}catch(Exception e){
 					}
 				}
-				if(field.type()==FormFieldType.SELECT||field.type()==FormFieldType.CHECKBOX||field.type()==FormFieldType.RADIO||field.type()==FormFieldType.STEPS||field.type()==FormFieldType.TEXTAUTO){
+				if(field.type()==FormFieldType.SELECT||field.type()==FormFieldType.SELECT_NODE||field.type()==FormFieldType.CHECKBOX||field.type()==FormFieldType.RADIO||field.type()==FormFieldType.STEPS||field.type()==FormFieldType.TEXTAUTO){
 					if(!StringUtil.isSpace(field.querySelect().modelClass())||!StringUtil.isSpace(field.dictType())){
 						m.put("selectData", new ArrayList<Map<String,Object>>());
-						JSONMessage json=QueryMetaUtil.toSelectParam(field.querySelect(),field.dictType(),field.linkField());
+						JSONMessage json=QueryMetaUtil.toSelectParam(field.type().name(),field.querySelect(),field.dictType(),field.linkField());
 						json.push("disabled", field.disabled());
 						m.put("selectParam", json);
 					}else{
@@ -180,5 +219,23 @@ public class FormMetaUtil {
 			list.add(map);
 		}
 		return list;
+	}
+	public static Object[] toViewUI(FormViewUIMeta[] viewui){
+		Pattern pattern=Pattern.compile("\\#\\{.+?\\}");
+		List<String> vulist=new ArrayList<String>();
+		List<String> vplist=new ArrayList<String>();
+		for(FormViewUIMeta ui : viewui) {
+			String f=ui.template();
+			Matcher matcher=pattern.matcher(f);
+			while(matcher.find()){
+				String str=matcher.group();
+				f=f.replace(str, "fields['"+str.substring(2,str.length()-1)+"']");
+			}
+			vulist.add(f);
+			for(String p : ui.fields()) {
+				vplist.add(p);
+			}
+		}
+		return new Object[] {vulist,vplist};
 	}
 }

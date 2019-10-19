@@ -27,4 +27,14 @@ public @interface QuerySelectMeta {
 	String sortField() default "";
 	SelectConditionMeta[] conditions() default {};
 	SessionMeta session() default @SessionMeta();
+	/**
+	 * 级联选择的父字段
+	 * @return
+	 */
+	String parentField() default "";
+	/**
+	 * 级联选择的父开始属性
+	 * @return
+	 */
+	String parentValue() default "";
 }

@@ -16,6 +16,16 @@ public @interface FormRowMeta {
 	 */
 	boolean splitLine() default false;
 	/**
+	 * 提示
+	 * @return
+	 */
+	FormAlertMeta alert() default @FormAlertMeta(title="");
+	/**
+	 * html标签段
+	 * @return
+	 */
+	FormViewUIMeta[] viewui() default {};
+	/**
 	 * 分割线上的文字
 	 * @return
 	 */
@@ -44,7 +54,7 @@ public @interface FormRowMeta {
 	 * 右侧空白距离
 	 * @return
 	 */
-	int marginRight() default 50;
+	int marginRight() default 0;
 	/**
 	 * 表单行里的字段
 	 * @return
